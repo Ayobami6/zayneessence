@@ -43,14 +43,25 @@ export function Header() {
   };
 
   return (
-    <AppBar position="sticky" component="header">
-      {/* Subtle studio utility bar */}
+    <AppBar
+      position="sticky"
+      component="header"
+      sx={{
+        bgcolor: 'background.paper',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderBottom: 1,
+        borderColor: 'divider',
+        transition: (theme) => theme.palette.zayne.modeTransition,
+      }}
+    >
+      {/* Top Parade-style studio status ribbon */}
       <Box
         sx={{
           borderBottom: 1,
           borderColor: 'divider',
-          bgcolor: 'background.paper',
           py: 0.75,
+          bgcolor: 'background.default',
         }}
       >
         <Container maxWidth="lg">
@@ -60,53 +71,51 @@ export function Header() {
               alignItems: 'center',
               justifyContent: 'space-between',
               gap: 2,
-              flexWrap: 'wrap',
             }}
           >
-            <Typography
-              variant="caption"
-              sx={{ color: 'text.primary', fontSize: '0.875rem', fontWeight: 400 }}
-            >
-              Lagos &amp; Abuja 1–2 day delivery · Free over ₦150,000
-            </Typography>
-
-            <Box
-              sx={{
-                display: { xs: 'none', sm: 'flex' },
-                alignItems: 'center',
-                gap: 2.5,
-              }}
-            >
-              <Typography
-                component={Link}
-                href="/#consultation"
-                variant="caption"
+            {/* Live studio status pill with pulsating dot (Parade Studio signature) */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box
                 sx={{
-                  color: 'text.primary',
-                  fontSize: '0.875rem',
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  bgcolor: '#34D399',
+                  animation: 'pulseDot 2s ease-in-out infinite',
+                }}
+              />
+              <Typography
+                sx={{
+                  fontFamily: 'var(--font-jost), "Jost", sans-serif',
+                  fontSize: '0.8125rem',
                   fontWeight: 500,
-                  textDecoration: 'none',
-                  '&:hover': { color: 'text.secondary' },
+                  color: 'text.primary',
                 }}
               >
-                Skin &amp; scent consultation
-              </Typography>
-              <Typography
-                variant="caption"
-                sx={{ color: 'text.secondary', fontSize: '0.875rem', fontWeight: 400 }}
-              >
-                Ikoyi · Maitama · +234 812 486 3945
+                Ikoyi &amp; Maitama studios open · Lagos &amp; Abuja 1–2 day delivery
               </Typography>
             </Box>
+
+            <Typography
+              sx={{
+                display: { xs: 'none', md: 'block' },
+                fontFamily: 'var(--font-jost), "Jost", sans-serif',
+                fontSize: '0.8125rem',
+                color: 'text.secondary',
+              }}
+            >
+              Complimentary delivery nationwide over ₦150,000
+            </Typography>
           </Box>
         </Container>
       </Box>
 
+      {/* Main navigation bar */}
       <Container maxWidth="lg">
         <Toolbar
           disableGutters
           sx={{
-            minHeight: { xs: 64, md: 76 },
+            minHeight: { xs: 66, md: 80 },
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -114,7 +123,7 @@ export function Header() {
           }}
         >
           {/* Left: Wordmark always written in lowercase as "zayneessence" */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 2, md: 3.5 } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 2, md: 4 } }}>
             <Typography
               component={Link}
               href="/"
@@ -124,10 +133,10 @@ export function Header() {
               }}
               sx={{
                 fontFamily: 'var(--font-italiana), "Italiana", Georgia, serif',
-                fontSize: { xs: '1.8rem', md: '2.15rem' },
+                fontSize: { xs: '1.9rem', md: '2.3rem' },
                 fontWeight: 400,
-                WebkitTextStroke: '0.28px currentColor',
-                letterSpacing: '-0.01em',
+                WebkitTextStroke: '0.25px currentColor',
+                letterSpacing: '-0.02em',
                 color: 'text.primary',
                 textDecoration: 'none',
                 textTransform: 'lowercase',
@@ -137,6 +146,7 @@ export function Header() {
               zayneessence
             </Typography>
 
+            {/* Parade-style centered navigation links */}
             <Box
               component="nav"
               aria-label="Primary navigation"
@@ -146,47 +156,47 @@ export function Header() {
                 component={Link}
                 href="/#catalogue"
                 color="inherit"
-                sx={{ px: 1.75, py: 0.75, fontSize: '1rem', fontWeight: 500 }}
+                sx={{ px: 2, py: 0.85, fontSize: '0.96875rem', fontWeight: 500 }}
               >
                 Shop
               </Button>
               <Button
                 component={Link}
-                href="/#consultation"
+                href="/#rituals"
                 color="inherit"
-                sx={{ px: 1.75, py: 0.75, fontSize: '1rem', fontWeight: 500 }}
+                sx={{ px: 2, py: 0.85, fontSize: '0.96875rem', fontWeight: 500 }}
               >
-                Skin consultation
+                Rituals
               </Button>
               <Button
                 component={Link}
-                href="/saved"
+                href="/#provenance"
                 color="inherit"
-                sx={{ px: 1.75, py: 0.75, fontSize: '1rem', fontWeight: 500 }}
+                sx={{ px: 2, py: 0.85, fontSize: '0.96875rem', fontWeight: 500 }}
               >
-                Saved{savedIds.length > 0 ? ` (${savedIds.length})` : ''}
+                Provenance
               </Button>
               <Button
                 component={Link}
-                href="/account"
+                href="/#journal"
                 color="inherit"
-                sx={{ px: 1.75, py: 0.75, fontSize: '1rem', fontWeight: 500 }}
+                sx={{ px: 2, py: 0.85, fontSize: '0.96875rem', fontWeight: 500 }}
               >
-                Account
+                Journal
               </Button>
               <Button
                 component={Link}
                 href="/admin"
                 color="inherit"
-                sx={{ px: 1.75, py: 0.75, fontSize: '1rem', fontWeight: 400, color: 'text.secondary' }}
+                sx={{ px: 2, py: 0.85, fontSize: '0.96875rem', fontWeight: 400, color: 'text.secondary' }}
               >
                 Studio admin
               </Button>
             </Box>
           </Box>
 
-          {/* Right: Theme toggle, Search, Saved (desktop), Account (mobile/desktop), Bag with count badge */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 } }}>
+          {/* Right Action Icons & Bag Pill Button */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1.25 } }}>
             <IconButton
               onClick={toggleColorMode}
               color="inherit"
@@ -205,7 +215,7 @@ export function Header() {
             <IconButton
               onClick={handleToggleSearch}
               color="inherit"
-              aria-label={isSearchOpen || searchQuery ? 'Close search' : 'Search pieces'}
+              aria-label={isSearchOpen || searchQuery ? 'Close search' : 'Search catalogue'}
               aria-expanded={isSearchOpen}
               data-testid="search-toggle-button"
             >
@@ -233,34 +243,29 @@ export function Header() {
               component={Link}
               href="/account"
               color="inherit"
-              aria-label="Account"
+              aria-label="Account & orders"
               data-testid="header-account-link"
             >
               <PersonOutlineOutlinedIcon fontSize="small" />
             </IconButton>
 
-            <IconButton
+            {/* Parade-style prominent Bag Pill Button */}
+            <Button
+              variant="contained"
+              color="primary"
               onClick={openBag}
-              color="inherit"
-              aria-label={`View bag, ${totalCount} ${totalCount === 1 ? 'item' : 'items'}`}
               data-testid="header-bag-button"
+              startIcon={<LocalMallOutlinedIcon sx={{ fontSize: 18 }} />}
+              sx={{
+                px: { xs: 2, sm: 2.75 },
+                py: 0.9,
+                fontSize: '0.9375rem',
+                fontWeight: 500,
+                ml: 0.5,
+              }}
             >
-              <Badge
-                key={badgeBumpKey}
-                badgeContent={totalCount}
-                invisible={totalCount === 0}
-                sx={{
-                  '& .MuiBadge-badge': {
-                    animation:
-                      badgeBumpKey > 0
-                        ? 'badgeBump 0.42s cubic-bezier(0.2, 0.7, 0.2, 1)'
-                        : 'none',
-                  },
-                }}
-              >
-                <LocalMallOutlinedIcon fontSize="small" />
-              </Badge>
-            </IconButton>
+              Bag{totalCount > 0 ? ` (${totalCount})` : ''}
+            </Button>
           </Box>
         </Toolbar>
       </Container>

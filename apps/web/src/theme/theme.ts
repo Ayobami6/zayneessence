@@ -232,6 +232,24 @@ export function createZayneTheme(mode: ColorMode) {
               transform: 'translateY(0)',
             },
           },
+          '@keyframes paradeMarquee': {
+            '0%': {
+              transform: 'translateX(0%)',
+            },
+            '100%': {
+              transform: 'translateX(-50%)',
+            },
+          },
+          '@keyframes pulseDot': {
+            '0%, 100%': {
+              opacity: 1,
+              transform: 'scale(1)',
+            },
+            '50%': {
+              opacity: 0.45,
+              transform: 'scale(0.85)',
+            },
+          },
           '@media (prefers-reduced-motion: reduce)': {
             '*, *::before, *::after': {
               animationDuration: '0.01ms !important',
