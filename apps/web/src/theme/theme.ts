@@ -100,14 +100,12 @@ export function createZayneTheme(mode: ColorMode) {
         fontWeight: 300,
         fontSize: '1.0625rem',
         lineHeight: 1.65,
-        maxWidth: '68ch',
       },
       body2: {
         fontFamily: BODY_FONT,
         fontWeight: 300,
         fontSize: '1rem',
         lineHeight: 1.65,
-        maxWidth: '68ch',
       },
       button: {
         fontFamily: BODY_FONT,
@@ -139,10 +137,14 @@ export function createZayneTheme(mode: ColorMode) {
             boxSizing: 'border-box',
           },
           html: {
+            width: '100%',
             WebkitFontSmoothing: 'antialiased',
             MozOsxFontSmoothing: 'grayscale',
           },
           body: {
+            width: '100%',
+            maxWidth: 'none',
+            margin: 0,
             backgroundColor: t.background,
             color: t.textPrimary,
             transition: MOTION_CURVES.modeCrossfade,
@@ -226,6 +228,16 @@ export function createZayneTheme(mode: ColorMode) {
               transitionDuration: '0.01ms !important',
               scrollBehavior: 'auto !important',
             },
+          },
+        },
+      },
+      MuiTypography: {
+        styleOverrides: {
+          body1: {
+            maxWidth: '68ch',
+          },
+          body2: {
+            maxWidth: '68ch',
           },
         },
       },

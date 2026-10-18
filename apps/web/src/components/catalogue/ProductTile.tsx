@@ -117,9 +117,11 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
             <Box
               sx={{
                 display: 'flex',
+                flexWrap: 'wrap',
                 alignItems: 'baseline',
                 justifyContent: 'space-between',
-                gap: 1,
+                columnGap: 1.5,
+                rowGap: 0.25,
               }}
             >
               <Typography
@@ -128,7 +130,7 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
                 sx={{
                   fontSize: isFeaturedSpan
                     ? { xs: '1.35rem', sm: '1.6rem' }
-                    : { xs: '1.15rem', sm: '1.3rem' },
+                    : { xs: '1.15rem', sm: '1.35rem' },
                 }}
               >
                 {product.name}
@@ -150,7 +152,7 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
               sx={{
                 display: 'block',
                 color: 'text.secondary',
-                mt: 0.25,
+                mt: 0.35,
               }}
             >
               {product.type} · {product.variants.map((v) => v.label).join(' / ')}

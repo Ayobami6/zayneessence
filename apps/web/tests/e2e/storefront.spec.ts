@@ -1,4 +1,8 @@
+import path from 'node:path';
 import { expect, test } from '@playwright/test';
+
+const ARTIFACT_DIR =
+  '/Users/mac/.gemini/antigravity/brain/5162610d-8cfa-42c0-897f-ca48ff4a71e4';
 
 test.describe('zayneessence luxury storefront E2E flows', () => {
   test('theme toggle switches between light and dark plum modes and persists', async ({
@@ -10,12 +14,22 @@ test.describe('zayneessence luxury storefront E2E flows', () => {
       page.getByRole('heading', { name: 'Skin that glows, quietly' })
     ).toBeVisible();
 
+    await page.screenshot({
+      path: path.join(ARTIFACT_DIR, 'home-light.png'),
+      fullPage: false,
+    });
+
     const initialMode = await page.locator('html').getAttribute('data-color-mode');
     const toggleBtn = page.getByTestId('theme-toggle-button');
     await toggleBtn.click();
 
     const nextMode = initialMode === 'dark' ? 'light' : 'dark';
     await expect(page.locator('html')).toHaveAttribute('data-color-mode', nextMode);
+
+    await page.screenshot({
+      path: path.join(ARTIFACT_DIR, 'home-dark.png'),
+      fullPage: false,
+    });
   });
 
   test('wishlist heart saves a piece and displays it on /saved', async ({ page }) => {
@@ -58,6 +72,11 @@ test.describe('zayneessence luxury storefront E2E flows', () => {
     await page.getByTestId('size-option-6-ml').click();
     await expect(page.getByTestId('product-detail-price')).toContainText('₦170,000');
 
+    await page.screenshot({
+      path: path.join(ARTIFACT_DIR, 'product-dialog.png'),
+      fullPage: false,
+    });
+
     // 3. Add to bag and verify button swaps to "✓ Added to bag"
     const addToBagBtn = page.getByTestId('add-to-bag-button');
     await addToBagBtn.click();
@@ -89,5 +108,10 @@ test.describe('zayneessence luxury storefront E2E flows', () => {
     await expect(page.getByTestId('order-confirmation-heading')).toHaveText(
       'Order placed. You’ll get a WhatsApp message when it leaves our studio.'
     );
+
+    await page.screenshot({
+      path: path.join(ARTIFACT_DIR, 'order-confirmation.png'),
+      fullPage: false,
+    });
   });
 });
