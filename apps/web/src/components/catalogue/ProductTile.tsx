@@ -144,8 +144,9 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
                 component="h3"
                 sx={{
                   fontSize: isFeaturedSpan
-                    ? { xs: '1.35rem', sm: '1.6rem' }
-                    : { xs: '1.15rem', sm: '1.35rem' },
+                    ? { xs: '1.45rem', sm: '1.75rem' }
+                    : { xs: '1.25rem', sm: '1.5rem' },
+                  WebkitTextStroke: '0.22px currentColor',
                 }}
               >
                 {product.name}
@@ -154,7 +155,7 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
               {lowestVariant && (
                 <Typography
                   variant="body2"
-                  sx={{ fontWeight: 400, whiteSpace: 'nowrap', fontSize: '0.9375rem' }}
+                  sx={{ fontWeight: 500, whiteSpace: 'nowrap', fontSize: '1.02rem' }}
                 >
                   {hasMultipleSizes ? 'From ' : ''}
                   <AnimatedPrice kobo={lowestVariant.price_kobo} />
@@ -167,7 +168,9 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
               sx={{
                 display: 'block',
                 color: 'text.secondary',
-                mt: 0.35,
+                fontSize: '0.95rem',
+                fontWeight: 400,
+                mt: 0.4,
               }}
             >
               {product.type} · {product.variants.map((v) => v.label).join(' / ')}
@@ -190,7 +193,7 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
       </Box>
 
       {/* Quick Add to bag / Choose size action bar */}
-      <Box sx={{ mt: 1.5, display: 'flex', gap: 1 }}>
+      <Box sx={{ mt: 1.75, display: 'flex', gap: 1 }}>
         <Button
           size="small"
           variant="outlined"
@@ -198,9 +201,10 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
           onClick={handleQuickAdd}
           data-testid={`quick-add-${product.slug}`}
           sx={{
-            py: 0.75,
+            py: 0.9,
             px: 2,
-            fontSize: '0.84rem',
+            fontSize: '0.925rem',
+            fontWeight: 500,
           }}
         >
           {quickAdded

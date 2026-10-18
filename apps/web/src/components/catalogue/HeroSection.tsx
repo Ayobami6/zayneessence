@@ -73,9 +73,12 @@ export function HeroSection() {
             <Typography
               variant="body1"
               sx={{
-                color: 'text.secondary',
+                color: 'text.primary',
+                opacity: 0.88,
+                fontSize: { xs: '1.125rem', md: '1.22rem' },
+                fontWeight: 400,
                 mb: 4,
-                maxWidth: '54ch',
+                maxWidth: '52ch',
               }}
             >
               Skincare made with Nigerian shea, baobab and moringa for melanin-rich
@@ -106,8 +109,8 @@ export function HeroSection() {
                 data-testid="hero-see-everything-link"
                 sx={{
                   color: 'text.primary',
-                  fontSize: '0.9375rem',
-                  fontWeight: 400,
+                  fontSize: '1.03125rem',
+                  fontWeight: 500,
                   textDecoration: 'underline',
                   textUnderlineOffset: '5px',
                   cursor: 'pointer',
@@ -150,14 +153,14 @@ export function HeroSection() {
                     fetchPriority="high"
                     placeholder="blur"
                     blurDataURL={primaryImage.blurDataURL}
-                    sizes="(max-width: 900px) 90vw, 460px"
+                    sizes="(max-width: 900px) 90vw, 540px"
                     style={{ objectFit: 'cover' }}
                   />
                 </ArchedWindow>
 
                 <Box
                   sx={{
-                    mt: 2,
+                    mt: 2.25,
                     display: 'flex',
                     alignItems: 'baseline',
                     justifyContent: 'space-between',
@@ -169,17 +172,21 @@ export function HeroSection() {
                     <Typography
                       sx={{
                         fontFamily: 'var(--font-italiana), "Italiana", Georgia, serif',
-                        fontSize: '1.35rem',
+                        fontSize: '1.55rem',
+                        WebkitTextStroke: '0.22px currentColor',
                         color: 'text.primary',
                       }}
                     >
                       {heroProduct.name}
                     </Typography>
-                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: 'text.secondary', fontSize: '0.96875rem', fontWeight: 400 }}
+                    >
                       {heroProduct.type} · {heroProduct.variants[0]?.label}
                     </Typography>
                   </Box>
-                  <Typography variant="body2" sx={{ fontWeight: 400 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '1.1rem' }}>
                     {formatKoboToNgn(startingPrice)}
                   </Typography>
                 </Box>

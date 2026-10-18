@@ -63,7 +63,10 @@ export function Header() {
               flexWrap: 'wrap',
             }}
           >
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>
+            <Typography
+              variant="caption"
+              sx={{ color: 'text.primary', fontSize: '0.875rem', fontWeight: 400 }}
+            >
               Lagos &amp; Abuja 1–2 day delivery · Free over ₦150,000
             </Typography>
 
@@ -79,15 +82,19 @@ export function Header() {
                 href="/#consultation"
                 variant="caption"
                 sx={{
-                  color: 'text.secondary',
-                  fontSize: '0.8rem',
+                  color: 'text.primary',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
                   textDecoration: 'none',
-                  '&:hover': { color: 'text.primary' },
+                  '&:hover': { color: 'text.secondary' },
                 }}
               >
                 Skin &amp; scent consultation
               </Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary', fontSize: '0.875rem', fontWeight: 400 }}
+              >
                 Ikoyi · Maitama · +234 812 486 3945
               </Typography>
             </Box>
@@ -117,8 +124,9 @@ export function Header() {
               }}
               sx={{
                 fontFamily: 'var(--font-italiana), "Italiana", Georgia, serif',
-                fontSize: { xs: '1.65rem', md: '1.95rem' },
+                fontSize: { xs: '1.8rem', md: '2.15rem' },
                 fontWeight: 400,
+                WebkitTextStroke: '0.28px currentColor',
                 letterSpacing: '-0.01em',
                 color: 'text.primary',
                 textDecoration: 'none',
@@ -132,13 +140,13 @@ export function Header() {
             <Box
               component="nav"
               aria-label="Primary navigation"
-              sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 0.5 }}
+              sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 0.75 }}
             >
               <Button
                 component={Link}
                 href="/#catalogue"
                 color="inherit"
-                sx={{ px: 1.75, py: 0.75, fontSize: '0.9375rem' }}
+                sx={{ px: 1.75, py: 0.75, fontSize: '1rem', fontWeight: 500 }}
               >
                 Shop
               </Button>
@@ -146,7 +154,7 @@ export function Header() {
                 component={Link}
                 href="/#consultation"
                 color="inherit"
-                sx={{ px: 1.75, py: 0.75, fontSize: '0.9375rem' }}
+                sx={{ px: 1.75, py: 0.75, fontSize: '1rem', fontWeight: 500 }}
               >
                 Skin consultation
               </Button>
@@ -154,7 +162,7 @@ export function Header() {
                 component={Link}
                 href="/saved"
                 color="inherit"
-                sx={{ px: 1.75, py: 0.75, fontSize: '0.9375rem' }}
+                sx={{ px: 1.75, py: 0.75, fontSize: '1rem', fontWeight: 500 }}
               >
                 Saved{savedIds.length > 0 ? ` (${savedIds.length})` : ''}
               </Button>
@@ -162,7 +170,7 @@ export function Header() {
                 component={Link}
                 href="/account"
                 color="inherit"
-                sx={{ px: 1.75, py: 0.75, fontSize: '0.9375rem' }}
+                sx={{ px: 1.75, py: 0.75, fontSize: '1rem', fontWeight: 500 }}
               >
                 Account
               </Button>
@@ -170,7 +178,7 @@ export function Header() {
                 component={Link}
                 href="/admin"
                 color="inherit"
-                sx={{ px: 1.75, py: 0.75, fontSize: '0.9375rem', color: 'text.secondary' }}
+                sx={{ px: 1.75, py: 0.75, fontSize: '1rem', fontWeight: 400, color: 'text.secondary' }}
               >
                 Studio admin
               </Button>

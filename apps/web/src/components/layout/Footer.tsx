@@ -33,7 +33,8 @@ export function Footer() {
             <Typography
               sx={{
                 fontFamily: 'var(--font-italiana), "Italiana", Georgia, serif',
-                fontSize: '1.85rem',
+                fontSize: '2.1rem',
+                WebkitTextStroke: '0.28px currentColor',
                 color: 'text.primary',
                 textTransform: 'lowercase',
                 mb: 1.5,
@@ -68,11 +69,12 @@ export function Footer() {
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 1,
+                gap: 1.15,
                 '& a': {
                   color: 'text.secondary',
                   textDecoration: 'none',
-                  fontSize: '0.9375rem',
+                  fontSize: '1.03125rem',
+                  fontWeight: 400,
                   '&:hover': {
                     color: 'text.primary',
                   },
@@ -98,10 +100,10 @@ export function Footer() {
             gap: 1.5,
           }}
         >
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.95rem' }}>
             © {new Date().getFullYear()} zayneessence. Formulated and bottled in Nigeria.
           </Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.95rem' }}>
             Lagos &amp; Abuja 1–2 day delivery · Complimentary delivery over ₦150,000
           </Typography>
         </Box>

@@ -11,7 +11,7 @@ const italiana = Italiana({
 });
 
 const jost = Jost({
-  weight: ['300', '400', '500'],
+  weight: ['300', '400', '500', '600'],
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-jost',

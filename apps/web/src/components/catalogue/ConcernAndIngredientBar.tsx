@@ -39,9 +39,11 @@ export function ConcernAndIngredientBar() {
       <Typography
         variant="caption"
         sx={{
-          color: 'text.secondary',
+          color: 'text.primary',
+          fontWeight: 500,
+          fontSize: '0.9375rem',
           flexShrink: 0,
-          mr: 0.5,
+          mr: 0.75,
         }}
       >
         By concern or ingredient:
@@ -67,8 +69,9 @@ export function ConcernAndIngredientBar() {
               }
             }}
             sx={{
-              height: 32,
-              fontSize: '0.8125rem',
+              height: 36,
+              fontSize: '0.9rem',
+              fontWeight: 500,
               flexShrink: 0,
             }}
           />
@@ -82,8 +85,9 @@ export function ConcernAndIngredientBar() {
           clickable
           onClick={() => setSearchQuery('')}
           sx={{
-            height: 32,
-            fontSize: '0.8125rem',
+            height: 36,
+            fontSize: '0.9rem',
+            fontWeight: 500,
             flexShrink: 0,
           }}
         />
