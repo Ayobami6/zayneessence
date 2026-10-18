@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2000" width="1600" height="2000">
+  <defs>
+    <!-- Soft daylight from the left side on seamless lilac/grey backdrop -->
+    <linearGradient id="studioDaylight" x1="0%" y1="15%" x2="100%" y2="85%">
+      <stop offset="0%" stop-color="#F6F3F7" />
+      <stop offset="52%" stop-color="#ECE4EF" />
+      <stop offset="100%" stop-color="#E1D5E5" />
+    </linearGradient>
+    <linearGradient id="floorHorizon" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E1D5E5" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#D5C6DB" stop-opacity="0.75" />
+    </linearGradient>
+  </defs>
+  <!-- Seamless studio backdrop -->
+  <rect width="1600" height="2000" fill="url(#studioDaylight)" />
+  <!-- Gentle studio table horizon -->
+  <rect x="0" y="1420" width="1600" height="580" fill="url(#floorHorizon)" />
+  
+        <!-- Floor shadow -->
+        <ellipse cx="830" cy="1535" rx="235" ry="34" fill="#C9B9CE" opacity="0.55" />
+        <!-- Smoked plum glass dropper bottle -->
+        <path d="M600 880 C600 800 675 760 725 735 L875 735 C925 760 1000 800 1000 880 L1000 1495 C1000 1518 982 1535 960 1535 L640 1535 C618 1535 600 1518 600 1495 Z" fill="#3A2440" />
+        <!-- Left daylight reflection -->
+        <rect x="622" y="860" width="76" height="640" rx="24" fill="#B4A3BA" opacity="0.28" />
+        <!-- Dropper collar & rubber bulb -->
+        <rect x="715" y="645" width="170" height="92" rx="10" fill="#1E1022" />
+        <path d="M740 645 L740 500 C740 445 860 445 860 500 L860 645 Z" fill="#2E1C33" />
+        <!-- Arch-shaped label -->
+        <path d="M655 1425 V1050 A145 145 0 0 1 945 1050 V1425 Z" fill="#FBF9FC" />
+        <text x="800" y="1135" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#1E1022">zayneessence</text>
+        <line x1="705" y1="1165" x2="895" y2="1165" stroke="#E2D9E5" stroke-width="2" />
+        <text x="800" y="1225" text-anchor="middle" font-family="Georgia, serif" font-size="36" fill="#1E1022">Huile Visage</text>
+        <text x="800" y="1272" text-anchor="middle" font-family="sans-serif" font-weight="300" font-size="20" fill="#6E5677">Nourishing face oil</text>
+        <text x="800" y="1340" text-anchor="middle" font-family="sans-serif" font-weight="300" font-size="19" fill="#6E5677">30 ml</text>
+      
+</svg>

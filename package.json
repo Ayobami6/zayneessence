@@ -1,0 +1,22 @@
+{
+  "name": "zayneessence",
+  "version": "1.0.0",
+  "private": true,
+  "description": "zayneessence — Nigerian luxury skincare, pure oud oils and perfume store",
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ],
+  "scripts": {
+    "dev": "npm --workspace=apps/web run dev",
+    "build": "npm --workspace=apps/web run build",
+    "start": "npm --workspace=apps/web run start",
+    "typecheck": "npm --workspace=apps/web run typecheck",
+    "test": "npm --workspace=apps/web run test",
+    "test:e2e": "npm --workspace=apps/web run test:e2e",
+    "seed": "npx tsx apps/api/sql/seed.ts"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

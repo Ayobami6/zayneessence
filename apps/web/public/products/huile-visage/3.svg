@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2000" width="1600" height="2000">
+  <defs>
+    <!-- Soft daylight from the left side on seamless lilac/grey backdrop -->
+    <linearGradient id="studioDaylight" x1="0%" y1="15%" x2="100%" y2="85%">
+      <stop offset="0%" stop-color="#F6F3F7" />
+      <stop offset="52%" stop-color="#ECE4EF" />
+      <stop offset="100%" stop-color="#E1D5E5" />
+    </linearGradient>
+    <linearGradient id="floorHorizon" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E1D5E5" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#D5C6DB" stop-opacity="0.75" />
+    </linearGradient>
+  </defs>
+  <!-- Seamless studio backdrop -->
+  <rect width="1600" height="2000" fill="url(#studioDaylight)" />
+  <!-- Gentle studio table horizon -->
+  <rect x="0" y="1420" width="1600" height="580" fill="url(#floorHorizon)" />
+  
+    <!-- Stone plinth surface -->
+    <rect x="280" y="360" width="1040" height="1280" rx="24" fill="#E1D5E5" />
+    <!-- Sculptural botanical texture swipe -->
+    <path d="M470 1120 C560 760 920 680 1090 890 C1210 1040 1020 1310 760 1290 C540 1275 420 1260 470 1120 Z" fill="#3A2440" opacity="0.85" />
+    <path d="M540 1085 C620 830 895 770 1015 920 C1100 1030 960 1220 755 1205" fill="none" stroke="#FBF9FC" stroke-width="18" stroke-linecap="round" opacity="0.42" />
+    <circle cx="1075" cy="720" r="46" fill="#6E5677" opacity="0.65" />
+    <circle cx="1155" cy="805" r="24" fill="#3A2440" opacity="0.55" />
+    <text x="800" y="1495" text-anchor="middle" font-family="Georgia, serif" font-size="38" fill="#1E1022">Huile Visage — Sensory study</text>
+    <text x="800" y="1548" text-anchor="middle" font-family="sans-serif" font-weight="300" font-size="22" fill="#6E5677">Nigerian botanicals &amp; aged resins · zayneessence</text>
+  
+</svg>

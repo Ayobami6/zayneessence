@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2000" width="1600" height="2000">
+  <defs>
+    <!-- Soft daylight from the left side on seamless lilac/grey backdrop -->
+    <linearGradient id="studioDaylight" x1="0%" y1="15%" x2="100%" y2="85%">
+      <stop offset="0%" stop-color="#F6F3F7" />
+      <stop offset="52%" stop-color="#ECE4EF" />
+      <stop offset="100%" stop-color="#E1D5E5" />
+    </linearGradient>
+    <linearGradient id="floorHorizon" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E1D5E5" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#D5C6DB" stop-opacity="0.75" />
+    </linearGradient>
+  </defs>
+  <!-- Seamless studio backdrop -->
+  <rect width="1600" height="2000" fill="url(#studioDaylight)" />
+  <!-- Gentle studio table horizon -->
+  <rect x="0" y="1420" width="1600" height="580" fill="url(#floorHorizon)" />
+  
+    <!-- Arched architectural studio niche -->
+    <path d="M360 1720 V740 A440 440 0 0 1 1240 740 V1720 Z" fill="#E1D5E5" />
+    <!-- Macro glass applicator / neck study -->
+    <rect x="755" y="280" width="90" height="680" rx="45" fill="#3A2440" opacity="0.88" />
+    <rect x="770" y="300" width="24" height="640" rx="12" fill="#FBF9FC" opacity="0.45" />
+    <!-- Suspended botanical droplet -->
+    <path d="M800 995 C800 995 885 1110 885 1170 A85 85 0 1 1 715 1170 C715 1110 800 995 800 995 Z" fill="#6E5677" />
+    <ellipse cx="775" cy="1155" rx="22" ry="36" fill="#FBF9FC" opacity="0.55" />
+    <!-- Concentric ripple on stone plinth -->
+    <ellipse cx="800" cy="1440" rx="290" ry="52" fill="none" stroke="#6E5677" stroke-width="3" opacity="0.45" />
+    <ellipse cx="800" cy="1440" rx="175" ry="30" fill="#3A2440" opacity="0.18" />
+    <text x="800" y="1615" text-anchor="middle" font-family="Georgia, serif" font-size="38" fill="#1E1022">Huile Précieuse — Atelier detail</text>
+    <text x="800" y="1665" text-anchor="middle" font-family="sans-serif" font-weight="300" font-size="22" fill="#6E5677">Dry body oil</text>
+  
+</svg>

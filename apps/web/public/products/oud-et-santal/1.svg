@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2000" width="1600" height="2000">
+  <defs>
+    <!-- Soft daylight from the left side on seamless lilac/grey backdrop -->
+    <linearGradient id="studioDaylight" x1="0%" y1="15%" x2="100%" y2="85%">
+      <stop offset="0%" stop-color="#F6F3F7" />
+      <stop offset="52%" stop-color="#ECE4EF" />
+      <stop offset="100%" stop-color="#E1D5E5" />
+    </linearGradient>
+    <linearGradient id="floorHorizon" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E1D5E5" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#D5C6DB" stop-opacity="0.75" />
+    </linearGradient>
+  </defs>
+  <!-- Seamless studio backdrop -->
+  <rect width="1600" height="2000" fill="url(#studioDaylight)" />
+  <!-- Gentle studio table horizon -->
+  <rect x="0" y="1420" width="1600" height="580" fill="url(#floorHorizon)" />
+  
+        <!-- Floor shadow -->
+        <ellipse cx="830" cy="1545" rx="240" ry="34" fill="#C9B9CE" opacity="0.55" />
+        <!-- Tall apothecary body oil bottle -->
+        <path d="M610 830 C610 760 680 720 730 700 L870 700 C920 720 990 760 990 830 L990 1500 C990 1520 974 1535 955 1535 L645 1535 C626 1535 610 1520 610 1500 Z" fill="#3A2440" />
+        <rect x="630" y="810" width="70" height="695" rx="22" fill="#B4A3BA" opacity="0.25" />
+        <!-- Neck & cap -->
+        <rect x="735" y="610" width="130" height="90" fill="#2E1C33" />
+        <rect x="720" y="485" width="160" height="130" rx="16" fill="#1E1022" />
+        <!-- Label -->
+        <rect x="655" y="965" width="290" height="390" rx="8" fill="#FBF9FC" />
+        <text x="800" y="1065" text-anchor="middle" font-family="Georgia, serif" font-size="30" fill="#1E1022">zayneessence</text>
+        <line x1="700" y1="1098" x2="900" y2="1098" stroke="#E2D9E5" stroke-width="2" />
+        <text x="800" y="1165" text-anchor="middle" font-family="Georgia, serif" font-size="36" fill="#1E1022">Oud & Santal</text>
+        <text x="800" y="1215" text-anchor="middle" font-family="sans-serif" font-weight="300" font-size="21" fill="#6E5677">Hair and body oil</text>
+        <text x="800" y="1295" text-anchor="middle" font-family="sans-serif" font-weight="300" font-size="19" fill="#6E5677">100 ml</text>
+      
+</svg>
