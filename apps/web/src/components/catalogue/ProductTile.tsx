@@ -1,13 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 import { Product } from '@/types/domain';
 import { SaveHeartButton } from '@/components/ui/SaveHeartButton';
 import { AnimatedPrice } from '@/components/ui/AnimatedPrice';
+import { useBag } from '@/context/BagContext';
 
 interface ProductTileProps {
   product: Product;
@@ -15,10 +17,22 @@ interface ProductTileProps {
 }
 
 export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProps) {
+  const { addToBag } = useBag();
+  const [quickAdded, setQuickAdded] = useState(false);
+
   const primaryImage = product.images[0];
   const secondaryImage = product.images[1] || product.images[0];
   const lowestVariant = product.variants[0];
   const hasMultipleSizes = product.variants.length > 1;
+
+  const handleQuickAdd = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!lowestVariant) return;
+    addToBag(product, lowestVariant, 1);
+    setQuickAdded(true);
+    setTimeout(() => setQuickAdded(false), 1700);
+  };
 
   return (
     <Box
@@ -29,6 +43,7 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'space-between',
       }}
     >
       <Box sx={{ position: 'relative' }}>
@@ -172,6 +187,26 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
             zIndex: 2,
           }}
         />
+      </Box>
+
+      {/* Quick Add to bag / Choose size action bar */}
+      <Box sx={{ mt: 1.5, display: 'flex', gap: 1 }}>
+        <Button
+          size="small"
+          variant="outlined"
+          fullWidth
+          onClick={handleQuickAdd}
+          data-testid={`quick-add-${product.slug}`}
+          sx={{
+            py: 0.75,
+            px: 2,
+            fontSize: '0.84rem',
+          }}
+        >
+          {quickAdded
+            ? '✓ Added to bag'
+            : `Add to bag · ${lowestVariant?.label || ''}`}
+        </Button>
       </Box>
     </Box>
   );
