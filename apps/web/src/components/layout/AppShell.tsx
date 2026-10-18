@@ -28,7 +28,7 @@ export function AppShell({
             <BagProvider>
               <Box
                 sx={{
-                  minHeight: '100vh',
+                  minHeight: '100dvh',
                   display: 'flex',
                   flexDirection: 'column',
                 }}
@@ -38,9 +38,9 @@ export function AppShell({
                 <Box component="main" sx={{ flexGrow: 1 }}>
                   {children}
                 </Box>
+                <Footer />
                 {modal}
                 <BagDrawer />
-                <Footer />
                 <MobileBottomNav />
               </Box>
             </BagProvider>

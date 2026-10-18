@@ -13,8 +13,9 @@ export function Footer() {
       component="footer"
       sx={{
         mt: { xs: 8, md: 12 },
-        pb: { xs: 'calc(84px + env(safe-area-inset-bottom, 0px))', md: 8 },
-        pt: { xs: 6, md: 8 },
+        mb: 0,
+        pb: { xs: 'calc(80px + env(safe-area-inset-bottom, 0px))', md: 5 },
+        pt: { xs: 6, md: 7 },
         borderTop: 1,
         borderColor: 'divider',
         bgcolor: 'background.paper',

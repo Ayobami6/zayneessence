@@ -138,6 +138,10 @@ export function createZayneTheme(mode: ColorMode) {
           },
           html: {
             width: '100%',
+            margin: 0,
+            padding: 0,
+            backgroundColor: t.background,
+            overflowX: 'clip',
             WebkitFontSmoothing: 'antialiased',
             MozOsxFontSmoothing: 'grayscale',
           },
@@ -145,10 +149,11 @@ export function createZayneTheme(mode: ColorMode) {
             width: '100%',
             maxWidth: 'none',
             margin: 0,
+            padding: 0,
             backgroundColor: t.background,
             color: t.textPrimary,
             transition: MOTION_CURVES.modeCrossfade,
-            overflowX: 'hidden',
+            overflowX: 'clip',
           },
           '*:focus-visible': {
             outline: `2px solid ${t.primaryBg}`,
