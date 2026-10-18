@@ -123,7 +123,14 @@ export function HeroSection() {
 
           {/* Right column: Featured skincare product in the signature arched window */}
           {heroProduct && primaryImage && (
-            <Box sx={{ maxWidth: { xs: 420, md: 460 }, width: '100%', mx: 'auto' }}>
+            <Box
+              sx={{
+                maxWidth: { xs: 440, md: 540 },
+                width: '100%',
+                ml: 'auto',
+                mr: { xs: 'auto', md: 0 },
+              }}
+            >
               <Box
                 component={Link}
                 href={`/products/${heroProduct.slug}`}

@@ -236,6 +236,17 @@ export function createZayneTheme(mode: ColorMode) {
           },
         },
       },
+      MuiContainer: {
+        styleOverrides: {
+          root: {
+            paddingLeft: 'clamp(16px, 3.5vw, 48px) !important',
+            paddingRight: 'clamp(16px, 3.5vw, 48px) !important',
+          },
+          maxWidthLg: {
+            maxWidth: '1760px !important',
+          },
+        },
+      },
       MuiTypography: {
         styleOverrides: {
           body1: {
