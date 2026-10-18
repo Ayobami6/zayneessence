@@ -1,0 +1,9 @@
+{
+  "name": "@zayneessence/api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "zayneessence — TypeScript NestJS + Postgres backend API",
+  "scripts": {
+    "seed": "npx tsx sql/seed.ts"
+  }
+}
