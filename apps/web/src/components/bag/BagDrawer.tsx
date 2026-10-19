@@ -70,7 +70,16 @@ export function BagDrawer() {
           borderColor: 'divider',
         }}
       >
-        <Typography variant="h3" sx={{ fontSize: '1.65rem' }}>
+        <Typography
+          variant="h3"
+          sx={{
+            fontFamily: 'var(--font-jost), "Jost", sans-serif',
+            fontSize: '1.75rem',
+            fontWeight: 700,
+            letterSpacing: '-0.025em',
+            color: 'text.primary',
+          }}
+        >
           Your bag{totalCount > 0 ? ` (${totalCount})` : ''}
         </Typography>
         <IconButton onClick={closeBag} aria-label="Close bag" data-testid="close-bag-button">
@@ -90,7 +99,7 @@ export function BagDrawer() {
       >
         <Typography
           variant="body2"
-          sx={{ fontSize: '0.9375rem', mb: 1, color: 'text.primary' }}
+          sx={{ fontSize: '0.96875rem', fontWeight: 500, mb: 1, color: 'text.primary' }}
           data-testid="free-delivery-message"
         >
           {hasUnlockedFreeDelivery
@@ -197,22 +206,32 @@ export function BagDrawer() {
                         href={`/products/${item.slug}`}
                         onClick={closeBag}
                         sx={{
-                          fontFamily: 'var(--font-italiana), "Italiana", Georgia, serif',
+                          fontFamily: 'var(--font-jost), "Jost", sans-serif',
                           fontSize: '1.2rem',
+                          fontWeight: 600,
                           color: 'text.primary',
                           textDecoration: 'none',
                         }}
                       >
                         {item.name}
                       </Typography>
-                      <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary' }}>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          display: 'block',
+                          color: 'text.primary',
+                          opacity: 0.8,
+                          fontSize: '0.875rem',
+                          fontWeight: 500,
+                        }}
+                      >
                         {item.sizeLabel} · {item.type}
                       </Typography>
                     </Box>
 
                     <AnimatedPrice
                       kobo={item.priceKobo * item.quantity}
-                      sx={{ fontWeight: 400, fontSize: '0.95rem' }}
+                      sx={{ fontWeight: 700, fontSize: '1.05rem', color: 'text.primary' }}
                     />
                   </Box>
 
@@ -247,7 +266,8 @@ export function BagDrawer() {
                         component="span"
                         sx={{
                           px: 1.5,
-                          fontSize: '0.875rem',
+                          fontSize: '0.9375rem',
+                          fontWeight: 600,
                           animation: 'priceFadeUp 0.25s cubic-bezier(0.2, 0.7, 0.2, 1)',
                         }}
                       >
@@ -267,10 +287,12 @@ export function BagDrawer() {
                       color="inherit"
                       onClick={() => removeItem(item.id)}
                       sx={{
-                        color: 'text.secondary',
+                        color: 'text.primary',
+                        opacity: 0.8,
                         px: 1.5,
                         py: 0.5,
-                        fontSize: '0.8125rem',
+                        fontSize: '0.875rem',
+                        fontWeight: 500,
                         textDecoration: 'underline',
                         textUnderlineOffset: '3px',
                       }}
@@ -305,16 +327,16 @@ export function BagDrawer() {
               mb: 1,
             }}
           >
-            <Typography variant="body1" sx={{ fontWeight: 400 }}>
+            <Typography variant="body1" sx={{ fontWeight: 600, fontSize: '1.1rem', color: 'text.primary' }}>
               Subtotal
             </Typography>
             <AnimatedPrice
               kobo={subtotalKobo}
               data-testid="bag-subtotal"
-              sx={{ fontSize: '1.15rem', fontWeight: 500 }}
+              sx={{ fontSize: '1.35rem', fontWeight: 700, color: 'text.primary' }}
             />
           </Box>
-          <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary', mb: 2 }}>
+          <Typography variant="caption" sx={{ display: 'block', color: 'text.primary', opacity: 0.8, fontSize: '0.875rem', mb: 2 }}>
             Delivery and complimentary gift wrapping are selected at checkout.
           </Typography>
           <Divider sx={{ mb: 2 }} />
@@ -324,7 +346,7 @@ export function BagDrawer() {
             color="primary"
             onClick={handleProceedToCheckout}
             data-testid="proceed-to-checkout-button"
-            sx={{ py: 1.5 }}
+            sx={{ py: 1.6, fontSize: '1.05rem', fontWeight: 600 }}
           >
             Continue to checkout · {formatKoboToNgn(subtotalKobo)}
           </Button>

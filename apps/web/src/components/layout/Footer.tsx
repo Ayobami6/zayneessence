@@ -41,11 +41,11 @@ export function Footer() {
             <Typography
               sx={{
                 fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: '0.875rem',
-                fontWeight: 500,
+                fontSize: '0.9375rem',
+                fontWeight: 600,
                 letterSpacing: '0.04em',
                 textTransform: 'uppercase',
-                color: 'rgba(255, 255, 255, 0.6)',
+                color: 'rgba(255, 255, 255, 0.75)',
                 mb: 2,
               }}
             >
@@ -55,10 +55,10 @@ export function Footer() {
               variant="h2"
               sx={{
                 fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: { xs: '2.4rem', sm: '3.2rem', md: '4.2rem' },
-                fontWeight: 600,
+                fontSize: { xs: '2.8rem', sm: '3.6rem', md: '4.8rem' },
+                fontWeight: 700,
                 lineHeight: 0.96,
-                letterSpacing: '-0.04em',
+                letterSpacing: '-0.045em',
                 color: '#F1EAF3',
               }}
             >
@@ -69,7 +69,7 @@ export function Footer() {
           </Box>
 
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            <Typography sx={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '0.9375rem' }}>
+            <Typography sx={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '1rem', fontWeight: 500 }}>
               Speak with our Ikoyi studio concierge:
             </Typography>
             <Button
@@ -80,10 +80,10 @@ export function Footer() {
                 bgcolor: '#F1EAF3',
                 color: '#170C1B',
                 borderRadius: 999,
-                px: 3.5,
-                py: 1.5,
-                fontSize: '1rem',
-                fontWeight: 600,
+                px: 4,
+                py: 1.6,
+                fontSize: '1.05rem',
+                fontWeight: 700,
                 textTransform: 'none',
                 '&:hover': {
                   bgcolor: '#ffffff',
@@ -110,7 +110,8 @@ export function Footer() {
             <Typography
               sx={{
                 fontFamily: 'var(--font-italiana), "Italiana", serif',
-                fontSize: '2rem',
+                fontSize: '2.2rem',
+                WebkitTextStroke: '0.35px currentColor',
                 color: '#F1EAF3',
                 mb: 1.5,
               }}
@@ -119,8 +120,8 @@ export function Footer() {
             </Typography>
             <Typography
               sx={{
-                color: 'rgba(255, 255, 255, 0.65)',
-                fontSize: '0.9375rem',
+                color: 'rgba(255, 255, 255, 0.75)',
+                fontSize: '1rem',
                 lineHeight: 1.65,
                 maxWidth: '42ch',
               }}
@@ -135,27 +136,27 @@ export function Footer() {
             <Typography
               sx={{
                 fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: '0.8125rem',
-                fontWeight: 600,
+                fontSize: '0.875rem',
+                fontWeight: 700,
                 letterSpacing: '0.04em',
                 textTransform: 'uppercase',
-                color: 'rgba(255, 255, 255, 0.6)',
+                color: 'rgba(255, 255, 255, 0.75)',
                 mb: 2,
               }}
             >
               Compounding Studios
             </Typography>
-            <Typography sx={{ color: '#F1EAF3', fontSize: '0.9375rem', mb: 0.5, fontWeight: 500 }}>
+            <Typography sx={{ color: '#F1EAF3', fontSize: '1.05rem', mb: 0.5, fontWeight: 600 }}>
               Ikoyi, Lagos
             </Typography>
-            <Typography sx={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '0.875rem', mb: 2 }}>
+            <Typography sx={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '0.9375rem', mb: 2 }}>
               14 Bourdillon Road · Mon–Sat, 10 am – 6 pm
             </Typography>
 
-            <Typography sx={{ color: '#F1EAF3', fontSize: '0.9375rem', mb: 0.5, fontWeight: 500 }}>
+            <Typography sx={{ color: '#F1EAF3', fontSize: '1.05rem', mb: 0.5, fontWeight: 600 }}>
               Maitama, Abuja
             </Typography>
-            <Typography sx={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '0.875rem' }}>
+            <Typography sx={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '0.9375rem' }}>
               22 Pope John Paul II Street · By appointment &amp; studio pickup
             </Typography>
           </Box>
@@ -165,11 +166,11 @@ export function Footer() {
             <Typography
               sx={{
                 fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: '0.8125rem',
-                fontWeight: 600,
+                fontSize: '0.875rem',
+                fontWeight: 700,
                 letterSpacing: '0.04em',
                 textTransform: 'uppercase',
-                color: 'rgba(255, 255, 255, 0.6)',
+                color: 'rgba(255, 255, 255, 0.75)',
                 mb: 2,
               }}
             >
@@ -181,10 +182,10 @@ export function Footer() {
                 flexDirection: 'column',
                 gap: 1.15,
                 '& a': {
-                  color: 'rgba(255, 255, 255, 0.75)',
+                  color: 'rgba(255, 255, 255, 0.85)',
                   textDecoration: 'none',
-                  fontSize: '0.9375rem',
-                  fontWeight: 400,
+                  fontSize: '1rem',
+                  fontWeight: 500,
                   transition: 'color 0.2s ease',
                   '&:hover': {
                     color: '#FFFFFF',

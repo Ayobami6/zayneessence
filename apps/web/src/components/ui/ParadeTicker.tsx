@@ -32,12 +32,12 @@ export function ParadeTicker() {
             component="span"
             sx={{
               fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.9375rem',
-              fontWeight: 500,
+              fontSize: '1rem',
+              fontWeight: 600,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
               color: 'text.primary',
-              opacity: 0.9,
+              opacity: 0.95,
             }}
           >
             {item}
@@ -46,8 +46,8 @@ export function ParadeTicker() {
             component="span"
             sx={{
               color: 'text.secondary',
-              opacity: 0.5,
-              fontSize: '0.85rem',
+              opacity: 0.7,
+              fontSize: '0.9rem',
             }}
           >
             ✦

@@ -58,11 +58,12 @@ export function BrandPhilosophySection() {
           <Typography
             sx={{
               fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.875rem',
-              fontWeight: 500,
+              fontSize: '0.9375rem',
+              fontWeight: 600,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
-              color: 'text.secondary',
+              color: 'text.primary',
+              opacity: 0.85,
             }}
           >
             (About zayneessence)
@@ -70,8 +71,10 @@ export function BrandPhilosophySection() {
           <Typography
             sx={{
               fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.875rem',
-              color: 'text.secondary',
+              fontSize: '0.9375rem',
+              fontWeight: 500,
+              color: 'text.primary',
+              opacity: 0.85,
             }}
           >
             Our Provenance &amp; Ethos
@@ -83,8 +86,8 @@ export function BrandPhilosophySection() {
           variant="h2"
           sx={{
             fontFamily: 'var(--font-jost), "Jost", sans-serif',
-            fontSize: { xs: '1.75rem', sm: '2.4rem', md: '3.1rem' },
-            fontWeight: 500,
+            fontSize: { xs: '1.9rem', sm: '2.6rem', md: '3.4rem' },
+            fontWeight: 600,
             lineHeight: 1.15,
             letterSpacing: '-0.03em',
             color: 'text.primary',
@@ -108,7 +111,7 @@ export function BrandPhilosophySection() {
             <Box
               key={pillar.num}
               sx={{
-                p: { xs: 3, md: 3.5 },
+                p: { xs: 3.5, md: 4 },
                 borderRadius: 2,
                 border: 1,
                 borderColor: 'divider',
@@ -116,7 +119,7 @@ export function BrandPhilosophySection() {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                minHeight: { xs: 'auto', md: 260 },
+                minHeight: { xs: 'auto', md: 270 },
                 transition: 'border-color 0.3s ease, transform 0.25s ease',
                 '&:hover': {
                   borderColor: 'text.primary',
@@ -127,9 +130,10 @@ export function BrandPhilosophySection() {
               <Typography
                 sx={{
                   fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  color: 'text.secondary',
+                  fontSize: '1rem',
+                  fontWeight: 700,
+                  color: 'text.primary',
+                  opacity: 0.8,
                   mb: 3,
                 }}
               >
@@ -140,7 +144,7 @@ export function BrandPhilosophySection() {
                 <Typography
                   sx={{
                     fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                    fontSize: '1.2rem',
+                    fontSize: '1.35rem',
                     fontWeight: 600,
                     letterSpacing: '-0.015em',
                     color: 'text.primary',
@@ -153,8 +157,8 @@ export function BrandPhilosophySection() {
                   variant="body2"
                   sx={{
                     color: 'text.secondary',
-                    fontSize: '0.9375rem',
-                    lineHeight: 1.6,
+                    fontSize: '1rem',
+                    lineHeight: 1.62,
                   }}
                 >
                   {pillar.desc}

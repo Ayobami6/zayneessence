@@ -158,9 +158,9 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
             >
               <Typography
                 sx={{
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.03em',
+                  fontSize: '0.8125rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
                   textTransform: 'uppercase',
                   color: 'text.primary',
                   lineHeight: 1.2,
@@ -188,10 +188,10 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
                 sx={{
                   fontFamily: 'var(--font-jost), "Jost", sans-serif',
                   fontSize: isFeaturedSpan
-                    ? { xs: '1.45rem', sm: '1.75rem' }
-                    : { xs: '1.25rem', sm: '1.45rem' },
-                  fontWeight: 600,
-                  letterSpacing: '-0.02em',
+                    ? { xs: '1.5rem', sm: '1.85rem' }
+                    : { xs: '1.3rem', sm: '1.5rem' },
+                  fontWeight: 700,
+                  letterSpacing: '-0.025em',
                   color: 'text.primary',
                 }}
               >
@@ -203,9 +203,9 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
                   variant="body2"
                   sx={{
                     fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                    fontWeight: 600,
+                    fontWeight: 700,
                     whiteSpace: 'nowrap',
-                    fontSize: '1.05rem',
+                    fontSize: '1.15rem',
                     color: 'text.primary',
                   }}
                 >
@@ -219,8 +219,9 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
               variant="caption"
               sx={{
                 display: 'block',
-                color: 'text.secondary',
-                fontSize: '0.9375rem',
+                color: 'text.primary',
+                opacity: 0.85,
+                fontSize: '0.95rem',
                 fontWeight: 400,
                 mt: 0.5,
               }}
@@ -261,10 +262,10 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
           onClick={handleQuickAdd}
           data-testid={`quick-add-${product.slug}`}
           sx={{
-            py: 0.95,
+            py: 1,
             px: 2,
-            fontSize: '0.90625rem',
-            fontWeight: 500,
+            fontSize: '0.9375rem',
+            fontWeight: 600,
             borderRadius: 999,
           }}
         >

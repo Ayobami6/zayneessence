@@ -48,11 +48,12 @@ export default function HomePage() {
             <Typography
               sx={{
                 fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: '0.875rem',
-                fontWeight: 500,
+                fontSize: '0.9375rem',
+                fontWeight: 600,
                 letterSpacing: '0.04em',
                 textTransform: 'uppercase',
-                color: 'text.secondary',
+                color: 'text.primary',
+                opacity: 0.85,
               }}
             >
               (Catalogue collection)
@@ -60,8 +61,10 @@ export default function HomePage() {
             <Typography
               sx={{
                 fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: '0.875rem',
-                color: 'text.secondary',
+                fontSize: '0.9375rem',
+                fontWeight: 500,
+                color: 'text.primary',
+                opacity: 0.85,
               }}
             >
               12 Formulations · In Stock
@@ -73,9 +76,9 @@ export default function HomePage() {
               variant="h2"
               sx={{
                 fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: { xs: '2rem', sm: '2.5rem', md: '3.2rem' },
-                fontWeight: 600,
-                letterSpacing: '-0.03em',
+                fontSize: { xs: '2.4rem', sm: '3rem', md: '3.8rem' },
+                fontWeight: 700,
+                letterSpacing: '-0.04em',
                 lineHeight: 1.05,
                 color: 'text.primary',
                 mb: 1.5,
@@ -83,7 +86,17 @@ export default function HomePage() {
             >
               Formulations we’re proud of.
             </Typography>
-            <Typography variant="body1" sx={{ color: 'text.secondary', maxWidth: '48ch' }}>
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'text.primary',
+                opacity: 0.88,
+                maxWidth: '52ch',
+                fontSize: { xs: '1.0625rem', md: '1.2rem' },
+                lineHeight: 1.65,
+                fontWeight: 400,
+              }}
+            >
               Skincare formulated for melanin-rich skin with unrefined northern shea, baobab and moringa, alongside pure aged oud oils and perfume.
             </Typography>
           </Box>

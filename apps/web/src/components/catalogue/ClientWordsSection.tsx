@@ -57,11 +57,12 @@ export function ClientWordsSection() {
           <Typography
             sx={{
               fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.875rem',
-              fontWeight: 500,
+              fontSize: '0.9375rem',
+              fontWeight: 600,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
-              color: 'text.secondary',
+              color: 'text.primary',
+              opacity: 0.85,
             }}
           >
             (Kind words)
@@ -69,8 +70,10 @@ export function ClientWordsSection() {
           <Typography
             sx={{
               fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.875rem',
-              color: 'text.secondary',
+              fontSize: '0.9375rem',
+              fontWeight: 500,
+              color: 'text.primary',
+              opacity: 0.85,
             }}
           >
             Client Impressions
@@ -81,9 +84,9 @@ export function ClientWordsSection() {
           variant="h2"
           sx={{
             fontFamily: 'var(--font-jost), "Jost", sans-serif',
-            fontSize: { xs: '2rem', sm: '2.5rem', md: '3.2rem' },
-            fontWeight: 600,
-            letterSpacing: '-0.03em',
+            fontSize: { xs: '2.2rem', sm: '2.8rem', md: '3.5rem' },
+            fontWeight: 700,
+            letterSpacing: '-0.035em',
             lineHeight: 1.05,
             color: 'text.primary',
             mb: { xs: 5, md: 7 },
@@ -104,7 +107,7 @@ export function ClientWordsSection() {
             <Box
               key={idx}
               sx={{
-                p: { xs: 3.5, md: 4 },
+                p: { xs: 3.5, md: 4.5 },
                 borderRadius: 2,
                 border: 1,
                 borderColor: 'divider',
@@ -122,8 +125,8 @@ export function ClientWordsSection() {
                 variant="body1"
                 sx={{
                   fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                  fontSize: { xs: '1.05rem', md: '1.15rem' },
-                  lineHeight: 1.6,
+                  fontSize: { xs: '1.125rem', md: '1.25rem' },
+                  lineHeight: 1.65,
                   color: 'text.primary',
                   mb: 4,
                 }}
@@ -131,11 +134,11 @@ export function ClientWordsSection() {
                 {t.quote}
               </Typography>
 
-              <Box sx={{ borderTop: 1, borderColor: 'divider', pt: 2 }}>
-                <Typography sx={{ fontWeight: 600, fontSize: '0.96875rem', color: 'text.primary' }}>
+              <Box sx={{ borderTop: 1, borderColor: 'divider', pt: 2.25 }}>
+                <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: 'text.primary' }}>
                   {t.author}
                 </Typography>
-                <Typography sx={{ fontSize: '0.84375rem', color: 'text.secondary' }}>
+                <Typography sx={{ fontSize: '0.90625rem', color: 'text.secondary', fontWeight: 500, mt: 0.25 }}>
                   {t.title} · {t.location}
                 </Typography>
               </Box>

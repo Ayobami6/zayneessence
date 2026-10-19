@@ -55,11 +55,12 @@ export function StudioMetricsSection() {
           <Typography
             sx={{
               fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.875rem',
-              fontWeight: 500,
+              fontSize: '0.9375rem',
+              fontWeight: 600,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
-              color: 'text.secondary',
+              color: 'text.primary',
+              opacity: 0.85,
             }}
           >
             (Studio benchmarks)
@@ -67,8 +68,10 @@ export function StudioMetricsSection() {
           <Typography
             sx={{
               fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.875rem',
-              color: 'text.secondary',
+              fontSize: '0.9375rem',
+              fontWeight: 500,
+              color: 'text.primary',
+              opacity: 0.85,
             }}
           >
             Ikoyi · Maitama · Worldwide
@@ -91,16 +94,16 @@ export function StudioMetricsSection() {
                 gap: 1.25,
                 borderTop: 2,
                 borderColor: 'text.primary',
-                pt: 2.5,
+                pt: 2.75,
               }}
             >
               <Typography
                 sx={{
                   fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                  fontSize: { xs: '3rem', md: '3.75rem' },
-                  fontWeight: 600,
+                  fontSize: { xs: '3.4rem', md: '4.25rem' },
+                  fontWeight: 700,
                   letterSpacing: '-0.04em',
-                  lineHeight: 0.95,
+                  lineHeight: 0.92,
                   color: 'text.primary',
                 }}
               >
@@ -108,8 +111,8 @@ export function StudioMetricsSection() {
               </Typography>
               <Typography
                 sx={{
-                  fontSize: '1.0625rem',
-                  fontWeight: 500,
+                  fontSize: '1.1875rem',
+                  fontWeight: 600,
                   color: 'text.primary',
                   mt: 0.5,
                 }}
@@ -120,8 +123,8 @@ export function StudioMetricsSection() {
                 variant="body2"
                 sx={{
                   color: 'text.secondary',
-                  fontSize: '0.9375rem',
-                  lineHeight: 1.55,
+                  fontSize: '1rem',
+                  lineHeight: 1.6,
                 }}
               >
                 {metric.detail}

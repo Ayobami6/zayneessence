@@ -98,11 +98,12 @@ export function StudioJournalSection() {
           <Typography
             sx={{
               fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.875rem',
-              fontWeight: 500,
+              fontSize: '0.9375rem',
+              fontWeight: 600,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
-              color: 'text.secondary',
+              color: 'text.primary',
+              opacity: 0.85,
             }}
           >
             (Studio journal)
@@ -110,8 +111,10 @@ export function StudioJournalSection() {
           <Typography
             sx={{
               fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.875rem',
-              color: 'text.secondary',
+              fontSize: '0.9375rem',
+              fontWeight: 500,
+              color: 'text.primary',
+              opacity: 0.85,
             }}
           >
             Formulation Dispatches
@@ -128,14 +131,14 @@ export function StudioJournalSection() {
             mb: { xs: 5, md: 7 },
           }}
         >
-          <Box sx={{ maxWidth: '42ch' }}>
+          <Box sx={{ maxWidth: '44ch' }}>
             <Typography
               variant="h2"
               sx={{
                 fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: { xs: '2rem', sm: '2.5rem', md: '3.2rem' },
-                fontWeight: 600,
-                letterSpacing: '-0.03em',
+                fontSize: { xs: '2.4rem', sm: '3rem', md: '3.8rem' },
+                fontWeight: 700,
+                letterSpacing: '-0.04em',
                 lineHeight: 1.05,
                 color: 'text.primary',
                 mb: 1.5,
@@ -143,7 +146,15 @@ export function StudioJournalSection() {
             >
               Notes from the studio.
             </Typography>
-            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'text.primary',
+                opacity: 0.88,
+                fontSize: { xs: '1.0625rem', md: '1.2rem' },
+                lineHeight: 1.65,
+              }}
+            >
               Insights into savanna botanicals, pure agarwood distillation, and the barrier biology of melanin-rich skin.
             </Typography>
           </Box>
@@ -190,7 +201,7 @@ export function StudioJournalSection() {
                   <Typography
                     sx={{
                       fontSize: '0.8125rem',
-                      fontWeight: 600,
+                      fontWeight: 700,
                       letterSpacing: '0.04em',
                       color: 'text.primary',
                       textTransform: 'uppercase',
@@ -198,7 +209,14 @@ export function StudioJournalSection() {
                   >
                     {article.tag}
                   </Typography>
-                  <Typography sx={{ fontSize: '0.8125rem', color: 'text.secondary' }}>
+                  <Typography
+                    sx={{
+                      fontSize: '0.84375rem',
+                      fontWeight: 500,
+                      color: 'text.primary',
+                      opacity: 0.75,
+                    }}
+                  >
                     {article.readingTime} · {article.date}
                   </Typography>
                 </Box>
@@ -206,10 +224,10 @@ export function StudioJournalSection() {
                 <Typography
                   sx={{
                     fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                    fontSize: { xs: '1.25rem', md: '1.4rem' },
-                    fontWeight: 600,
+                    fontSize: { xs: '1.35rem', md: '1.55rem' },
+                    fontWeight: 700,
                     lineHeight: 1.25,
-                    letterSpacing: '-0.02em',
+                    letterSpacing: '-0.025em',
                     color: 'text.primary',
                     mb: 2,
                   }}
@@ -220,9 +238,10 @@ export function StudioJournalSection() {
                 <Typography
                   variant="body2"
                   sx={{
-                    color: 'text.secondary',
-                    fontSize: '0.9375rem',
-                    lineHeight: 1.6,
+                    color: 'text.primary',
+                    opacity: 0.85,
+                    fontSize: '1rem',
+                    lineHeight: 1.65,
                     mb: 3,
                   }}
                 >
@@ -232,8 +251,8 @@ export function StudioJournalSection() {
 
               <Typography
                 sx={{
-                  fontSize: '0.90625rem',
-                  fontWeight: 500,
+                  fontSize: '0.96875rem',
+                  fontWeight: 600,
                   color: 'text.primary',
                   textDecoration: 'underline',
                   textUnderlineOffset: '4px',
@@ -262,16 +281,24 @@ export function StudioJournalSection() {
           }}
         >
           <Box sx={{ maxWidth: '44ch' }}>
-            <Typography sx={{ fontWeight: 600, fontSize: '1.15rem', color: 'text.primary', mb: 0.5 }}>
+            <Typography sx={{ fontWeight: 700, fontSize: '1.3rem', color: 'text.primary', mb: 0.75 }}>
               The Studio Dispatch
             </Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.primary',
+                opacity: 0.85,
+                fontSize: '1rem',
+                lineHeight: 1.6,
+              }}
+            >
               Subtle dispatches on rare agarwood harvests, harvest yields, and private client studio appointments.
             </Typography>
           </Box>
 
           {newsletterSubscribed ? (
-            <Typography sx={{ fontWeight: 500, color: 'text.primary' }}>
+            <Typography sx={{ fontWeight: 600, fontSize: '1.05rem', color: 'text.primary' }}>
               ✓ You are subscribed to our private studio dispatch.
             </Typography>
           ) : (
@@ -299,10 +326,16 @@ export function StudioJournalSection() {
                   borderColor: 'divider',
                   bgcolor: 'background.default',
                   flexGrow: 1,
-                  fontSize: '0.9375rem',
+                  fontSize: '0.96875rem',
+                  fontWeight: 500,
                 }}
               />
-              <Button type="submit" variant="contained" color="primary" sx={{ flexShrink: 0, px: 3 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                sx={{ flexShrink: 0, px: 3.5, fontSize: '0.96875rem', fontWeight: 600 }}
+              >
                 Join list
               </Button>
             </Box>

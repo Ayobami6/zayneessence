@@ -63,11 +63,12 @@ export function HeroSection() {
           <Typography
             sx={{
               fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.875rem',
-              fontWeight: 500,
+              fontSize: '0.9375rem',
+              fontWeight: 600,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
-              color: 'text.secondary',
+              color: 'text.primary',
+              opacity: 0.85,
             }}
           >
             (Melanin-rich skincare &amp; pure aged oud)
@@ -75,8 +76,10 @@ export function HeroSection() {
           <Typography
             sx={{
               fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.875rem',
-              color: 'text.secondary',
+              fontSize: '0.9375rem',
+              fontWeight: 500,
+              color: 'text.primary',
+              opacity: 0.85,
             }}
           >
             Lagos &amp; Abuja — Est. 2026
@@ -98,9 +101,9 @@ export function HeroSection() {
               component="h1"
               sx={{
                 fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: 'clamp(54px, 8.5vw, 108px)',
-                fontWeight: 600,
-                lineHeight: 0.93,
+                fontSize: 'clamp(58px, 9vw, 116px)',
+                fontWeight: 700,
+                lineHeight: 0.92,
                 letterSpacing: '-0.045em',
                 color: 'text.primary',
                 mb: 3.5,
@@ -117,9 +120,10 @@ export function HeroSection() {
             <Typography
               variant="body1"
               sx={{
-                color: 'text.secondary',
-                fontSize: { xs: '1.125rem', md: '1.25rem' },
-                lineHeight: 1.6,
+                color: 'text.primary',
+                opacity: 0.88,
+                fontSize: { xs: '1.15rem', md: '1.28rem' },
+                lineHeight: 1.65,
                 mb: 4.5,
                 maxWidth: '48ch',
               }}
@@ -143,10 +147,10 @@ export function HeroSection() {
                 onClick={handleShopSkincare}
                 data-testid="hero-shop-skincare-btn"
                 sx={{
-                  px: 3.5,
-                  py: 1.5,
-                  fontSize: '1rem',
-                  fontWeight: 500,
+                  px: 4,
+                  py: 1.6,
+                  fontSize: '1.05rem',
+                  fontWeight: 600,
                 }}
               >
                 Shop skincare
@@ -156,10 +160,10 @@ export function HeroSection() {
                 variant="outlined"
                 onClick={handleExploreOud}
                 sx={{
-                  px: 3.5,
-                  py: 1.5,
-                  fontSize: '1rem',
-                  fontWeight: 500,
+                  px: 4,
+                  py: 1.6,
+                  fontSize: '1.05rem',
+                  fontWeight: 600,
                 }}
               >
                 Explore pure oud
@@ -170,8 +174,8 @@ export function HeroSection() {
                 href="/#rituals"
                 sx={{
                   color: 'text.primary',
-                  fontSize: '1rem',
-                  fontWeight: 500,
+                  fontSize: '1.05rem',
+                  fontWeight: 600,
                   textDecoration: 'underline',
                   textUnderlineOffset: '5px',
                   ml: { xs: 0, sm: 1 },
@@ -234,11 +238,12 @@ export function HeroSection() {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                       <Typography
                         sx={{
-                          fontSize: '0.78125rem',
+                          fontSize: '0.84375rem',
                           fontWeight: 600,
                           letterSpacing: '0.04em',
                           textTransform: 'uppercase',
-                          color: 'text.secondary',
+                          color: 'text.primary',
+                          opacity: 0.8,
                         }}
                       >
                         2026 Signature formulation
@@ -247,9 +252,9 @@ export function HeroSection() {
                     <Typography
                       sx={{
                         fontFamily: 'var(--font-italiana), "Italiana", serif',
-                        fontSize: '1.65rem',
+                        fontSize: '1.75rem',
                         fontWeight: 400,
-                        WebkitTextStroke: '0.22px currentColor',
+                        WebkitTextStroke: '0.25px currentColor',
                         color: 'text.primary',
                         lineHeight: 1.15,
                       }}
@@ -258,7 +263,7 @@ export function HeroSection() {
                     </Typography>
                     <Typography
                       variant="caption"
-                      sx={{ color: 'text.secondary', fontSize: '0.96875rem' }}
+                      sx={{ color: 'text.secondary', fontSize: '1rem', fontWeight: 500 }}
                     >
                       {heroProduct.type} · {heroProduct.variants[0]?.label}
                     </Typography>
@@ -268,14 +273,14 @@ export function HeroSection() {
                     <Typography
                       sx={{
                         fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                        fontWeight: 600,
-                        fontSize: '1.25rem',
+                        fontWeight: 700,
+                        fontSize: '1.35rem',
                         color: 'text.primary',
                       }}
                     >
                       {formatKoboToNgn(startingPrice)}
                     </Typography>
-                    <Typography sx={{ fontSize: '0.8125rem', color: 'text.secondary' }}>
+                    <Typography sx={{ fontSize: '0.84375rem', color: 'text.secondary', fontWeight: 500 }}>
                       Free delivery eligible
                     </Typography>
                   </Box>

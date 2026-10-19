@@ -103,11 +103,12 @@ export function RitualProcessSection() {
           <Typography
             sx={{
               fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.875rem',
-              fontWeight: 500,
+              fontSize: '0.9375rem',
+              fontWeight: 600,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
-              color: 'text.secondary',
+              color: 'text.primary',
+              opacity: 0.85,
             }}
           >
             (The Daily Ritual)
@@ -115,8 +116,10 @@ export function RitualProcessSection() {
           <Typography
             sx={{
               fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.875rem',
-              color: 'text.secondary',
+              fontSize: '0.9375rem',
+              fontWeight: 500,
+              color: 'text.primary',
+              opacity: 0.85,
             }}
           >
             Four Steps · Morning &amp; Night
@@ -139,9 +142,9 @@ export function RitualProcessSection() {
               variant="h2"
               sx={{
                 fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: { xs: '2rem', sm: '2.5rem', md: '3.2rem' },
-                fontWeight: 600,
-                letterSpacing: '-0.03em',
+                fontSize: { xs: '2.2rem', sm: '2.8rem', md: '3.5rem' },
+                fontWeight: 700,
+                letterSpacing: '-0.035em',
                 lineHeight: 1.05,
                 color: 'text.primary',
                 mb: 1.5,
@@ -149,7 +152,10 @@ export function RitualProcessSection() {
             >
               A simple ritual, obsessively run.
             </Typography>
-            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+            <Typography
+              variant="body1"
+              sx={{ color: 'text.primary', opacity: 0.88, fontSize: '1.15rem' }}
+            >
               Four complementary steps to balance, nourish and lock in skin vitality, anchored by artisanal pure aged oud.
             </Typography>
           </Box>
@@ -159,9 +165,10 @@ export function RitualProcessSection() {
             color="primary"
             onClick={handleAddFullRitual}
             sx={{
-              px: 3.5,
-              py: 1.5,
-              fontSize: '1rem',
+              px: 4,
+              py: 1.6,
+              fontSize: '1.05rem',
+              fontWeight: 600,
               flexShrink: 0,
             }}
           >
@@ -190,7 +197,7 @@ export function RitualProcessSection() {
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  p: 3,
+                  p: 3.5,
                   borderRadius: 2,
                   border: 1,
                   borderColor: 'divider',
@@ -217,10 +224,11 @@ export function RitualProcessSection() {
                   >
                     <Typography
                       sx={{
-                        fontSize: '0.8125rem',
-                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        fontWeight: 700,
                         letterSpacing: '0.04em',
-                        color: 'text.secondary',
+                        color: 'text.primary',
+                        opacity: 0.8,
                         textTransform: 'uppercase',
                       }}
                     >
@@ -228,8 +236,8 @@ export function RitualProcessSection() {
                     </Typography>
                     <Typography
                       sx={{
-                        fontSize: '0.8125rem',
-                        fontWeight: 500,
+                        fontSize: '0.875rem',
+                        fontWeight: 600,
                         color: 'text.primary',
                       }}
                     >
@@ -266,8 +274,9 @@ export function RitualProcessSection() {
                     sx={{
                       display: 'block',
                       fontFamily: 'var(--font-italiana), "Italiana", serif',
-                      fontSize: '1.4rem',
+                      fontSize: '1.55rem',
                       fontWeight: 400,
+                      WebkitTextStroke: '0.22px currentColor',
                       color: 'text.primary',
                       textDecoration: 'none',
                       mb: 0.5,
@@ -278,7 +287,8 @@ export function RitualProcessSection() {
 
                   <Typography
                     sx={{
-                      fontSize: '0.875rem',
+                      fontSize: '0.9375rem',
+                      fontWeight: 500,
                       color: 'text.secondary',
                       mb: 1.5,
                     }}
@@ -290,8 +300,8 @@ export function RitualProcessSection() {
                     variant="body2"
                     sx={{
                       color: 'text.secondary',
-                      fontSize: '0.875rem',
-                      lineHeight: 1.55,
+                      fontSize: '0.9375rem',
+                      lineHeight: 1.6,
                       mb: 2.5,
                     }}
                   >
@@ -301,7 +311,7 @@ export function RitualProcessSection() {
 
                 <Box
                   sx={{
-                    pt: 2,
+                    pt: 2.25,
                     borderTop: 1,
                     borderColor: 'divider',
                     display: 'flex',
@@ -309,7 +319,7 @@ export function RitualProcessSection() {
                     justifyContent: 'space-between',
                   }}
                 >
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.96875rem' }}>
+                  <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', color: 'text.primary' }}>
                     {formatKoboToNgn(step.priceKobo)}
                   </Typography>
 
@@ -318,7 +328,7 @@ export function RitualProcessSection() {
                       size="small"
                       variant="outlined"
                       onClick={() => addToBag(product, variant, 1)}
-                      sx={{ py: 0.6, px: 2, fontSize: '0.8125rem' }}
+                      sx={{ py: 0.75, px: 2.25, fontSize: '0.875rem', fontWeight: 600 }}
                     >
                       Add to bag
                     </Button>

@@ -87,8 +87,8 @@ export function Header() {
               <Typography
                 sx={{
                   fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                  fontSize: '0.8125rem',
-                  fontWeight: 500,
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
                   color: 'text.primary',
                 }}
               >
@@ -100,8 +100,10 @@ export function Header() {
               sx={{
                 display: { xs: 'none', md: 'block' },
                 fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: '0.8125rem',
-                color: 'text.secondary',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                color: 'text.primary',
+                opacity: 0.85,
               }}
             >
               Complimentary delivery nationwide over ₦150,000
@@ -133,10 +135,10 @@ export function Header() {
               }}
               sx={{
                 fontFamily: 'var(--font-italiana), "Italiana", Georgia, serif',
-                fontSize: { xs: '1.9rem', md: '2.3rem' },
+                fontSize: { xs: '2.1rem', md: '2.5rem' },
                 fontWeight: 400,
-                WebkitTextStroke: '0.25px currentColor',
-                letterSpacing: '-0.02em',
+                WebkitTextStroke: '0.35px currentColor',
+                letterSpacing: '-0.025em',
                 color: 'text.primary',
                 textDecoration: 'none',
                 textTransform: 'lowercase',
@@ -156,7 +158,7 @@ export function Header() {
                 component={Link}
                 href="/#catalogue"
                 color="inherit"
-                sx={{ px: 2, py: 0.85, fontSize: '0.96875rem', fontWeight: 500 }}
+                sx={{ px: 2, py: 0.85, fontSize: '1rem', fontWeight: 600 }}
               >
                 Shop
               </Button>
@@ -164,7 +166,7 @@ export function Header() {
                 component={Link}
                 href="/#rituals"
                 color="inherit"
-                sx={{ px: 2, py: 0.85, fontSize: '0.96875rem', fontWeight: 500 }}
+                sx={{ px: 2, py: 0.85, fontSize: '1rem', fontWeight: 600 }}
               >
                 Rituals
               </Button>
@@ -172,7 +174,7 @@ export function Header() {
                 component={Link}
                 href="/#provenance"
                 color="inherit"
-                sx={{ px: 2, py: 0.85, fontSize: '0.96875rem', fontWeight: 500 }}
+                sx={{ px: 2, py: 0.85, fontSize: '1rem', fontWeight: 600 }}
               >
                 Provenance
               </Button>
@@ -180,7 +182,7 @@ export function Header() {
                 component={Link}
                 href="/#journal"
                 color="inherit"
-                sx={{ px: 2, py: 0.85, fontSize: '0.96875rem', fontWeight: 500 }}
+                sx={{ px: 2, py: 0.85, fontSize: '1rem', fontWeight: 600 }}
               >
                 Journal
               </Button>
@@ -188,7 +190,7 @@ export function Header() {
                 component={Link}
                 href="/admin"
                 color="inherit"
-                sx={{ px: 2, py: 0.85, fontSize: '0.96875rem', fontWeight: 400, color: 'text.secondary' }}
+                sx={{ px: 2, py: 0.85, fontSize: '1rem', fontWeight: 500, color: 'text.secondary' }}
               >
                 Studio admin
               </Button>
@@ -257,10 +259,10 @@ export function Header() {
               data-testid="header-bag-button"
               startIcon={<LocalMallOutlinedIcon sx={{ fontSize: 18 }} />}
               sx={{
-                px: { xs: 2, sm: 2.75 },
-                py: 0.9,
-                fontSize: '0.9375rem',
-                fontWeight: 500,
+                px: { xs: 2.25, sm: 3 },
+                py: 1,
+                fontSize: '0.96875rem',
+                fontWeight: 600,
                 ml: 0.5,
               }}
             >
