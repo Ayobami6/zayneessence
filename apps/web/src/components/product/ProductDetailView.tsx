@@ -230,8 +230,16 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
         {/* Right: Product type, name, price, description, size selector, notes/ingredients, stepper, Add to bag, accordions */}
         <Box>
           <Typography
-            variant="body2"
-            sx={{ color: 'text.secondary', mb: 0.75, fontWeight: 400 }}
+            sx={{
+              fontFamily: 'var(--font-jost), "Jost", sans-serif',
+              fontSize: '0.9375rem',
+              fontWeight: 600,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              color: 'text.primary',
+              opacity: 0.85,
+              mb: 1,
+            }}
           >
             {product.type}
           </Typography>
@@ -245,7 +253,18 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
               mb: 2,
             }}
           >
-            <Typography variant="h2" component="h1">
+            <Typography
+              variant="h2"
+              component="h1"
+              sx={{
+                fontFamily: 'var(--font-jost), "Jost", sans-serif',
+                fontSize: { xs: '2.4rem', md: '3.2rem' },
+                fontWeight: 700,
+                letterSpacing: '-0.03em',
+                lineHeight: 1.08,
+                color: 'text.primary',
+              }}
+            >
               {product.name}
             </Typography>
 
@@ -254,23 +273,42 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
                 kobo={selectedVariant.price_kobo}
                 data-testid="product-detail-price"
                 sx={{
-                  fontSize: { xs: '1.35rem', md: '1.6rem' },
-                  fontWeight: 400,
+                  fontFamily: 'var(--font-jost), "Jost", sans-serif',
+                  fontSize: { xs: '1.65rem', md: '2rem' },
+                  fontWeight: 700,
                   whiteSpace: 'nowrap',
+                  color: 'text.primary',
                 }}
               />
             )}
           </Box>
 
-          <Typography variant="body1" sx={{ color: 'text.primary', mb: 3.5 }}>
+          <Typography
+            variant="body1"
+            sx={{
+              color: 'text.primary',
+              opacity: 0.9,
+              fontSize: { xs: '1.0625rem', md: '1.1875rem' },
+              lineHeight: 1.7,
+              mb: 3.5,
+            }}
+          >
             {product.description}
           </Typography>
 
           {/* Size selector (pill ToggleButtons) */}
           <Box sx={{ mb: 3.5 }}>
             <Typography
-              variant="body2"
-              sx={{ color: 'text.secondary', mb: 1.25, fontWeight: 400 }}
+              sx={{
+                fontFamily: 'var(--font-jost), "Jost", sans-serif',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                color: 'text.primary',
+                opacity: 0.85,
+                mb: 1.25,
+              }}
             >
               Size
             </Typography>
@@ -308,7 +346,16 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
                 borderColor: 'divider',
               }}
             >
-              <Typography variant="h4" sx={{ mb: 1.5, fontSize: '1.15rem' }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontFamily: 'var(--font-jost), "Jost", sans-serif',
+                  fontSize: '1.25rem',
+                  fontWeight: 700,
+                  color: 'text.primary',
+                  mb: 1.5,
+                }}
+              >
                 Scent architecture
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
@@ -322,10 +369,15 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
                     borderColor: 'divider',
                   }}
                 >
-                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 400 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: 'text.primary', fontWeight: 600, fontSize: '0.9375rem' }}
+                  >
                     Top
                   </Typography>
-                  <Typography variant="body2">{product.notes.top}</Typography>
+                  <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '1rem' }}>
+                    {product.notes.top}
+                  </Typography>
                 </Box>
                 <Box
                   sx={{
@@ -337,10 +389,15 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
                     borderColor: 'divider',
                   }}
                 >
-                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 400 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: 'text.primary', fontWeight: 600, fontSize: '0.9375rem' }}
+                  >
                     Heart
                   </Typography>
-                  <Typography variant="body2">{product.notes.heart}</Typography>
+                  <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '1rem' }}>
+                    {product.notes.heart}
+                  </Typography>
                 </Box>
                 <Box
                   sx={{
@@ -349,10 +406,15 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
                     gap: 1.5,
                   }}
                 >
-                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 400 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: 'text.primary', fontWeight: 600, fontSize: '0.9375rem' }}
+                  >
                     Base
                   </Typography>
-                  <Typography variant="body2">{product.notes.base}</Typography>
+                  <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '1rem' }}>
+                    {product.notes.base}
+                  </Typography>
                 </Box>
               </Box>
             </Box>
@@ -370,7 +432,16 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
                 borderColor: 'divider',
               }}
             >
-              <Typography variant="h4" sx={{ mb: 1.25, fontSize: '1.15rem' }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontFamily: 'var(--font-jost), "Jost", sans-serif',
+                  fontSize: '1.25rem',
+                  fontWeight: 700,
+                  color: 'text.primary',
+                  mb: 1.5,
+                }}
+              >
                 Key ingredients
               </Typography>
               <Box
@@ -384,7 +455,12 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
                 }}
               >
                 {product.ingredients.map((ingredient) => (
-                  <Typography key={ingredient} component="li" variant="body2">
+                  <Typography
+                    key={ingredient}
+                    component="li"
+                    variant="body2"
+                    sx={{ color: 'text.primary', fontSize: '0.96875rem' }}
+                  >
                     {ingredient}
                   </Typography>
                 ))}
@@ -411,7 +487,7 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
                 borderRadius: 999,
                 bgcolor: 'background.paper',
                 px: 1,
-                height: 48,
+                height: 52,
               }}
             >
               <IconButton
@@ -430,7 +506,8 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
                   px: 2,
                   minWidth: 36,
                   textAlign: 'center',
-                  fontWeight: 400,
+                  fontWeight: 600,
+                  fontSize: '1.05rem',
                   animation: 'priceFadeUp 0.25s cubic-bezier(0.2, 0.7, 0.2, 1)',
                 }}
               >
@@ -453,8 +530,9 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
               disabled={!selectedVariant || selectedVariant.stock <= 0}
               data-testid="add-to-bag-button"
               sx={{
-                height: 48,
-                fontSize: '0.96rem',
+                height: 52,
+                fontSize: '1.05rem',
+                fontWeight: 600,
               }}
             >
               {selectedVariant && selectedVariant.stock <= 0 ? (
@@ -477,12 +555,28 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
                 aria-controls="how-to-use-content"
                 id="how-to-use-header"
               >
-                <Typography variant="h4" sx={{ fontSize: '1.1rem' }}>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontFamily: 'var(--font-jost), "Jost", sans-serif',
+                    fontSize: '1.2rem',
+                    fontWeight: 700,
+                    color: 'text.primary',
+                  }}
+                >
                   {isFragrance ? 'How to wear' : 'How to use'}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.primary',
+                    opacity: 0.88,
+                    fontSize: '1rem',
+                    lineHeight: 1.7,
+                  }}
+                >
                   {product.how_to_use}
                 </Typography>
               </AccordionDetails>
@@ -494,18 +588,43 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
                 aria-controls="delivery-returns-content"
                 id="delivery-returns-header"
               >
-                <Typography variant="h4" sx={{ fontSize: '1.1rem' }}>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontFamily: 'var(--font-jost), "Jost", sans-serif',
+                    fontSize: '1.2rem',
+                    fontWeight: 700,
+                    color: 'text.primary',
+                  }}
+                >
                   Delivery and returns
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.primary',
+                    opacity: 0.88,
+                    fontSize: '1rem',
+                    lineHeight: 1.7,
+                    mb: 1.5,
+                  }}
+                >
                   Lagos and Abuja orders arrive within 1–2 days, with complimentary
                   delivery on orders over ₦150,000. Rest of Nigeria orders arrive in
                   2–5 working days. Same-day studio pickup is available in Ikoyi and
                   Maitama.
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.primary',
+                    opacity: 0.88,
+                    fontSize: '1rem',
+                    lineHeight: 1.7,
+                  }}
+                >
                   Unopened pieces in their original sealed box may be returned within
                   14 days of delivery. Due to the intimate nature of pure oud oils and
                   attars, opened flacons cannot be exchanged.

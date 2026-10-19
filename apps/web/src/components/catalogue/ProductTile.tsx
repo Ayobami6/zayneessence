@@ -34,6 +34,17 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
     setTimeout(() => setQuickAdded(false), 1700);
   };
 
+  const categoryTag =
+    product.category === 'Oud'
+      ? 'Aged 6 Yrs · Pure Oud'
+      : product.category === 'Roll-ons'
+      ? 'Attar Roll-On'
+      : product.category === 'Oils'
+      ? 'Dry Savanna Oil'
+      : product.category === 'Perfume'
+      ? 'Eau de Parfum'
+      : 'Active Skincare';
+
   return (
     <Box
       component="article"
@@ -44,6 +55,8 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
+        borderRadius: 2,
+        transition: 'transform 0.25s ease',
       }}
     >
       <Box sx={{ position: 'relative' }}>
@@ -66,14 +79,14 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
             },
           })}
         >
-          {/* Image stage with 4px radius and 5px lift on hover/focus */}
+          {/* Image stage with Parade-style 4:5 ratio, lift on hover, and inner backdrop */}
           <Box
             className="tile-image-stage"
             sx={(theme) => ({
               position: 'relative',
               aspectRatio: isFeaturedSpan ? { xs: '4 / 5', sm: '16 / 10' } : '4 / 5',
               width: '100%',
-              borderRadius: `${theme.palette.zayne.tileRadius}px`,
+              borderRadius: 2,
               bgcolor: theme.palette.zayne.productTile,
               border: `1px solid ${theme.palette.divider}`,
               overflow: 'hidden',
@@ -92,7 +105,7 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
                 sizes={
                   isFeaturedSpan
                     ? '(max-width: 600px) 96vw, (max-width: 1200px) 66vw, 580px'
-                    : '(max-width: 600px) 48vw, (max-width: 1200px) 33vw, 280px'
+                    : '(max-width: 600px) 48vw, (max-width: 1200px) 33vw, 340px'
                 }
                 style={{ objectFit: 'cover' }}
               />
@@ -119,16 +132,47 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
                   sizes={
                     isFeaturedSpan
                       ? '(max-width: 600px) 96vw, (max-width: 1200px) 66vw, 580px'
-                      : '(max-width: 600px) 48vw, (max-width: 1200px) 33vw, 280px'
+                      : '(max-width: 600px) 48vw, (max-width: 1200px) 33vw, 340px'
                   }
                   style={{ objectFit: 'cover' }}
                 />
               </Box>
             )}
+
+            {/* Parade-style top floating metadata chip */}
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 14,
+                left: 14,
+                px: 1.5,
+                py: 0.5,
+                borderRadius: 999,
+                bgcolor: 'background.paper',
+                border: 1,
+                borderColor: 'divider',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                zIndex: 2,
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: '0.8125rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
+                  color: 'text.primary',
+                  lineHeight: 1.2,
+                }}
+              >
+                {categoryTag}
+              </Typography>
+            </Box>
           </Box>
 
           {/* Product details */}
-          <Box sx={{ pt: 1.75, px: 0.25 }}>
+          <Box sx={{ pt: 2, px: 0.25 }}>
             <Box
               sx={{
                 display: 'flex',
@@ -140,13 +184,15 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
               }}
             >
               <Typography
-                variant="h4"
                 component="h3"
                 sx={{
+                  fontFamily: 'var(--font-jost), "Jost", sans-serif',
                   fontSize: isFeaturedSpan
-                    ? { xs: '1.45rem', sm: '1.75rem' }
-                    : { xs: '1.25rem', sm: '1.5rem' },
-                  WebkitTextStroke: '0.22px currentColor',
+                    ? { xs: '1.5rem', sm: '1.85rem' }
+                    : { xs: '1.3rem', sm: '1.5rem' },
+                  fontWeight: 700,
+                  letterSpacing: '-0.025em',
+                  color: 'text.primary',
                 }}
               >
                 {product.name}
@@ -155,7 +201,13 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
               {lowestVariant && (
                 <Typography
                   variant="body2"
-                  sx={{ fontWeight: 500, whiteSpace: 'nowrap', fontSize: '1.02rem' }}
+                  sx={{
+                    fontFamily: 'var(--font-jost), "Jost", sans-serif',
+                    fontWeight: 700,
+                    whiteSpace: 'nowrap',
+                    fontSize: '1.15rem',
+                    color: 'text.primary',
+                  }}
                 >
                   {hasMultipleSizes ? 'From ' : ''}
                   <AnimatedPrice kobo={lowestVariant.price_kobo} />
@@ -167,10 +219,11 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
               variant="caption"
               sx={{
                 display: 'block',
-                color: 'text.secondary',
+                color: 'text.primary',
+                opacity: 0.85,
                 fontSize: '0.95rem',
                 fontWeight: 400,
-                mt: 0.4,
+                mt: 0.5,
               }}
             >
               {product.type} · {product.variants.map((v) => v.label).join(' / ')}
@@ -187,13 +240,21 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
             position: 'absolute',
             top: 12,
             right: 12,
-            zIndex: 2,
+            zIndex: 3,
+            bgcolor: 'background.paper',
+            border: 1,
+            borderColor: 'divider',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            width: 36,
+            height: 36,
+            borderRadius: 999,
           }}
         />
       </Box>
 
-      {/* Quick Add to bag / Choose size action bar */}
-      <Box sx={{ mt: 1.75, display: 'flex', gap: 1 }}>
+      {/* Quick Add to bag action pill button */}
+      <Box sx={{ mt: 1.75 }}>
         <Button
           size="small"
           variant="outlined"
@@ -201,10 +262,11 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
           onClick={handleQuickAdd}
           data-testid={`quick-add-${product.slug}`}
           sx={{
-            py: 0.9,
+            py: 1,
             px: 2,
-            fontSize: '0.925rem',
-            fontWeight: 500,
+            fontSize: '0.9375rem',
+            fontWeight: 600,
+            borderRadius: 999,
           }}
         >
           {quickAdded

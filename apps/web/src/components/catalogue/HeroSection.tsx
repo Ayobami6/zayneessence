@@ -29,10 +29,9 @@ export function HeroSection() {
     el?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSeeEverything = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
+  const handleExploreOud = () => {
     setSearchQuery('');
-    setActiveCategory('All');
+    setActiveCategory('Oud');
     const el = document.getElementById('catalogue');
     el?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -40,34 +39,82 @@ export function HeroSection() {
   return (
     <Box
       component="section"
-      aria-label="Featured skincare introduction"
+      aria-label="Featured introduction"
       sx={{
-        pt: { xs: 4, md: 7 },
-        pb: { xs: 6, md: 10 },
+        pt: { xs: 4, md: 6 },
+        pb: { xs: 7, md: 11 },
         borderBottom: 1,
         borderColor: 'divider',
       }}
     >
       <Container maxWidth="lg">
+        {/* Parade-style top eyebrow row */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            mb: { xs: 4, md: 6 },
+            borderBottom: 1,
+            borderColor: 'divider',
+            pb: 2,
+          }}
+        >
+          <Typography
+            sx={{
+              fontFamily: 'var(--font-jost), "Jost", sans-serif',
+              fontSize: '0.9375rem',
+              fontWeight: 600,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              color: 'text.primary',
+              opacity: 0.85,
+            }}
+          >
+            (Melanin-rich skincare &amp; pure aged oud)
+          </Typography>
+          <Typography
+            sx={{
+              fontFamily: 'var(--font-jost), "Jost", sans-serif',
+              fontSize: '0.9375rem',
+              fontWeight: 500,
+              color: 'text.primary',
+              opacity: 0.85,
+            }}
+          >
+            Lagos &amp; Abuja — Est. 2026
+          </Typography>
+        </Box>
+
+        {/* Hero asymmetric grid */}
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: '1.15fr 0.85fr' },
+            gridTemplateColumns: { xs: '1fr', md: '1.2fr 0.8fr' },
             alignItems: 'center',
-            gap: { xs: 5, md: 8 },
+            gap: { xs: 6, md: 8 },
           }}
         >
-          {/* Left column: Headline, subline, CTA button & link */}
+          {/* Left Column: Stacked monumental typography & CTAs */}
           <Box>
             <Typography
-              variant="h1"
+              component="h1"
               sx={{
-                mb: 3,
-                animation:
-                  'heroHeadlineSettle 1.35s cubic-bezier(0.2, 0.7, 0.2, 1) both',
+                fontFamily: 'var(--font-jost), "Jost", sans-serif',
+                fontSize: 'clamp(58px, 9vw, 116px)',
+                fontWeight: 700,
+                lineHeight: 0.92,
+                letterSpacing: '-0.045em',
+                color: 'text.primary',
+                mb: 3.5,
+                animation: 'heroHeadlineSettle 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both',
               }}
             >
-              Skin that glows, quietly
+              Skin that
+              <br />
+              glows,
+              <br />
+              quietly.
             </Typography>
 
             <Typography
@@ -75,22 +122,23 @@ export function HeroSection() {
               sx={{
                 color: 'text.primary',
                 opacity: 0.88,
-                fontSize: { xs: '1.125rem', md: '1.22rem' },
-                fontWeight: 400,
-                mb: 4,
-                maxWidth: '52ch',
+                fontSize: { xs: '1.15rem', md: '1.28rem' },
+                lineHeight: 1.65,
+                mb: 4.5,
+                maxWidth: '48ch',
               }}
             >
-              Skincare made with Nigerian shea, baobab and moringa for melanin-rich
-              skin, alongside pure oud oils and perfume.
+              Skincare formulated with unrefined northern Nigerian shea, cold-pressed baobab
+              and moringa for melanin-rich skin, alongside pure aged oud oils and fine perfume.
             </Typography>
 
+            {/* Parade-style pill action cluster */}
             <Box
               sx={{
                 display: 'flex',
                 flexWrap: 'wrap',
                 alignItems: 'center',
-                gap: 3,
+                gap: 2,
               }}
             >
               <Button
@@ -98,37 +146,54 @@ export function HeroSection() {
                 color="primary"
                 onClick={handleShopSkincare}
                 data-testid="hero-shop-skincare-btn"
+                sx={{
+                  px: 4,
+                  py: 1.6,
+                  fontSize: '1.05rem',
+                  fontWeight: 600,
+                }}
               >
                 Shop skincare
               </Button>
 
+              <Button
+                variant="outlined"
+                onClick={handleExploreOud}
+                sx={{
+                  px: 4,
+                  py: 1.6,
+                  fontSize: '1.05rem',
+                  fontWeight: 600,
+                }}
+              >
+                Explore pure oud
+              </Button>
+
               <Typography
-                component="a"
-                href="#catalogue"
-                onClick={handleSeeEverything}
-                data-testid="hero-see-everything-link"
+                component={Link}
+                href="/#rituals"
                 sx={{
                   color: 'text.primary',
-                  fontSize: '1.03125rem',
-                  fontWeight: 500,
+                  fontSize: '1.05rem',
+                  fontWeight: 600,
                   textDecoration: 'underline',
                   textUnderlineOffset: '5px',
-                  cursor: 'pointer',
+                  ml: { xs: 0, sm: 1 },
                   '&:hover': {
                     color: 'text.secondary',
                   },
                 }}
               >
-                See everything
+                View 4-step ritual →
               </Typography>
             </Box>
           </Box>
 
-          {/* Right column: Featured skincare product in the signature arched window */}
+          {/* Right Column: Featured skincare showcase in signature arched window */}
           {heroProduct && primaryImage && (
             <Box
               sx={{
-                maxWidth: { xs: 440, md: 540 },
+                maxWidth: { xs: 440, md: 520 },
                 width: '100%',
                 ml: 'auto',
                 mr: { xs: 'auto', md: 0 },
@@ -153,14 +218,15 @@ export function HeroSection() {
                     fetchPriority="high"
                     placeholder="blur"
                     blurDataURL={primaryImage.blurDataURL}
-                    sizes="(max-width: 900px) 90vw, 540px"
+                    sizes="(max-width: 900px) 90vw, 520px"
                     style={{ objectFit: 'cover' }}
                   />
                 </ArchedWindow>
 
+                {/* Metadata caption card */}
                 <Box
                   sx={{
-                    mt: 2.25,
+                    mt: 2.5,
                     display: 'flex',
                     alignItems: 'baseline',
                     justifyContent: 'space-between',
@@ -169,26 +235,55 @@ export function HeroSection() {
                   }}
                 >
                   <Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                      <Typography
+                        sx={{
+                          fontSize: '0.84375rem',
+                          fontWeight: 600,
+                          letterSpacing: '0.04em',
+                          textTransform: 'uppercase',
+                          color: 'text.primary',
+                          opacity: 0.8,
+                        }}
+                      >
+                        2026 Signature formulation
+                      </Typography>
+                    </Box>
                     <Typography
                       sx={{
-                        fontFamily: 'var(--font-italiana), "Italiana", Georgia, serif',
-                        fontSize: '1.55rem',
-                        WebkitTextStroke: '0.22px currentColor',
+                        fontFamily: 'var(--font-italiana), "Italiana", serif',
+                        fontSize: '1.75rem',
+                        fontWeight: 400,
+                        WebkitTextStroke: '0.25px currentColor',
                         color: 'text.primary',
+                        lineHeight: 1.15,
                       }}
                     >
                       {heroProduct.name}
                     </Typography>
                     <Typography
                       variant="caption"
-                      sx={{ color: 'text.secondary', fontSize: '0.96875rem', fontWeight: 400 }}
+                      sx={{ color: 'text.secondary', fontSize: '1rem', fontWeight: 500 }}
                     >
                       {heroProduct.type} · {heroProduct.variants[0]?.label}
                     </Typography>
                   </Box>
-                  <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '1.1rem' }}>
-                    {formatKoboToNgn(startingPrice)}
-                  </Typography>
+
+                  <Box sx={{ textAlign: 'right' }}>
+                    <Typography
+                      sx={{
+                        fontFamily: 'var(--font-jost), "Jost", sans-serif',
+                        fontWeight: 700,
+                        fontSize: '1.35rem',
+                        color: 'text.primary',
+                      }}
+                    >
+                      {formatKoboToNgn(startingPrice)}
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.84375rem', color: 'text.secondary', fontWeight: 500 }}>
+                      Free delivery eligible
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
             </Box>
