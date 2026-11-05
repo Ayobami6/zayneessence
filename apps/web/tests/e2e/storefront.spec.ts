@@ -1,11 +1,10 @@
 import path from 'node:path';
 import { expect, test } from '@playwright/test';
 
-const ARTIFACT_DIR =
-  '/Users/mac/.gemini/antigravity/brain/5162610d-8cfa-42c0-897f-ca48ff4a71e4';
+const ARTIFACT_DIR = path.resolve('test-results', 'screenshots');
 
 test.describe('zayneessence luxury storefront E2E flows', () => {
-  test('theme toggle switches between light and dark plum modes and persists', async ({
+  test('theme toggle switches between light and dark modes and persists', async ({
     page,
   }) => {
     await page.goto('/');
