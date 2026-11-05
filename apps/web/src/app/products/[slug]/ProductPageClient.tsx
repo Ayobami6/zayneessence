@@ -6,7 +6,7 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import { Product } from '@/types/domain';
 import { useStoreData } from '@/context/StoreDataContext';
 import { ProductDetailView } from '@/components/product/ProductDetailView';
@@ -32,26 +32,26 @@ export function ProductPageClient({
           skincare, pure oud oils and perfume instead.
         </Typography>
         <Button component={Link} href="/" variant="contained" color="primary">
-          Shop skincare
+          Back to the shop
         </Button>
       </Container>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ pt: { xs: 2, md: 4 } }}>
-      <Box sx={{ mb: 1 }}>
+    <Container maxWidth="lg" sx={{ pt: { xs: 1, md: 2 } }}>
+      <Box sx={{ mb: 2 }}>
         <Button
           component={Link}
           href="/#catalogue"
-          color="inherit"
-          startIcon={<ArrowBackOutlinedIcon fontSize="small" />}
-          sx={{ px: 1.5, py: 0.75, color: 'text.secondary' }}
+          variant="outlined"
+          startIcon={<ArrowBackRoundedIcon fontSize="small" />}
+          sx={{ minHeight: 44 }}
         >
           Back to collection
         </Button>
       </Box>
-      <ProductDetailView product={product} />
+      <ProductDetailView key={product.id} product={product} />
     </Container>
   );
 }

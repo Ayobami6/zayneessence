@@ -4,131 +4,68 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+import { RingGauge } from '@/components/glow';
 
 const METRICS = [
   {
-    number: '100%',
-    label: 'Wild-harvested botanicals',
-    detail: 'Unrefined shea, cold-pressed baobab and moringa sourced directly from northern Nigerian grower cooperatives.',
+    value: '100%',
+    progress: 1,
+    title: 'Wild-harvested botanicals',
+    body: 'Shea, baobab and moringa from northern grower cooperatives.',
   },
   {
-    number: '6 Yrs',
-    label: 'Pure oud maturation',
-    detail: 'Aged in dark pharmaceutical glass to cultivate deep honeyed and smoky nuances without synthetic extenders.',
+    value: '6 yrs',
+    progress: 1,
+    title: 'Pure oud maturation',
+    body: 'Aged in dark glass, with no synthetic extenders.',
   },
   {
-    number: '37',
-    label: 'States & territories',
-    detail: 'Fast, secure nationwide delivery across all 36 states and the FCT, with real-time WhatsApp dispatch notices.',
+    value: '37',
+    progress: 1,
+    title: 'States & territories',
+    body: 'All 36 states and the FCT, with WhatsApp dispatch notices.',
   },
   {
-    number: '0%',
-    label: 'White cast or synthetic fillers',
-    detail: 'Formulated exclusively for melanin-rich skin with zero white chalkiness, sulfates, parabens or artificial colours.',
+    value: '0%',
+    progress: 0,
+    title: 'White cast or fillers',
+    body: 'No chalkiness, sulfates, parabens or artificial colours.',
   },
 ];
 
 export function StudioMetricsSection() {
   return (
-    <Box
-      component="section"
-      aria-label="Studio proof and metrics"
-      sx={{
-        py: { xs: 7, md: 10 },
-        borderBottom: 1,
-        borderColor: 'divider',
-      }}
-    >
+    <Box component="section" aria-label="Studio benchmarks" sx={{ pb: { xs: 2, md: 4 } }}>
       <Container maxWidth="lg">
-        {/* Eyebrow in Parade's parenthesis style */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            mb: 5,
-            borderBottom: 1,
-            borderColor: 'divider',
-            pb: 2,
-          }}
-        >
-          <Typography
-            sx={{
-              fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.9375rem',
-              fontWeight: 600,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              color: 'text.primary',
-              opacity: 0.85,
-            }}
-          >
-            (Studio benchmarks)
-          </Typography>
-          <Typography
-            sx={{
-              fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.9375rem',
-              fontWeight: 500,
-              color: 'text.primary',
-              opacity: 0.85,
-            }}
-          >
-            Ikoyi · Maitama · Worldwide
-          </Typography>
-        </Box>
-
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' },
-            gap: { xs: 4, md: 5 },
+            gridTemplateColumns: { xs: 'repeat(2, minmax(0, 1fr))', md: 'repeat(4, minmax(0, 1fr))' },
+            gap: { xs: 1.25, md: 2 },
           }}
         >
-          {METRICS.map((metric, idx) => (
+          {METRICS.map((m) => (
             <Box
-              key={idx}
+              key={m.title}
               sx={{
                 display: 'flex',
-                flexDirection: 'column',
-                gap: 1.25,
-                borderTop: 2,
-                borderColor: 'text.primary',
-                pt: 2.75,
+                flexDirection: { xs: 'column', lg: 'row' },
+                alignItems: { xs: 'flex-start', lg: 'center' },
+                gap: { xs: 1.25, md: 2 },
+                p: { xs: 1.75, md: 2 },
+                borderRadius: '30px',
+                bgcolor: 'background.paper',
               }}
             >
-              <Typography
-                sx={{
-                  fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                  fontSize: { xs: '3.4rem', md: '4.25rem' },
-                  fontWeight: 700,
-                  letterSpacing: '-0.04em',
-                  lineHeight: 0.92,
-                  color: 'text.primary',
-                }}
-              >
-                {metric.number}
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: '1.1875rem',
-                  fontWeight: 600,
-                  color: 'text.primary',
-                  mt: 0.5,
-                }}
-              >
-                {metric.label}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: 'text.secondary',
-                  fontSize: '1rem',
-                  lineHeight: 1.6,
-                }}
-              >
-                {metric.detail}
-              </Typography>
+              <RingGauge value={m.progress} size={84} stroke={7} label={m.value} filled ariaLabel={`${m.value} ${m.title}`} />
+              <Box sx={{ minWidth: 0 }}>
+                <Typography component="h3" variant="h4" sx={{ fontSize: { xs: 14, md: 15 } }}>
+                  {m.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: 12.5, md: 13 }, mt: 0.5 }}>
+                  {m.body}
+                </Typography>
+              </Box>
             </Box>
           ))}
         </Box>

@@ -37,8 +37,6 @@ export function generateMetadata({ params }: ProductPageProps): Metadata {
         ? [
             {
               url: primaryImage.url,
-              width: 1600,
-              height: 2000,
               alt: primaryImage.alt,
             },
           ]

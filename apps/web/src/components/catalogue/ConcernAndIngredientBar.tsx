@@ -22,44 +22,28 @@ export function ConcernAndIngredientBar() {
   return (
     <Box
       sx={{
-        mt: 2,
-        pt: 2,
-        borderTop: 1,
-        borderColor: 'divider',
+        mt: 1.5,
         display: 'flex',
         alignItems: 'center',
         gap: 1,
         overflowX: 'auto',
+        mx: { xs: -2, md: 0 },
+        px: { xs: 2, md: 0 },
         scrollbarWidth: 'none',
-        '&::-webkit-scrollbar': {
-          display: 'none',
-        },
+        '&::-webkit-scrollbar': { display: 'none' },
       }}
     >
-      <Typography
-        variant="caption"
-        sx={{
-          color: 'text.primary',
-          fontWeight: 500,
-          fontSize: '0.9375rem',
-          flexShrink: 0,
-          mr: 0.75,
-        }}
-      >
-        By concern or ingredient:
+      <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0, mr: 0.5, fontSize: 13 }}>
+        By concern:
       </Typography>
-
       {SKIN_CONCERNS_AND_INGREDIENTS.map((item) => {
         const isSelected = searchQuery.toLowerCase() === item.query.toLowerCase();
         return (
           <Chip
             key={item.label}
             label={item.label}
-            size="small"
             clickable
             data-active={isSelected ? 'true' : 'false'}
-            color={isSelected ? 'primary' : 'default'}
-            variant={isSelected ? 'filled' : 'outlined'}
             onClick={() => {
               if (isSelected) {
                 setSearchQuery('');
@@ -69,29 +53,17 @@ export function ConcernAndIngredientBar() {
               }
             }}
             sx={{
-              height: 36,
-              fontSize: '0.9rem',
-              fontWeight: 500,
               flexShrink: 0,
+              height: 36,
+              bgcolor: isSelected ? undefined : 'transparent',
+              border: (t) => (isSelected ? 'none' : `1px solid ${t.palette.glow.mauve}`),
             }}
           />
         );
       })}
-
-      {searchQuery && (
-        <Chip
-          label="Clear filter"
-          size="small"
-          clickable
-          onClick={() => setSearchQuery('')}
-          sx={{
-            height: 36,
-            fontSize: '0.9rem',
-            fontWeight: 500,
-            flexShrink: 0,
-          }}
-        />
-      )}
+      {searchQuery ? (
+        <Chip label="Clear filter" clickable onClick={() => setSearchQuery('')} sx={{ flexShrink: 0, height: 36 }} />
+      ) : null}
     </Box>
   );
 }

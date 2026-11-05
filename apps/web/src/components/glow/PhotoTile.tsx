@@ -10,8 +10,8 @@ import { GLOW_BLUR_DATA_URL } from '@/data/blur';
 interface PhotoTileProps {
   src: string;
   alt: string;
-  /** CSS aspect-ratio like '4 / 5'. Ignored when `height` is given. */
-  aspectRatio?: string;
+  /** CSS aspect-ratio like '4 / 5' (responsive object allowed). Ignored when `height` is given. */
+  aspectRatio?: string | Record<string, string>;
   height?: number | string | Record<string, number | string>;
   radius?: number | string | Record<string, number | string>;
   sizes?: string;

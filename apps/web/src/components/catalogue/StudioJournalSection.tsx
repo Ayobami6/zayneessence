@@ -7,9 +7,12 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
-import InputBase from '@mui/material/InputBase';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import { AccentHeading, CircleIconButton, PhotoTile } from '@/components/glow';
 
 interface JournalArticle {
+  image: string;
+  imageAlt: string;
   tag: string;
   readingTime: string;
   date: string;
@@ -20,7 +23,9 @@ interface JournalArticle {
 
 const ARTICLES: JournalArticle[] = [
   {
-    tag: 'Raw Shea',
+    image: '/images/shea.jpg',
+    imageAlt: 'Pieces of unrefined shea butter in a dark bowl',
+    tag: 'Raw shea',
     readingTime: '5 min read',
     date: 'Oct 12, 2026',
     title: 'Why unrefined northern Nigerian shea outperforms processed butter',
@@ -33,7 +38,9 @@ const ARTICLES: JournalArticle[] = [
     ],
   },
   {
-    tag: 'Aged Oud',
+    image: '/images/agarwood.jpg',
+    imageAlt: 'Close-up of agarwood heartwood grain',
+    tag: 'Aged oud',
     readingTime: '6 min read',
     date: 'Sep 28, 2026',
     title: 'The alchemy of aging pure agarwood oil in dark glass',
@@ -46,7 +53,9 @@ const ARTICLES: JournalArticle[] = [
     ],
   },
   {
-    tag: 'Barrier Science',
+    image: '/images/profile.jpg',
+    imageAlt: 'Profile of a woman with glowing deep brown skin and eyes closed',
+    tag: 'Barrier science',
     readingTime: '4 min read',
     date: 'Sep 10, 2026',
     title: 'Treating hyperpigmentation without barrier inflammation',
@@ -61,331 +70,70 @@ const ARTICLES: JournalArticle[] = [
 ];
 
 export function StudioJournalSection() {
-  const [activeArticle, setActiveArticle] = useState<JournalArticle | null>(null);
-  const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
-
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newsletterEmail || !newsletterEmail.includes('@')) return;
-    setNewsletterSubscribed(true);
-  };
+  const [openArticle, setOpenArticle] = useState<JournalArticle | null>(null);
 
   return (
-    <Box
-      id="journal"
-      component="section"
-      aria-label="Studio journal notes"
-      sx={{
-        py: { xs: 8, md: 13 },
-        borderBottom: 1,
-        borderColor: 'divider',
-      }}
-    >
+    <Box id="journal" component="section" aria-labelledby="journal-heading" sx={{ py: { xs: 4, md: 8 }, scrollMarginTop: 96 }}>
       <Container maxWidth="lg">
-        {/* Eyebrow */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            mb: 4,
-            borderBottom: 1,
-            borderColor: 'divider',
-            pb: 2,
-          }}
-        >
-          <Typography
-            sx={{
-              fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.9375rem',
-              fontWeight: 600,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              color: 'text.primary',
-              opacity: 0.85,
-            }}
-          >
-            (Studio journal)
-          </Typography>
-          <Typography
-            sx={{
-              fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.9375rem',
-              fontWeight: 500,
-              color: 'text.primary',
-              opacity: 0.85,
-            }}
-          >
-            Formulation Dispatches
-          </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            justifyContent: 'space-between',
-            alignItems: { xs: 'flex-start', md: 'flex-end' },
-            gap: 2,
-            mb: { xs: 5, md: 7 },
-          }}
-        >
-          <Box sx={{ maxWidth: '44ch' }}>
-            <Typography
-              variant="h2"
-              sx={{
-                fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: { xs: '2.4rem', sm: '3rem', md: '3.8rem' },
-                fontWeight: 700,
-                letterSpacing: '-0.04em',
-                lineHeight: 1.05,
-                color: 'text.primary',
-                mb: 1.5,
-              }}
-            >
-              Notes from the studio.
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                color: 'text.primary',
-                opacity: 0.88,
-                fontSize: { xs: '1.0625rem', md: '1.2rem' },
-                lineHeight: 1.65,
-              }}
-            >
-              Insights into savanna botanicals, pure agarwood distillation, and the barrier biology of melanin-rich skin.
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* 3 Journal Cards (Parade's "Notes from the studio" 3-column format) */}
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
-            gap: { xs: 3, md: 4 },
-          }}
-        >
+        <AccentHeading id="journal-heading" component="h2" variant="h2" text="Notes from" accent="the studio." sx={{ mb: { xs: 2.5, md: 3 } }} />
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, minmax(0, 1fr))' }, gap: 2 }}>
           {ARTICLES.map((article) => (
             <Box
               key={article.title}
-              onClick={() => setActiveArticle(article)}
-              sx={{
-                p: { xs: 3.5, md: 4 },
-                borderRadius: 2,
-                border: 1,
-                borderColor: 'divider',
-                bgcolor: 'background.paper',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                cursor: 'pointer',
-                transition: 'border-color 0.25s ease, transform 0.25s ease',
-                '&:hover': {
-                  borderColor: 'text.primary',
-                  transform: 'translateY(-3px)',
-                },
-              }}
+              component="article"
+              sx={{ display: 'flex', flexDirection: 'column', gap: 1.75, p: 1.25, pb: 2.75, borderRadius: '32px', bgcolor: 'background.paper' }}
             >
-              <Box>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    mb: 3,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontSize: '0.8125rem',
-                      fontWeight: 700,
-                      letterSpacing: '0.04em',
-                      color: 'text.primary',
-                      textTransform: 'uppercase',
-                    }}
-                  >
+              <PhotoTile src={article.image} alt={article.imageAlt} height={200} radius="24px" sizes="(max-width: 900px) 92vw, 400px" />
+              <Box sx={{ px: 1.5, display: 'flex', flexDirection: 'column', gap: 1.25, flex: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                  <Box sx={{ height: 26, px: 1.25, borderRadius: '999px', bgcolor: 'background.default', display: 'inline-flex', alignItems: 'center', fontSize: 11.5, fontWeight: 700 }}>
                     {article.tag}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: '0.84375rem',
-                      fontWeight: 500,
-                      color: 'text.primary',
-                      opacity: 0.75,
-                    }}
-                  >
+                  </Box>
+                  <Typography variant="caption" color="text.secondary">
                     {article.readingTime} · {article.date}
                   </Typography>
                 </Box>
-
-                <Typography
-                  sx={{
-                    fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                    fontSize: { xs: '1.35rem', md: '1.55rem' },
-                    fontWeight: 700,
-                    lineHeight: 1.25,
-                    letterSpacing: '-0.025em',
-                    color: 'text.primary',
-                    mb: 2,
-                  }}
-                >
+                <Typography component="h3" variant="h3" sx={{ fontSize: 18 }}>
                   {article.title}
                 </Typography>
-
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: 'text.primary',
-                    opacity: 0.85,
-                    fontSize: '1rem',
-                    lineHeight: 1.65,
-                    mb: 3,
-                  }}
-                >
+                <Typography variant="body2" color="text.secondary">
                   {article.excerpt}
                 </Typography>
+                <Button
+                  variant="text"
+                  onClick={() => setOpenArticle(article)}
+                  sx={{ alignSelf: 'flex-start', mt: 'auto', px: 0, minHeight: 40, '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' } }}
+                >
+                  Read note
+                </Button>
               </Box>
-
-              <Typography
-                sx={{
-                  fontSize: '0.96875rem',
-                  fontWeight: 600,
-                  color: 'text.primary',
-                  textDecoration: 'underline',
-                  textUnderlineOffset: '4px',
-                }}
-              >
-                Read note →
-              </Typography>
             </Box>
           ))}
         </Box>
-
-        {/* Newsletter Signup Row */}
-        <Box
-          sx={{
-            mt: { xs: 6, md: 8 },
-            p: { xs: 3.5, md: 5 },
-            borderRadius: 2,
-            border: 1,
-            borderColor: 'divider',
-            bgcolor: 'background.paper',
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            alignItems: { xs: 'flex-start', md: 'center' },
-            justifyContent: 'space-between',
-            gap: 3,
-          }}
-        >
-          <Box sx={{ maxWidth: '44ch' }}>
-            <Typography sx={{ fontWeight: 700, fontSize: '1.3rem', color: 'text.primary', mb: 0.75 }}>
-              The Studio Dispatch
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{
-                color: 'text.primary',
-                opacity: 0.85,
-                fontSize: '1rem',
-                lineHeight: 1.6,
-              }}
-            >
-              Subtle dispatches on rare agarwood harvests, harvest yields, and private client studio appointments.
-            </Typography>
-          </Box>
-
-          {newsletterSubscribed ? (
-            <Typography sx={{ fontWeight: 600, fontSize: '1.05rem', color: 'text.primary' }}>
-              ✓ You are subscribed to our private studio dispatch.
-            </Typography>
-          ) : (
-            <Box
-              component="form"
-              onSubmit={handleNewsletterSubmit}
-              sx={{
-                display: 'flex',
-                gap: 1.5,
-                width: { xs: '100%', md: 'auto' },
-                maxWidth: 440,
-                flexGrow: { md: 1 },
-              }}
-            >
-              <InputBase
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                placeholder="Enter your email address"
-                inputProps={{ 'aria-label': 'Email address for studio dispatch' }}
-                sx={{
-                  px: 2.5,
-                  py: 1.25,
-                  borderRadius: 999,
-                  border: 1,
-                  borderColor: 'divider',
-                  bgcolor: 'background.default',
-                  flexGrow: 1,
-                  fontSize: '0.96875rem',
-                  fontWeight: 500,
-                }}
-              />
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                sx={{ flexShrink: 0, px: 3.5, fontSize: '0.96875rem', fontWeight: 600 }}
-              >
-                Join list
-              </Button>
-            </Box>
-          )}
-        </Box>
       </Container>
 
-      {/* Slide-up reading dialog */}
-      <Dialog
-        open={Boolean(activeArticle)}
-        onClose={() => setActiveArticle(null)}
-        maxWidth="sm"
-        fullWidth
-      >
-        {activeArticle && (
-          <DialogContent sx={{ p: { xs: 3.5, md: 5 } }}>
-            <Typography
-              sx={{
-                fontSize: '0.8125rem',
-                fontWeight: 600,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                color: 'text.secondary',
-                mb: 1.5,
-              }}
-            >
-              {activeArticle.tag} · {activeArticle.readingTime}
+      <Dialog open={Boolean(openArticle)} onClose={() => setOpenArticle(null)} maxWidth="sm" fullWidth aria-labelledby="journal-dialog-title">
+        {openArticle ? (
+          <DialogContent sx={{ p: { xs: 2, md: 3 } }}>
+            <PhotoTile src={openArticle.image} alt={openArticle.imageAlt} height={220} radius="24px" sizes="600px" />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2.5, gap: 2 }}>
+              <Typography variant="caption" color="text.secondary">
+                {openArticle.tag} · {openArticle.readingTime} · {openArticle.date}
+              </Typography>
+              <CircleIconButton label="Close note" onClick={() => setOpenArticle(null)} size={40}>
+                <CloseRoundedIcon />
+              </CircleIconButton>
+            </Box>
+            <Typography id="journal-dialog-title" component="h2" variant="h3" sx={{ mt: 1, mb: 2 }}>
+              {openArticle.title}
             </Typography>
-            <Typography
-              variant="h2"
-              sx={{
-                fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: '1.85rem',
-                fontWeight: 600,
-                lineHeight: 1.2,
-                mb: 3,
-              }}
-            >
-              {activeArticle.title}
-            </Typography>
-            {activeArticle.body.map((paragraph, idx) => (
-              <Typography key={idx} variant="body1" sx={{ mb: 2.5, lineHeight: 1.7 }}>
+            {openArticle.body.map((paragraph) => (
+              <Typography key={paragraph.slice(0, 24)} variant="body1" sx={{ mb: 1.75 }}>
                 {paragraph}
               </Typography>
             ))}
-            <Button variant="outlined" onClick={() => setActiveArticle(null)} sx={{ mt: 2 }}>
-              Close note
-            </Button>
           </DialogContent>
-        )}
+        ) : null}
       </Dialog>
     </Box>
   );

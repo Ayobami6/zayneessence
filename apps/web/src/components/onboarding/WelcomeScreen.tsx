@@ -91,7 +91,7 @@ export function WelcomeScreen() {
           component="svg"
           viewBox="0 0 350 180"
           aria-hidden="true"
-          sx={{ position: 'absolute', left: '3%', width: '94%', bottom: '18%' }}
+          sx={{ position: 'absolute', left: '3%', width: '94%', bottom: '6%' }}
         >
           <path d="M15 175a160 160 0 0 1 320 0" fill="none" stroke="#FFFFFF" strokeWidth={2.5} strokeDasharray="2 8" strokeLinecap="round" />
           <path d="M15 175a160 160 0 0 1 240 -140" fill="none" stroke="#FFFFFF" strokeWidth={3} strokeLinecap="round" opacity={0.9} />

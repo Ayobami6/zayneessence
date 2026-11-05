@@ -1,28 +1,27 @@
-'use client';
-
 import React from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+import { AccentHeading } from '@/components/glow';
 
 const TESTIMONIALS = [
   {
     quote:
-      '“The Sérum Lumière completely cleared my stubborn hyperpigmentation without drying out my face. My skin has never felt this calm, hydrated or radiant.”',
+      'The Sérum Lumière completely cleared my stubborn hyperpigmentation without drying out my face. My skin has never felt this calm, hydrated or radiant.',
     author: 'Dr. Amina B.',
     title: 'Consultant Dermatologist',
     location: 'Maitama, Abuja',
   },
   {
     quote:
-      '“Oud Mubakhar is hands-down the most nuanced pure oud oil in my collection. Two drops on linen linger for days without sharpness. Extraordinary craftsmanship.”',
+      'Oud Mubakhar is hands-down the most nuanced pure oud oil in my collection. Two drops on linen linger for days without sharpness. Extraordinary craftsmanship.',
     author: 'Tunde E.',
     title: 'Fragrance Collector',
     location: 'Ikoyi, Lagos',
   },
   {
     quote:
-      '“Crème Velours completely rescued my compromised moisture barrier. It melts immediately into melanin-rich skin with zero ashiness or stickiness. An essential.”',
+      'Crème Velours completely rescued my compromised moisture barrier. It melts immediately into melanin-rich skin with zero ashiness or stickiness. An essential.',
     author: 'Folashade O.',
     title: 'Creative Director',
     location: 'London & Lagos',
@@ -31,116 +30,29 @@ const TESTIMONIALS = [
 
 export function ClientWordsSection() {
   return (
-    <Box
-      component="section"
-      aria-label="Client testimonials"
-      sx={{
-        py: { xs: 8, md: 12 },
-        borderBottom: 1,
-        borderColor: 'divider',
-        bgcolor: 'background.paper',
-      }}
-    >
+    <Box component="section" aria-labelledby="words-heading" sx={{ py: { xs: 4, md: 8 } }}>
       <Container maxWidth="lg">
-        {/* Eyebrow */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            mb: 4,
-            borderBottom: 1,
-            borderColor: 'divider',
-            pb: 2,
-          }}
-        >
-          <Typography
-            sx={{
-              fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.9375rem',
-              fontWeight: 600,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              color: 'text.primary',
-              opacity: 0.85,
-            }}
-          >
-            (Kind words)
-          </Typography>
-          <Typography
-            sx={{
-              fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.9375rem',
-              fontWeight: 500,
-              color: 'text.primary',
-              opacity: 0.85,
-            }}
-          >
-            Client Impressions
-          </Typography>
-        </Box>
-
-        <Typography
-          variant="h2"
-          sx={{
-            fontFamily: 'var(--font-jost), "Jost", sans-serif',
-            fontSize: { xs: '2.2rem', sm: '2.8rem', md: '3.5rem' },
-            fontWeight: 700,
-            letterSpacing: '-0.035em',
-            lineHeight: 1.05,
-            color: 'text.primary',
-            mb: { xs: 5, md: 7 },
-            maxWidth: '32ch',
-          }}
-        >
-          Clients say it better.
-        </Typography>
-
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
-            gap: { xs: 3, md: 4 },
-          }}
-        >
-          {TESTIMONIALS.map((t, idx) => (
+        <AccentHeading id="words-heading" component="h2" variant="h2" text="Clients say it" accent="better." sx={{ mb: { xs: 2.5, md: 3 } }} />
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, minmax(0, 1fr))' }, gap: 2 }}>
+          {TESTIMONIALS.map((t) => (
             <Box
-              key={idx}
-              sx={{
-                p: { xs: 3.5, md: 4.5 },
-                borderRadius: 2,
-                border: 1,
-                borderColor: 'divider',
-                bgcolor: 'background.default',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                transition: 'border-color 0.25s ease',
-                '&:hover': {
-                  borderColor: 'text.primary',
-                },
-              }}
+              key={t.author}
+              component="figure"
+              sx={{ m: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 3, p: { xs: 2.5, md: 3.25 }, borderRadius: '32px', bgcolor: 'background.paper' }}
             >
-              <Typography
-                variant="body1"
-                sx={{
-                  fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                  fontSize: { xs: '1.125rem', md: '1.25rem' },
-                  lineHeight: 1.65,
-                  color: 'text.primary',
-                  mb: 4,
-                }}
-              >
-                {t.quote}
+              <Typography component="blockquote" sx={{ m: 0, fontSize: { xs: 15.5, md: 17 }, lineHeight: 1.55, fontWeight: 500, maxWidth: 'none' }}>
+                “{t.quote}”
               </Typography>
-
-              <Box sx={{ borderTop: 1, borderColor: 'divider', pt: 2.25 }}>
-                <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: 'text.primary' }}>
-                  {t.author}
-                </Typography>
-                <Typography sx={{ fontSize: '0.90625rem', color: 'text.secondary', fontWeight: 500, mt: 0.25 }}>
-                  {t.title} · {t.location}
-                </Typography>
+              <Box component="figcaption" sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Box sx={{ width: 44, height: 44, borderRadius: '999px', bgcolor: 'glow.petal', color: 'glow.accent', display: 'grid', placeItems: 'center', fontWeight: 800 }}>
+                  {t.author.replace('Dr. ', '').charAt(0)}
+                </Box>
+                <Box>
+                  <Typography sx={{ fontSize: 14.5, fontWeight: 700 }}>{t.author}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: 12.5 }}>
+                    {t.title} · {t.location}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
           ))}

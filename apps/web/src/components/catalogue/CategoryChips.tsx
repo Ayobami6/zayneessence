@@ -3,7 +3,7 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
-import { CATEGORY_ORDER, CategoryFilter } from '@/types/domain';
+import { CATEGORY_META, CATEGORY_ORDER, CategoryFilter } from '@/types/domain';
 import { useStoreData } from '@/context/StoreDataContext';
 
 export function CategoryChips() {
@@ -16,33 +16,30 @@ export function CategoryChips() {
       sx={{
         display: 'flex',
         alignItems: 'center',
-        gap: 1.25,
+        gap: 1,
         overflowX: 'auto',
-        py: 1,
+        py: 0.5,
+        mx: { xs: -2, md: 0 },
+        px: { xs: 2, md: 0 },
         scrollbarWidth: 'none',
-        '&::-webkit-scrollbar': {
-          display: 'none',
-        },
+        '&::-webkit-scrollbar': { display: 'none' },
       }}
     >
       {CATEGORY_ORDER.map((category: CategoryFilter) => {
         const isActive = activeCategory === category;
+        const label = category === 'All' ? 'All' : CATEGORY_META[category].shortLabel;
+        const slug = category === 'All' ? 'all' : CATEGORY_META[category].slug;
         return (
           <Chip
             key={category}
             role="tab"
             aria-selected={isActive}
             data-active={isActive ? 'true' : 'false'}
-            data-testid={`category-chip-${category.toLowerCase()}`}
-            label={category}
+            data-testid={`category-chip-${slug}`}
+            label={label}
             clickable
-            color={isActive ? 'primary' : 'default'}
-            variant={isActive ? 'filled' : 'outlined'}
             onClick={() => setActiveCategory(category)}
-            sx={{
-              flexShrink: 0,
-              px: 1.5,
-            }}
+            sx={{ flexShrink: 0, px: 1 }}
           />
         );
       })}
