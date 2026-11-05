@@ -7,10 +7,6 @@ export interface ZayneCompatTokens {
   productTile: string;
   tileRadius: number;
   modeTransition: string;
-  headerGlass: string;
-  tileInnerArch: string;
-  archRadius: string;
-  innerArchRadius: string;
 }
 
 declare module '@mui/material/styles' {
@@ -77,10 +73,6 @@ export function createZayneTheme(mode: ColorMode) {
         productTile: t.petal,
         tileRadius: 20,
         modeTransition: MOTION_CURVES.modeCrossfade,
-        headerGlass: t.glass,
-        tileInnerArch: t.mauve,
-        archRadius: `${GLOW_RADII.tile}px`,
-        innerArchRadius: `${GLOW_RADII.card}px`,
       },
     },
     shape: {
