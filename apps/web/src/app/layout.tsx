@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Italiana, Jost } from 'next/font/google';
+import { Italiana, Plus_Jakarta_Sans } from 'next/font/google';
 import { AppShell } from '@/components/layout/AppShell';
 
 const italiana = Italiana({
@@ -10,11 +10,12 @@ const italiana = Italiana({
   variable: '--font-italiana',
 });
 
-const jost = Jost({
-  weight: ['300', '400', '500', '600', '700'],
+const jakarta = Plus_Jakarta_Sans({
+  weight: ['400', '500', '600', '700', '800'],
+  style: ['normal', 'italic'],
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-jost',
+  variable: '--font-jakarta',
 });
 
 export const metadata: Metadata = {
@@ -38,10 +39,10 @@ export const metadata: Metadata = {
       'Skincare made with Nigerian shea, baobab and moringa for melanin-rich skin, alongside pure oud oils and perfume.',
     images: [
       {
-        url: '/products/serum-lumiere/1.svg',
-        width: 1600,
-        height: 2000,
-        alt: 'Sérum Lumière by zayneessence',
+        url: '/images/hero.jpg',
+        width: 1000,
+        height: 1504,
+        alt: 'zayneessence: skincare, pure oud oils and perfume for melanin-rich skin',
       },
     ],
   },
@@ -55,8 +56,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F6F3F7' },
-    { media: '(prefers-color-scheme: dark)', color: '#170C1B' },
+    { media: '(prefers-color-scheme: light)', color: '#F6EAF3' },
+    { media: '(prefers-color-scheme: dark)', color: '#150C14' },
   ],
   width: 'device-width',
   initialScale: 1,
@@ -71,7 +72,7 @@ export default function RootLayout({
   modal: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${italiana.variable} ${jost.variable}`}>
+    <html lang="en" className={`${italiana.variable} ${jakarta.variable}`}>
       <body>
         <AppShell modal={modal}>{children}</AppShell>
       </body>
