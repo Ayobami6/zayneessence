@@ -19,9 +19,12 @@ import ArrowDownwardOutlinedIcon from '@mui/icons-material/ArrowDownwardOutlined
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { useAuth } from '@/context/AuthContext';
 import { useStoreData } from '@/context/StoreDataContext';
-import { PLUM_BLUR_DATA_URL } from '@/data/seed-catalogue';
+import { GLOW_BLUR_DATA_URL } from '@/data/blur';
 import {
+  CATEGORY_META,
+  ORDER_STEPS,
   OrderStatus,
+  PRODUCT_CATEGORIES,
   Product,
   ProductCategory,
   ProductImage,
@@ -31,7 +34,7 @@ import { formatKoboToNgn, koboToNaira, nairaToKobo } from '@/utils/currency';
 
 type AdminTab = 'products' | 'orders' | 'low_stock' | 'settings';
 
-const ORDER_STATUSES: OrderStatus[] = ['paid', 'packed', 'shipped', 'delivered'];
+const ORDER_STATUSES: OrderStatus[] = ORDER_STEPS;
 
 export default function AdminPage() {
   const { session, toggleAdminRole } = useAuth();
@@ -152,10 +155,10 @@ export default function AdminPage() {
         {
           id: `img-${Date.now()}-1`,
           product_id: newId,
-          url: '/products/serum-lumiere/1.svg',
-          alt: 'Nouvelle Pièce front view on seamless lilac backdrop',
+          url: '/products/serum-lumiere/1.jpg',
+          alt: 'Nouvelle Pièce product photograph',
           position: 1,
-          blurDataURL: PLUM_BLUR_DATA_URL,
+          blurDataURL: GLOW_BLUR_DATA_URL,
         },
       ],
       variants: [
@@ -174,10 +177,7 @@ export default function AdminPage() {
   const handleSaveProductModal = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProduct) return;
-    const isFrag =
-      editingProduct.category === 'Perfume' ||
-      editingProduct.category === 'Oud' ||
-      editingProduct.category === 'Roll-ons';
+    const isFrag = CATEGORY_META[editingProduct.category].isScent;
 
     const cleaned: Product = {
       ...editingProduct,
@@ -223,7 +223,7 @@ export default function AdminPage() {
         url: dataUrl,
         alt: `${editingProduct.name} studio view ${editingProduct.images.length + 1}`,
         position: editingProduct.images.length + 1,
-        blurDataURL: PLUM_BLUR_DATA_URL,
+        blurDataURL: GLOW_BLUR_DATA_URL,
       };
       setEditingProduct({
         ...editingProduct,
@@ -754,13 +754,11 @@ export default function AdminPage() {
                       color: theme.palette.text.primary,
                     })}
                   >
-                    {(['Skincare', 'Perfume', 'Oud', 'Roll-ons', 'Oils'] as const).map(
-                      (cat) => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      )
-                    )}
+                    {PRODUCT_CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {CATEGORY_META[cat].label}
+                      </option>
+                    ))}
                   </Box>
                 </Box>
 

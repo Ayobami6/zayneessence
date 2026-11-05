@@ -7,7 +7,18 @@ import {
   toE164NigerianPhone,
 } from '@/utils/phone';
 import { DEFAULT_STORE_SETTINGS, SEED_PRODUCTS } from '@/data/seed-catalogue';
-import { calculateDeliveryFeeKobo, filterProducts } from '@/services/store-service';
+import {
+  calculateDeliveryFeeKobo,
+  filterProducts,
+  getFreeDeliveryProgress,
+} from '@/services/store-service';
+import {
+  CATEGORY_META,
+  CATEGORY_ORDER,
+  PRODUCT_CATEGORIES,
+  categoryFromSlug,
+} from '@/types/domain';
+import { CONSULTATION_RITUALS, DAILY_RITUAL, getRitualTotalKobo, resolveRitualSteps } from '@/data/rituals';
 import { NIGERIA_STATES_AND_FCT, isLagosOrAbuja } from '@/data/nigeria-states';
 import { verifyPaystackWebhookSignature } from '../../../api/src/webhooks/paystack.controller';
 
@@ -40,12 +51,24 @@ describe('Nigerian +234 phone formatting and validation', () => {
 });
 
 describe('Catalogue & live search filtering', () => {
-  it('contains all 12 required seed products with 3 images each', () => {
-    expect(SEED_PRODUCTS).toHaveLength(12);
+  it('contains the 12 core pieces plus 8 marked samples, each with 3 photos', () => {
+    expect(SEED_PRODUCTS).toHaveLength(20);
+    expect(SEED_PRODUCTS.filter((p) => p.is_sample)).toHaveLength(8);
     for (const product of SEED_PRODUCTS) {
       expect(product.images.length).toBeGreaterThanOrEqual(3);
       expect(product.variants.length).toBeGreaterThanOrEqual(1);
+      for (const image of product.images) {
+        expect(image.url).toMatch(/\.jpg$/);
+        expect(image.alt.length).toBeGreaterThan(10);
+      }
     }
+  });
+
+  it('has unique slugs, ids and SKUs', () => {
+    const slugs = SEED_PRODUCTS.map((p) => p.slug);
+    const skus = SEED_PRODUCTS.flatMap((p) => p.variants.map((v) => v.sku));
+    expect(new Set(slugs).size).toBe(slugs.length);
+    expect(new Set(skus).size).toBe(skus.length);
   });
 
   it('filters live by name, type, category, and Nigerian ingredients', () => {
@@ -59,6 +82,55 @@ describe('Catalogue & live search filtering', () => {
       searchQuery: 'nonexistent-ingredient-xyz',
     });
     expect(noMatches).toHaveLength(0);
+  });
+
+  it('filters the new Bakhoor and Supplements categories', () => {
+    const bakhoor = filterProducts(SEED_PRODUCTS, { category: 'Bakhoor' });
+    expect(bakhoor.map((p) => p.slug)).toEqual([
+      'bakhoor-malaki',
+      'turaren-wuta-amarya',
+      'dukhan-ambre',
+      'mabkhara',
+    ]);
+    const supplements = filterProducts(SEED_PRODUCTS, { category: 'Supplements' });
+    expect(supplements).toHaveLength(4);
+    expect(filterProducts(SEED_PRODUCTS, { searchQuery: 'moringa' }).some((p) => p.slug === 'moringa-pure')).toBe(true);
+  });
+});
+
+describe('Category metadata', () => {
+  it('describes every category with a unique, URL-safe slug', () => {
+    const slugs = PRODUCT_CATEGORIES.map((c) => CATEGORY_META[c].slug);
+    expect(new Set(slugs).size).toBe(PRODUCT_CATEGORIES.length);
+    for (const slug of slugs) {
+      expect(slug).toMatch(/^[a-z0-9-]+$/);
+    }
+    expect(CATEGORY_ORDER[0]).toBe('All');
+    expect(CATEGORY_ORDER).toHaveLength(PRODUCT_CATEGORIES.length + 1);
+  });
+
+  it('maps slugs back to categories', () => {
+    expect(categoryFromSlug('bakhoor')).toBe('Bakhoor');
+    expect(categoryFromSlug('roll-ons')).toBe('Roll-ons');
+    expect(categoryFromSlug('unknown')).toBeUndefined();
+    expect(CATEGORY_META.Bakhoor.label).toBe('Bakhoor & turaren wuta');
+    expect(CATEGORY_META.Supplements.isScent).toBe(false);
+  });
+});
+
+describe('Rituals', () => {
+  it('resolves every ritual step to a published catalogue product', () => {
+    for (const ritual of CONSULTATION_RITUALS) {
+      expect(resolveRitualSteps(ritual.steps, SEED_PRODUCTS)).toHaveLength(ritual.steps.length);
+    }
+    expect(resolveRitualSteps(DAILY_RITUAL, SEED_PRODUCTS)).toHaveLength(4);
+  });
+
+  it('prices rituals from the catalogue', () => {
+    // Sérum Lumière 85,000 + Huile Visage 75,000 + Musc Soie 38,000
+    expect(getRitualTotalKobo(CONSULTATION_RITUALS[0].steps, SEED_PRODUCTS)).toBe(19800000);
+    // Sérum Lumière + Huile Visage + Crème Velours + Oud Mubakhar 3 ml
+    expect(getRitualTotalKobo(DAILY_RITUAL, SEED_PRODUCTS)).toBe(36500000);
   });
 });
 
@@ -83,6 +155,20 @@ describe('Nigerian states, delivery zones, and ₦150,000 free-delivery threshol
     expect(
       calculateDeliveryFeeKobo('store_pickup', 4500000, DEFAULT_STORE_SETTINGS)
     ).toBe(0);
+  });
+
+  it('reports progress toward the free-delivery threshold', () => {
+    const partial = getFreeDeliveryProgress(12300000, DEFAULT_STORE_SETTINGS);
+    expect(partial.unlocked).toBe(false);
+    expect(partial.remainingKobo).toBe(2700000);
+    expect(partial.progress).toBeCloseTo(0.82, 2);
+
+    const unlocked = getFreeDeliveryProgress(17000000, DEFAULT_STORE_SETTINGS);
+    expect(unlocked.unlocked).toBe(true);
+    expect(unlocked.remainingKobo).toBe(0);
+    expect(unlocked.progress).toBe(1);
+
+    expect(getFreeDeliveryProgress(0, DEFAULT_STORE_SETTINGS).unlocked).toBe(false);
   });
 });
 

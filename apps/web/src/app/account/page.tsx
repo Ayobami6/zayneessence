@@ -18,9 +18,8 @@ import { NIGERIA_STATES_AND_FCT } from '@/data/nigeria-states';
 import { ProductTile } from '@/components/catalogue/ProductTile';
 import { formatKoboToNgn } from '@/utils/currency';
 import { formatNigerianPhone, isValidNigerianPhone } from '@/utils/phone';
-import { OrderStatus } from '@/types/domain';
+import { ORDER_STEPS, OrderStatus } from '@/types/domain';
 
-const ORDER_STEPS: OrderStatus[] = ['paid', 'packed', 'shipped', 'delivered'];
 
 export default function AccountPage() {
   const {

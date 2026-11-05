@@ -17,7 +17,7 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import RemoveOutlinedIcon from '@mui/icons-material/RemoveOutlined';
 import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined';
 import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined';
-import { Product } from '@/types/domain';
+import { CATEGORY_META, Product } from '@/types/domain';
 import { ArchedWindow } from '@/components/ui/ArchedWindow';
 import { SaveHeartButton } from '@/components/ui/SaveHeartButton';
 import { AnimatedPrice } from '@/components/ui/AnimatedPrice';
@@ -49,10 +49,7 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
 
   const totalLinePriceKobo = (selectedVariant?.price_kobo || 0) * quantity;
 
-  const isFragrance =
-    product.category === 'Perfume' ||
-    product.category === 'Oud' ||
-    product.category === 'Roll-ons';
+  const isFragrance = CATEGORY_META[product.category].isScent;
 
   const relatedProducts = useMemo(() => {
     const sameCategory = publishedProducts.filter(

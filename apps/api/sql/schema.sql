@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS products (
   id TEXT PRIMARY KEY,
   slug TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
-  category TEXT NOT NULL CHECK (category IN ('Skincare', 'Perfume', 'Oud', 'Roll-ons', 'Oils')),
+  category TEXT NOT NULL CONSTRAINT products_category_check CHECK (category IN ('Skincare', 'Perfume', 'Oud', 'Roll-ons', 'Oils', 'Bakhoor', 'Supplements')),
   type TEXT NOT NULL,
   description TEXT NOT NULL,
   notes JSONB,

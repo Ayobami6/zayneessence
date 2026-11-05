@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { Product } from '@/types/domain';
+import { CATEGORY_META, Product } from '@/types/domain';
 import { SaveHeartButton } from '@/components/ui/SaveHeartButton';
 import { AnimatedPrice } from '@/components/ui/AnimatedPrice';
 import { useBag } from '@/context/BagContext';
@@ -34,16 +34,7 @@ export function ProductTile({ product, isFeaturedSpan = false }: ProductTileProp
     setTimeout(() => setQuickAdded(false), 1700);
   };
 
-  const categoryTag =
-    product.category === 'Oud'
-      ? 'Aged 6 Yrs · Pure Oud'
-      : product.category === 'Roll-ons'
-      ? 'Attar Roll-On'
-      : product.category === 'Oils'
-      ? 'Dry Savanna Oil'
-      : product.category === 'Perfume'
-      ? 'Eau de Parfum'
-      : 'Active Skincare';
+  const categoryTag = CATEGORY_META[product.category].tileTag;
 
   return (
     <Box

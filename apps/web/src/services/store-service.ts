@@ -1,7 +1,8 @@
 import { DEFAULT_STORE_SETTINGS, SEED_PRODUCTS } from '@/data/seed-catalogue';
 import { OrderRecord, Product, StoreSettings } from '@/types/domain';
 
-const PRODUCTS_STORAGE_KEY = 'zayneessence_products_v1';
+// v2: Glow redesign catalogue (photography, Bakhoor and Supplements categories).
+const PRODUCTS_STORAGE_KEY = 'zayneessence_products_v2';
 const SETTINGS_STORAGE_KEY = 'zayneessence_settings_v1';
 const ORDERS_STORAGE_KEY = 'zayneessence_orders_v1';
 
@@ -125,4 +126,24 @@ export function calculateDeliveryFeeKobo(
     return settings.lagosAbujaRateKobo;
   }
   return settings.restOfNigeriaRateKobo;
+}
+
+export interface FreeDeliveryProgress {
+  thresholdKobo: number;
+  remainingKobo: number;
+  /** 0–1, capped at 1. */
+  progress: number;
+  unlocked: boolean;
+}
+
+/** Progress toward the free-delivery threshold, shared by the bag, home card and checkout gauge. */
+export function getFreeDeliveryProgress(
+  subtotalKobo: number,
+  settings: Pick<StoreSettings, 'freeDeliveryThresholdKobo'>
+): FreeDeliveryProgress {
+  const thresholdKobo = settings.freeDeliveryThresholdKobo;
+  const unlocked = subtotalKobo > 0 && subtotalKobo >= thresholdKobo;
+  const remainingKobo = Math.max(0, thresholdKobo - subtotalKobo);
+  const progress = thresholdKobo > 0 ? Math.min(1, Math.max(0, subtotalKobo / thresholdKobo)) : 1;
+  return { thresholdKobo, remainingKobo, progress, unlocked };
 }

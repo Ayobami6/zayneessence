@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import { CartItem, Product, ProductVariant } from '@/types/domain';
 import { useStoreData } from './StoreDataContext';
 import { formatKoboToNgn } from '@/utils/currency';
+import { getFreeDeliveryProgress } from '@/services/store-service';
 
 const BAG_STORAGE_KEY = 'zayneessence_bag_v1';
 
@@ -31,8 +32,8 @@ interface BagContextValue {
 const BagContext = createContext<BagContextValue | undefined>(undefined);
 
 export function BagProvider({ children }: { children: React.ReactNode }) {
-  const { settings } = useStoreData();
-  const [items, setItems] = useState<CartItem[]>([]);
+  const { settings, products } = useStoreData();
+  const [storedItems, setItems] = useState<CartItem[]>([]);
   const [isBagOpen, setIsBagOpen] = useState<boolean>(false);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [badgeBumpKey, setBadgeBumpKey] = useState<number>(0);
@@ -52,12 +53,22 @@ export function BagProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const persistBag = (next: CartItem[]) => {
-    setItems(next);
+  const writeBag = (next: CartItem[]) => {
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(BAG_STORAGE_KEY, JSON.stringify(next));
     }
   };
+
+  // Always show the product's current photo, so bags saved before a catalogue
+  // change never point at retired image files.
+  const items = useMemo(
+    () =>
+      storedItems.map((item) => {
+        const image = products.find((p) => p.id === item.productId)?.images[0];
+        return image ? { ...item, thumbnailUrl: image.url, thumbnailAlt: image.alt } : item;
+      }),
+    [storedItems, products]
+  );
 
   const addToBag = (product: Product, variant: ProductVariant, quantity = 1) => {
     const itemId = `${product.id}__${variant.id}`;
@@ -83,14 +94,12 @@ export function BagProvider({ children }: { children: React.ReactNode }) {
               sizeLabel: variant.label,
               priceKobo: variant.price_kobo,
               quantity,
-              thumbnailUrl: primaryImage?.url || '/products/serum-lumiere/1.svg',
+              thumbnailUrl: primaryImage?.url || '/products/serum-lumiere/1.jpg',
               thumbnailAlt: primaryImage?.alt || product.name,
             },
           ];
 
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(BAG_STORAGE_KEY, JSON.stringify(next));
-      }
+      writeBag(next);
       return next;
     });
 
@@ -108,29 +117,34 @@ export function BagProvider({ children }: { children: React.ReactNode }) {
       removeItem(itemId);
       return;
     }
-    const next = items.map((item) =>
-      item.id === itemId ? { ...item, quantity } : item
-    );
-    persistBag(next);
-    const updatedItem = next.find((i) => i.id === itemId);
-    if (updatedItem) {
-      setLiveAnnouncement(
-        `Updated ${updatedItem.name} (${updatedItem.sizeLabel}) quantity to ${quantity}.`
-      );
+    let updated: CartItem | undefined;
+    setItems((prev) => {
+      const next = prev.map((item) => (item.id === itemId ? { ...item, quantity } : item));
+      updated = next.find((i) => i.id === itemId);
+      writeBag(next);
+      return next;
+    });
+    const name = updated?.name ?? storedItems.find((i) => i.id === itemId)?.name;
+    if (name) {
+      setLiveAnnouncement(`Updated ${name} quantity to ${quantity}.`);
     }
   };
 
   const removeItem = (itemId: string) => {
-    const removed = items.find((i) => i.id === itemId);
-    const next = items.filter((item) => item.id !== itemId);
-    persistBag(next);
+    const removed = storedItems.find((i) => i.id === itemId);
+    setItems((prev) => {
+      const next = prev.filter((item) => item.id !== itemId);
+      writeBag(next);
+      return next;
+    });
     if (removed) {
       setLiveAnnouncement(`Removed ${removed.name} from bag.`);
     }
   };
 
   const clearBag = () => {
-    persistBag([]);
+    setItems([]);
+    writeBag([]);
     setLiveAnnouncement('Cleared all items from bag.');
   };
 
@@ -144,18 +158,10 @@ export function BagProvider({ children }: { children: React.ReactNode }) {
     [items]
   );
 
-  const remainingForFreeDeliveryKobo = Math.max(
-    0,
-    settings.freeDeliveryThresholdKobo - subtotalKobo
-  );
-
-  const hasUnlockedFreeDelivery =
-    subtotalKobo >= settings.freeDeliveryThresholdKobo && subtotalKobo > 0;
-
-  const freeDeliveryProgressPercent = Math.min(
-    100,
-    Math.round((subtotalKobo / settings.freeDeliveryThresholdKobo) * 100)
-  );
+  const freeDelivery = getFreeDeliveryProgress(subtotalKobo, settings);
+  const remainingForFreeDeliveryKobo = freeDelivery.remainingKobo;
+  const hasUnlockedFreeDelivery = freeDelivery.unlocked;
+  const freeDeliveryProgressPercent = Math.round(freeDelivery.progress * 100);
 
   const value = useMemo(
     () => ({
