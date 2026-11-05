@@ -3,33 +3,40 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
+import Container from '@mui/material/Container';
 import Badge from '@mui/material/Badge';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
-import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
-import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
-import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
+import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
+import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
 import { useColorMode } from '@/theme/ThemeRegistry';
 import { useStoreData } from '@/context/StoreDataContext';
 import { useBag } from '@/context/BagContext';
 import { useWishlist } from '@/context/WishlistContext';
+import { useAuth } from '@/context/AuthContext';
+import { CircleIconButton, Wordmark } from '@/components/glow';
+
+const NAV_LINKS = [
+  { label: 'Shop', href: '/', match: (p: string) => p === '/' || p.startsWith('/products') },
+  { label: 'Consultation', href: '/consultation', match: (p: string) => p.startsWith('/consultation') },
+  { label: 'Bakhoor', href: '/shop/bakhoor', match: (p: string) => p === '/shop/bakhoor' },
+  { label: 'Supplements', href: '/shop/supplements', match: (p: string) => p === '/shop/supplements' },
+  { label: 'Journal', href: '/#journal', match: () => false },
+];
 
 export function Header() {
   const { mode, toggleColorMode } = useColorMode();
   const { isSearchOpen, setIsSearchOpen, searchQuery, setSearchQuery } = useStoreData();
   const { totalCount, openBag, badgeBumpKey } = useBag();
   const { savedIds } = useWishlist();
-  const pathname = usePathname();
+  const { session } = useAuth();
+  const pathname = usePathname() || '/';
   const router = useRouter();
+  const isCheckout = pathname.startsWith('/checkout');
 
   const handleToggleSearch = () => {
     if (isSearchOpen) {
@@ -42,235 +49,160 @@ export function Header() {
     }
   };
 
+  const initial = session?.name?.trim()?.charAt(0)?.toUpperCase();
+
   return (
-    <AppBar
-      position="sticky"
+    <Box
       component="header"
       sx={{
-        bgcolor: 'background.paper',
+        position: 'sticky',
+        top: 0,
+        zIndex: (t) => t.zIndex.appBar,
+        bgcolor: (t) => (t.palette.mode === 'light' ? 'rgba(246, 234, 243, 0.86)' : 'rgba(21, 12, 20, 0.86)'),
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: 1,
-        borderColor: 'divider',
-        transition: (theme) => theme.palette.zayne.modeTransition,
       }}
     >
-      {/* Top Parade-style studio status ribbon */}
-      <Box
-        sx={{
-          borderBottom: 1,
-          borderColor: 'divider',
-          py: 0.75,
-          bgcolor: 'background.default',
-        }}
-      >
-        <Container maxWidth="lg">
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 2,
-            }}
-          >
-            {/* Live studio status pill with pulsating dot (Parade Studio signature) */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Box
-                sx={{
-                  width: 7,
-                  height: 7,
-                  borderRadius: '50%',
-                  bgcolor: '#34D399',
-                  animation: 'pulseDot 2s ease-in-out infinite',
-                }}
-              />
-              <Typography
-                sx={{
-                  fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  color: 'text.primary',
-                }}
-              >
-                Ikoyi &amp; Maitama studios open · Lagos &amp; Abuja 1–2 day delivery
-              </Typography>
-            </Box>
-
-            <Typography
-              sx={{
-                display: { xs: 'none', md: 'block' },
-                fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                color: 'text.primary',
-                opacity: 0.85,
-              }}
-            >
-              Complimentary delivery nationwide over ₦150,000
-            </Typography>
-          </Box>
-        </Container>
-      </Box>
-
-      {/* Main navigation bar */}
       <Container maxWidth="lg">
-        <Toolbar
-          disableGutters
+        <Box
           sx={{
-            minHeight: { xs: 66, md: 80 },
+            minHeight: { xs: 68, md: 88 },
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: 2,
           }}
         >
-          {/* Left: Wordmark always written in lowercase as "zayneessence" */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 2, md: 4 } }}>
-            <Typography
-              component={Link}
-              href="/"
-              onClick={() => {
-                setSearchQuery('');
-                setIsSearchOpen(false);
-              }}
-              sx={{
-                fontFamily: 'var(--font-italiana), "Italiana", Georgia, serif',
-                fontSize: { xs: '2.1rem', md: '2.5rem' },
-                fontWeight: 400,
-                WebkitTextStroke: '0.35px currentColor',
-                letterSpacing: '-0.025em',
-                color: 'text.primary',
-                textDecoration: 'none',
-                textTransform: 'lowercase',
-                lineHeight: 1,
-              }}
-            >
-              zayneessence
-            </Typography>
+          <Box
+            component={Link}
+            href="/"
+            aria-label="zayneessence home"
+            onClick={() => {
+              setSearchQuery('');
+              setIsSearchOpen(false);
+            }}
+            sx={{ textDecoration: 'none', display: 'inline-flex' }}
+          >
+            <Wordmark size={{ xs: 26, md: 30 }} />
+          </Box>
 
-            {/* Parade-style centered navigation links */}
+          {!isCheckout ? (
             <Box
               component="nav"
               aria-label="Primary navigation"
-              sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 0.75 }}
-            >
-              <Button
-                component={Link}
-                href="/#catalogue"
-                color="inherit"
-                sx={{ px: 2, py: 0.85, fontSize: '1rem', fontWeight: 600 }}
-              >
-                Shop
-              </Button>
-              <Button
-                component={Link}
-                href="/#rituals"
-                color="inherit"
-                sx={{ px: 2, py: 0.85, fontSize: '1rem', fontWeight: 600 }}
-              >
-                Rituals
-              </Button>
-              <Button
-                component={Link}
-                href="/#provenance"
-                color="inherit"
-                sx={{ px: 2, py: 0.85, fontSize: '1rem', fontWeight: 600 }}
-              >
-                Provenance
-              </Button>
-              <Button
-                component={Link}
-                href="/#journal"
-                color="inherit"
-                sx={{ px: 2, py: 0.85, fontSize: '1rem', fontWeight: 600 }}
-              >
-                Journal
-              </Button>
-              <Button
-                component={Link}
-                href="/admin"
-                color="inherit"
-                sx={{ px: 2, py: 0.85, fontSize: '1rem', fontWeight: 500, color: 'text.secondary' }}
-              >
-                Studio admin
-              </Button>
-            </Box>
-          </Box>
-
-          {/* Right Action Icons & Bag Pill Button */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1.25 } }}>
-            <IconButton
-              onClick={toggleColorMode}
-              color="inherit"
-              aria-label={
-                mode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
-              }
-              data-testid="theme-toggle-button"
-            >
-              {mode === 'light' ? (
-                <DarkModeOutlinedIcon fontSize="small" />
-              ) : (
-                <LightModeOutlinedIcon fontSize="small" />
-              )}
-            </IconButton>
-
-            <IconButton
-              onClick={handleToggleSearch}
-              color="inherit"
-              aria-label={isSearchOpen || searchQuery ? 'Close search' : 'Search catalogue'}
-              aria-expanded={isSearchOpen}
-              data-testid="search-toggle-button"
-            >
-              {isSearchOpen ? (
-                <CloseOutlinedIcon fontSize="small" />
-              ) : (
-                <SearchOutlinedIcon fontSize="small" />
-              )}
-            </IconButton>
-
-            <IconButton
-              component={Link}
-              href="/saved"
-              color="inherit"
-              aria-label={`Saved pieces (${savedIds.length})`}
-              sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
-              data-testid="header-saved-link"
-            >
-              <Badge badgeContent={savedIds.length} invisible={savedIds.length === 0}>
-                <FavoriteBorderOutlinedIcon fontSize="small" />
-              </Badge>
-            </IconButton>
-
-            <IconButton
-              component={Link}
-              href="/account"
-              color="inherit"
-              aria-label="Account & orders"
-              data-testid="header-account-link"
-            >
-              <PersonOutlineOutlinedIcon fontSize="small" />
-            </IconButton>
-
-            {/* Parade-style prominent Bag Pill Button */}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={openBag}
-              data-testid="header-bag-button"
-              startIcon={<LocalMallOutlinedIcon sx={{ fontSize: 18 }} />}
               sx={{
-                px: { xs: 2.25, sm: 3 },
-                py: 1,
-                fontSize: '0.96875rem',
-                fontWeight: 600,
-                ml: 0.5,
+                display: { xs: 'none', md: 'flex' },
+                alignItems: 'center',
+                gap: 0.5,
+                p: '5px',
+                borderRadius: '999px',
+                bgcolor: 'background.paper',
               }}
             >
-              Bag{totalCount > 0 ? ` (${totalCount})` : ''}
-            </Button>
+              {NAV_LINKS.map((link) => {
+                const active = link.match(pathname);
+                return (
+                  <Box
+                    key={link.label}
+                    component={Link}
+                    href={link.href}
+                    aria-current={active ? 'page' : undefined}
+                    sx={{
+                      height: 40,
+                      px: 2.25,
+                      borderRadius: '999px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      fontSize: 14,
+                      fontWeight: 600,
+                      textDecoration: 'none',
+                      color: active ? 'primary.contrastText' : 'text.primary',
+                      bgcolor: active ? 'primary.main' : 'transparent',
+                      transition: 'background-color 0.25s ease',
+                      '&:hover': { bgcolor: active ? 'primary.main' : 'background.default' },
+                    }}
+                  >
+                    {link.label}
+                  </Box>
+                );
+              })}
+              {session?.role === 'admin' ? (
+                <Box
+                  component={Link}
+                  href="/admin"
+                  sx={{ height: 40, px: 2, display: 'flex', alignItems: 'center', fontSize: 13, fontWeight: 600, color: 'text.secondary' }}
+                >
+                  Studio admin
+                </Box>
+              ) : null}
+            </Box>
+          ) : null}
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, md: 1 } }}>
+            <CircleIconButton
+              label={mode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+              onClick={toggleColorMode}
+              data-testid="theme-toggle-button"
+              sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+            >
+              {mode === 'light' ? <DarkModeOutlinedIcon /> : <LightModeOutlinedIcon />}
+            </CircleIconButton>
+
+            {!isCheckout ? (
+              <CircleIconButton
+                label={isSearchOpen || searchQuery ? 'Close search' : 'Search catalogue'}
+                aria-expanded={isSearchOpen}
+                onClick={handleToggleSearch}
+                data-testid="search-toggle-button"
+              >
+                {isSearchOpen ? <CloseRoundedIcon /> : <SearchRoundedIcon />}
+              </CircleIconButton>
+            ) : null}
+
+            <CircleIconButton
+              label={`Saved pieces (${savedIds.length})`}
+              href="/saved"
+              data-testid="header-saved-link"
+              sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+            >
+              <Badge badgeContent={savedIds.length} invisible={savedIds.length === 0}>
+                <FavoriteBorderRoundedIcon />
+              </Badge>
+            </CircleIconButton>
+
+            <CircleIconButton
+              label={totalCount > 0 ? `Bag, ${totalCount} pieces` : 'Bag'}
+              onClick={openBag}
+              data-testid="header-bag-button"
+              sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+            >
+              <Badge
+                key={badgeBumpKey}
+                badgeContent={totalCount}
+                invisible={totalCount === 0}
+                sx={{ '& .MuiBadge-badge': { animation: badgeBumpKey > 0 ? 'badgeBump 0.45s ease' : 'none' } }}
+              >
+                <ShoppingBagOutlinedIcon />
+              </Badge>
+            </CircleIconButton>
+
+            <CircleIconButton
+              label="Account & orders"
+              href="/account"
+              tone={initial ? 'action' : 'surface'}
+              data-testid="header-account-link"
+            >
+              {initial ? (
+                <Box component="span" sx={{ fontSize: 16, fontWeight: 700 }}>
+                  {initial}
+                </Box>
+              ) : (
+                <PersonOutlineRoundedIcon />
+              )}
+            </CircleIconButton>
           </Box>
-        </Toolbar>
+        </Box>
       </Container>
-    </AppBar>
+    </Box>
   );
 }

@@ -7,27 +7,19 @@ import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { useStoreData } from '@/context/StoreDataContext';
 
-const SUGGESTED_TERMS = ['shea', 'rose', 'oud', 'serum', 'baobab', 'moringa'];
+const SUGGESTED_TERMS = ['shea', 'rose', 'oud', 'serum', 'baobab', 'moringa', 'bakhoor'];
 
 export function SearchTray() {
-  const {
-    isSearchOpen,
-    setIsSearchOpen,
-    searchQuery,
-    setSearchQuery,
-    setActiveCategory,
-  } = useStoreData();
+  const { isSearchOpen, setIsSearchOpen, searchQuery, setSearchQuery, setActiveCategory } = useStoreData();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (isSearchOpen) {
-      const timer = setTimeout(() => {
-        inputRef.current?.focus();
-      }, 60);
+      const timer = setTimeout(() => inputRef.current?.focus(), 60);
       return () => clearTimeout(timer);
     }
   }, [isSearchOpen]);
@@ -37,32 +29,22 @@ export function SearchTray() {
   }
 
   return (
-    <Box
-      role="search"
-      aria-label="Search catalogue"
-      sx={{
-        borderBottom: 1,
-        borderColor: 'divider',
-        bgcolor: 'background.paper',
-        py: 2,
-        transition: (theme) => theme.palette.zayne.modeTransition,
-      }}
-    >
+    <Box role="search" aria-label="Search catalogue" sx={{ pb: 2, animation: 'glowRise 0.35s ease' }}>
       <Container maxWidth="lg">
         <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
-            gap: 1.5,
-            px: 2.5,
-            py: 1,
-            borderRadius: 999,
-            border: 1,
-            borderColor: 'divider',
-            bgcolor: 'background.default',
+            gap: 1.25,
+            pl: 2.25,
+            pr: 0.75,
+            minHeight: 56,
+            borderRadius: '999px',
+            bgcolor: 'background.paper',
+            boxShadow: (t) => t.palette.glow.shadow,
           }}
         >
-          <SearchOutlinedIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+          <SearchRoundedIcon sx={{ color: 'text.secondary', fontSize: 22 }} />
           <InputBase
             inputRef={inputRef}
             fullWidth
@@ -71,39 +53,23 @@ export function SearchTray() {
               setSearchQuery(e.target.value);
               setActiveCategory('All');
             }}
-            placeholder="Search by name, ingredient or scent note (shea, baobab, oud, rose…)"
+            placeholder="Search shea, baobab, oud, rose, bakhoor…"
             inputProps={{
               'aria-label': 'Search products by name, type and category',
               'data-testid': 'search-input',
             }}
-            sx={{
-              fontSize: '1rem',
-              fontWeight: 300,
-              color: 'text.primary',
-            }}
+            sx={{ fontSize: 16, fontWeight: 500, color: 'text.primary' }}
           />
-          {searchQuery && (
-            <IconButton
-              size="small"
-              aria-label="Clear search query"
-              onClick={() => setSearchQuery('')}
-            >
-              <CloseOutlinedIcon fontSize="small" />
+          {searchQuery ? (
+            <IconButton aria-label="Clear search query" onClick={() => setSearchQuery('')} sx={{ bgcolor: 'background.default' }}>
+              <CloseRoundedIcon fontSize="small" />
             </IconButton>
-          )}
+          ) : null}
         </Box>
 
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: 1,
-            mt: 1.5,
-          }}
-        >
-          <Typography variant="caption" sx={{ color: 'text.secondary', mr: 0.5 }}>
-            Suggested:
+        <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1, mt: 1.5 }}>
+          <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
+            Try:
           </Typography>
           {SUGGESTED_TERMS.map((term) => (
             <Chip
@@ -111,21 +77,10 @@ export function SearchTray() {
               label={term}
               size="small"
               clickable
+              data-active={searchQuery.toLowerCase() === term ? 'true' : undefined}
               onClick={() => {
                 setSearchQuery(term);
                 setActiveCategory('All');
-              }}
-              sx={{
-                height: 30,
-                fontSize: '0.8125rem',
-                bgcolor:
-                  searchQuery.toLowerCase() === term
-                    ? 'primary.main'
-                    : 'background.default',
-                color:
-                  searchQuery.toLowerCase() === term
-                    ? 'primary.contrastText'
-                    : 'text.secondary',
               }}
             />
           ))}
@@ -138,7 +93,6 @@ export function SearchTray() {
               setSearchQuery('');
               setIsSearchOpen(false);
             }}
-            sx={{ height: 30, fontSize: '0.8125rem' }}
           />
         </Box>
       </Container>

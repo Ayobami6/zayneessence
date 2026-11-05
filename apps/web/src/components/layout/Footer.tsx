@@ -1,246 +1,194 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+import InputBase from '@mui/material/InputBase';
 import Button from '@mui/material/Button';
+import { AccentHeading, Wordmark } from '@/components/glow';
+
+const COLUMNS: Array<{ title: string; links: Array<{ label: string; href: string }> }> = [
+  {
+    title: 'Shop',
+    links: [
+      { label: 'Skincare', href: '/shop/skincare' },
+      { label: 'Pure oud', href: '/shop/oud' },
+      { label: 'Perfume', href: '/shop/perfume' },
+      { label: 'Roll-ons & oils', href: '/shop/roll-ons' },
+      { label: 'Bakhoor & turaren wuta', href: '/shop/bakhoor' },
+      { label: 'Supplements', href: '/shop/supplements' },
+    ],
+  },
+  {
+    title: 'Help',
+    links: [
+      { label: 'Track an order', href: '/account' },
+      { label: 'Skin & scent consultation', href: '/consultation' },
+      { label: 'Saved pieces', href: '/saved' },
+      { label: 'Email the studio', href: 'mailto:concierge@zayneessence.com' },
+    ],
+  },
+];
 
 export function Footer() {
-  return (
-    <Box
-      component="footer"
-      sx={{
-        mt: { xs: 10, md: 16 },
-        borderTopLeftRadius: { xs: 24, md: 36 },
-        borderTopRightRadius: { xs: 24, md: 36 },
-        bgcolor: '#170C1B',
-        color: '#F1EAF3',
-        pt: { xs: 8, md: 12 },
-        pb: { xs: 'calc(80px + env(safe-area-inset-bottom, 0px))', md: 5 },
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      <Container maxWidth="lg">
-        {/* Parade-style massive callout header */}
+  const pathname = usePathname() || '/';
+  const [email, setEmail] = useState('');
+  const [joined, setJoined] = useState(false);
+  const year = new Date().getFullYear();
+
+  const bottomPad = { xs: 'calc(108px + env(safe-area-inset-bottom, 0px))', md: 6 };
+
+  if (pathname.startsWith('/checkout')) {
+    return (
+      <Container maxWidth="lg" component="footer" sx={{ pb: { xs: 4, md: 6 }, pt: 4 }}>
         <Box
           sx={{
             display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
+            flexWrap: 'wrap',
             justifyContent: 'space-between',
-            alignItems: { xs: 'flex-start', md: 'flex-end' },
-            gap: 4,
-            borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
-            pb: { xs: 6, md: 8 },
-            mb: { xs: 6, md: 8 },
+            alignItems: 'center',
+            gap: 2,
+            px: { xs: 3, md: 4 },
+            py: 3,
+            borderRadius: '32px',
+            bgcolor: 'glow.inverse',
+            color: 'glow.inverseText',
           }}
         >
-          <Box sx={{ maxWidth: '44ch' }}>
-            <Typography
-              sx={{
-                fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: '0.9375rem',
-                fontWeight: 600,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                color: 'rgba(255, 255, 255, 0.75)',
-                mb: 2,
-              }}
-            >
-              (Bespoke appointments &amp; gifting)
-            </Typography>
-            <Typography
-              variant="h2"
-              sx={{
-                fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: { xs: '2.8rem', sm: '3.6rem', md: '4.8rem' },
-                fontWeight: 700,
-                lineHeight: 0.96,
-                letterSpacing: '-0.045em',
-                color: '#F1EAF3',
-              }}
-            >
-              Let’s elevate
-              <br />
-              your ritual.
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            <Typography sx={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '1rem', fontWeight: 500 }}>
-              Speak with our Ikoyi studio concierge:
-            </Typography>
-            <Button
-              component="a"
-              href="mailto:concierge@zayneessence.com"
-              variant="contained"
-              sx={{
-                bgcolor: '#F1EAF3',
-                color: '#170C1B',
-                borderRadius: 999,
-                px: 4,
-                py: 1.6,
-                fontSize: '1.05rem',
-                fontWeight: 700,
-                textTransform: 'none',
-                '&:hover': {
-                  bgcolor: '#ffffff',
-                  opacity: 0.95,
-                },
-              }}
-            >
-              concierge@zayneessence.com
-            </Button>
-          </Box>
+          <Wordmark size={30} sx={{ color: 'inherit' }} />
+          <Typography variant="body2" sx={{ color: 'glow.inverseMuted' }}>
+            © {year} · Paystack secured · Delivery to all 36 states and the FCT
+          </Typography>
         </Box>
+      </Container>
+    );
+  }
 
-        {/* 3 Columns links */}
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: '1.5fr 1fr 1fr' },
-            gap: { xs: 5, md: 7 },
-            mb: { xs: 8, md: 10 },
-          }}
-        >
-          {/* Brand bio */}
-          <Box>
-            <Typography
-              sx={{
-                fontFamily: 'var(--font-italiana), "Italiana", serif',
-                fontSize: '2.2rem',
-                WebkitTextStroke: '0.35px currentColor',
-                color: '#F1EAF3',
-                mb: 1.5,
-              }}
-            >
-              zayneessence
+  return (
+    <Container maxWidth="lg" component="footer" sx={{ pt: { xs: 6, md: 10 }, pb: bottomPad }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: { xs: 4, md: 5 },
+          p: { xs: 3, sm: 4, md: 7 },
+          borderRadius: { xs: '32px', md: '48px' },
+          bgcolor: 'glow.inverse',
+          color: 'glow.inverseText',
+        }}
+      >
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: { xs: 4, md: 6 } }}>
+          <Box
+            component="form"
+            onSubmit={(e: React.FormEvent) => {
+              e.preventDefault();
+              if (email.includes('@')) setJoined(true);
+            }}
+            sx={{ flex: '1 1 340px', display: 'flex', flexDirection: 'column', gap: 1.75, minWidth: 0 }}
+          >
+            <AccentHeading component="h2" variant="h3" text="The Studio" accent="Dispatch" onInverse sx={{ fontSize: 26 }} />
+            <Typography variant="body2" sx={{ color: 'glow.inverseMuted', maxWidth: 380 }}>
+              Rare agarwood harvests, new formulations and private studio appointments in Ikoyi and Maitama.
             </Typography>
-            <Typography
-              sx={{
-                color: 'rgba(255, 255, 255, 0.75)',
-                fontSize: '1rem',
-                lineHeight: 1.65,
-                maxWidth: '42ch',
-              }}
-            >
-              Independent luxury house formulating with unrefined northern Nigerian shea,
-              cold-pressed baobab and moringa for melanin-rich skin, alongside aged pure oud oils.
-            </Typography>
+            {joined ? (
+              <Typography role="status" sx={{ fontWeight: 700 }}>
+                You’re on the list. Watch your inbox.
+              </Typography>
+            ) : (
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 0.75,
+                  p: 0.75,
+                  borderRadius: '999px',
+                  bgcolor: 'rgba(255,255,255,0.1)',
+                  maxWidth: 440,
+                }}
+              >
+                <InputBase
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  inputProps={{ 'aria-label': 'Email address for the Studio Dispatch' }}
+                  sx={{ flex: 1, minWidth: 0, px: 2, color: 'inherit', fontSize: 15, '& input::placeholder': { color: 'glow.inverseMuted', opacity: 1 } }}
+                />
+                <Button
+                  type="submit"
+                  sx={{
+                    minHeight: 46,
+                    px: 3,
+                    bgcolor: 'glow.inverseText',
+                    color: 'glow.inverse',
+                    '&:hover': { bgcolor: 'glow.inverseText', opacity: 0.9 },
+                  }}
+                >
+                  Join
+                </Button>
+              </Box>
+            )}
           </Box>
 
-          {/* Studios */}
-          <Box>
-            <Typography
-              sx={{
-                fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: '0.875rem',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                color: 'rgba(255, 255, 255, 0.75)',
-                mb: 2,
-              }}
-            >
-              Compounding Studios
-            </Typography>
-            <Typography sx={{ color: '#F1EAF3', fontSize: '1.05rem', mb: 0.5, fontWeight: 600 }}>
-              Ikoyi, Lagos
-            </Typography>
-            <Typography sx={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '0.9375rem', mb: 2 }}>
-              14 Bourdillon Road · Mon–Sat, 10 am – 6 pm
-            </Typography>
-
-            <Typography sx={{ color: '#F1EAF3', fontSize: '1.05rem', mb: 0.5, fontWeight: 600 }}>
-              Maitama, Abuja
-            </Typography>
-            <Typography sx={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '0.9375rem' }}>
-              22 Pope John Paul II Street · By appointment &amp; studio pickup
-            </Typography>
-          </Box>
-
-          {/* Navigation */}
-          <Box>
-            <Typography
-              sx={{
-                fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: '0.875rem',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                color: 'rgba(255, 255, 255, 0.75)',
-                mb: 2,
-              }}
-            >
-              Navigation
-            </Typography>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 1.15,
-                '& a': {
-                  color: 'rgba(255, 255, 255, 0.85)',
-                  textDecoration: 'none',
-                  fontSize: '1rem',
-                  fontWeight: 500,
-                  transition: 'color 0.2s ease',
-                  '&:hover': {
-                    color: '#FFFFFF',
-                  },
-                },
-              }}
-            >
-              <Link href="/#catalogue">Catalogue collection</Link>
-              <Link href="/#rituals">The 4-step daily ritual</Link>
-              <Link href="/#provenance">Artisanal provenance</Link>
-              <Link href="/#journal">Studio journal notes</Link>
-              <Link href="/saved">Saved pieces</Link>
-              <Link href="/account">Account &amp; order tracking</Link>
-              <Link href="/checkout">Checkout</Link>
-              <Link href="/admin">Studio admin</Link>
+          <Box
+            component="nav"
+            aria-label="Footer"
+            sx={{
+              flex: '1 1 420px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+              gap: 3,
+            }}
+          >
+            {COLUMNS.map((col) => (
+              <Box key={col.title} sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+                <Typography sx={{ fontSize: 12.5, fontWeight: 700, color: 'glow.bloom' }}>{col.title}</Typography>
+                {col.links.map((l) => (
+                  <Box
+                    key={l.label}
+                    component={Link}
+                    href={l.href}
+                    sx={{ color: 'inherit', fontSize: 14, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+                  >
+                    {l.label}
+                  </Box>
+                ))}
+              </Box>
+            ))}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+              <Typography sx={{ fontSize: 12.5, fontWeight: 700, color: 'glow.bloom' }}>Studios</Typography>
+              <Typography sx={{ fontSize: 14, fontWeight: 600 }}>Ikoyi, Lagos</Typography>
+              <Typography sx={{ fontSize: 13, color: 'glow.inverseMuted', mt: -0.75 }}>
+                14 Bourdillon Road · Mon–Sat, 10 am – 6 pm
+              </Typography>
+              <Typography sx={{ fontSize: 14, fontWeight: 600 }}>Maitama, Abuja</Typography>
+              <Typography sx={{ fontSize: 13, color: 'glow.inverseMuted', mt: -0.75 }}>
+                By appointment &amp; studio pickup
+              </Typography>
             </Box>
           </Box>
         </Box>
 
-        {/* Parade-style massive edge-to-edge wordmark watermark */}
-        <Typography
-          sx={{
-            fontFamily: 'var(--font-italiana), "Italiana", Georgia, serif',
-            fontSize: { xs: '15vw', md: '13.5vw' },
-            lineHeight: 0.8,
-            letterSpacing: '-0.03em',
-            color: 'rgba(255, 255, 255, 0.07)',
-            textAlign: 'center',
-            userSelect: 'none',
-            pointerEvents: 'none',
-            mb: { xs: 3, md: 4 },
-          }}
-        >
-          zayneessence
-        </Typography>
-
-        {/* Bottom copyright row */}
         <Box
           sx={{
-            pt: 3,
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
             display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
+            flexWrap: 'wrap',
             justifyContent: 'space-between',
-            gap: 1.5,
+            alignItems: 'flex-end',
+            gap: 2,
+            pt: 3,
+            borderTop: '1px solid rgba(255,255,255,0.14)',
           }}
         >
-          <Typography sx={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.84375rem' }}>
-            © {new Date().getFullYear()} zayneessence. Formulated and bottled in Nigeria. All rights reserved.
-          </Typography>
-          <Typography sx={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.84375rem' }}>
-            Lagos &amp; Abuja 1–2 day delivery · Free nationwide over ₦150,000
+          <Wordmark size={{ xs: 48, sm: 80, md: 128 }} sx={{ color: 'inherit', lineHeight: 0.9 }} />
+          <Typography variant="body2" sx={{ color: 'glow.inverseMuted' }}>
+            © {year} zayneessence · Formulated and bottled in Nigeria · Paystack secured
           </Typography>
         </Box>
-      </Container>
-    </Box>
+      </Box>
+    </Container>
   );
 }
