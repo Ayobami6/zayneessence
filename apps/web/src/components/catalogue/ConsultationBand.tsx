@@ -111,7 +111,12 @@ export function ConsultationBand() {
             <ArcGauge
               segments={sample.steps.map((s) => s.verb)}
               value={formatKoboToNgn(total)}
-              caption={steps.map((s) => s.product.name).join(' · ')}
+              // When a piece is sold out the price covers fewer steps, so say so under the price.
+              caption={
+                isComplete
+                  ? steps.map((s) => s.product.name).join(' · ')
+                  : `Only ${steps.length} of ${sample.steps.length} steps in stock right now`
+              }
               ariaLabel={`${sample.label} ritual: ${sample.steps.map((s) => s.verb).join(', ')}. ${
                 isComplete ? 'Complete ritual' : `${steps.length} of ${sample.steps.length} pieces available`
               } ${formatKoboToNgn(total)}`}
