@@ -120,16 +120,25 @@ export interface ResolvedRitualStep {
   variant: ProductVariant;
 }
 
-/** Resolves ritual slugs to published products and their entry (first) variant; missing products are skipped. */
+/**
+ * Resolves ritual slugs to published products and the first size in stock (normally the entry size).
+ * Steps whose product is missing, unpublished or sold out are skipped; see getUnavailableRitualSteps.
+ */
 export function resolveRitualSteps<T extends { slug: string }>(
   steps: T[],
   products: Product[]
 ): Array<T & ResolvedRitualStep> {
   return steps.flatMap((step) => {
     const product = products.find((p) => p.slug === step.slug && p.is_published);
-    const variant = product?.variants[0];
+    const variant = product?.variants.find((v) => v.stock > 0);
     return product && variant ? [{ ...step, product, variant }] : [];
   });
+}
+
+/** Ritual steps that can't be offered right now (product missing, unpublished or sold out). */
+export function getUnavailableRitualSteps<T extends { slug: string }>(steps: T[], products: Product[]): T[] {
+  const available = new Set(resolveRitualSteps(steps, products).map((s) => s.slug));
+  return steps.filter((s) => !available.has(s.slug));
 }
 
 /** Total of the entry variants for a ritual, in kobo. */

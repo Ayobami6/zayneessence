@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Box from '@mui/material/Box';
@@ -13,9 +13,16 @@ import WaterDropOutlinedIcon from '@mui/icons-material/WaterDropOutlined';
 import NightsStayOutlinedIcon from '@mui/icons-material/NightsStayOutlined';
 import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined';
 import { AccentHeading, ArcGauge, PhotoTile } from '@/components/glow';
+import { rovingRadioProps } from '@/components/glow/rovingRadio';
 import { useStoreData } from '@/context/StoreDataContext';
 import { useBag } from '@/context/BagContext';
-import { CONSULTATION_RITUALS, RitualGoalId, RitualIcon, resolveRitualSteps } from '@/data/rituals';
+import {
+  CONSULTATION_RITUALS,
+  RitualGoalId,
+  RitualIcon,
+  getUnavailableRitualSteps,
+  resolveRitualSteps,
+} from '@/data/rituals';
 import { formatKoboToNgn } from '@/utils/currency';
 
 const ICONS: Record<RitualIcon, React.ReactNode> = {
@@ -25,22 +32,47 @@ const ICONS: Record<RitualIcon, React.ReactNode> = {
   sun: <WbSunnyOutlinedIcon />,
 };
 
+const GOAL_IDS: readonly RitualGoalId[] = CONSULTATION_RITUALS.map((r) => r.id);
+
 /** Skin & scent consultation: pick a goal, get a three-step ritual priced from the catalogue. */
 export function SkinConsultationSection() {
   const { publishedProducts } = useStoreData();
-  const { addToBag } = useBag();
+  const { addLinesToBag } = useBag();
   const [selectedGoal, setSelectedGoal] = useState<RitualGoalId>('hyperpigmentation');
   const [added, setAdded] = useState(false);
+  const addedTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  // A goal chosen on the home page arrives as /consultation?goal=…
+  useEffect(() => {
+    const goal = new URLSearchParams(window.location.search).get('goal');
+    if (goal && GOAL_IDS.includes(goal as RitualGoalId)) setSelectedGoal(goal as RitualGoalId);
+  }, []);
+
+  useEffect(() => () => clearTimeout(addedTimer.current), []);
+
+  // Switching goals clears the "added" confirmation, which belonged to the previous ritual.
+  const chooseGoal = (id: RitualGoalId) => {
+    clearTimeout(addedTimer.current);
+    setAdded(false);
+    setSelectedGoal(id);
+  };
 
   const ritual = CONSULTATION_RITUALS.find((r) => r.id === selectedGoal) || CONSULTATION_RITUALS[0];
   const steps = resolveRitualSteps(ritual.steps, publishedProducts);
+  const unavailable = getUnavailableRitualSteps(ritual.steps, publishedProducts);
+  const isComplete = unavailable.length === 0;
   const totalKobo = steps.reduce((sum, s) => sum + s.variant.price_kobo, 0);
   const verbs = ritual.steps.map((s) => s.verb);
+  const availability = isComplete
+    ? `Complete ritual · ${ritual.steps.length} steps`
+    : `${steps.length} of ${ritual.steps.length} steps available`;
 
   const handleAddRitual = () => {
-    steps.forEach((s) => addToBag(s.product, s.variant, 1));
+    const { addedUnits } = addLinesToBag(steps.map((s) => ({ product: s.product, variant: s.variant, quantity: 1 })));
+    if (addedUnits === 0) return;
+    clearTimeout(addedTimer.current);
     setAdded(true);
-    setTimeout(() => setAdded(false), 2200);
+    addedTimer.current = setTimeout(() => setAdded(false), 2200);
   };
 
   return (
@@ -70,9 +102,8 @@ export function SkinConsultationSection() {
                 return (
                   <ButtonBase
                     key={r.id}
-                    role="radio"
-                    aria-checked={active}
-                    onClick={() => setSelectedGoal(r.id)}
+                    {...rovingRadioProps(GOAL_IDS, selectedGoal, chooseGoal, r.id)}
+                    onClick={() => chooseGoal(r.id)}
                     data-testid={`consultation-goal-${r.id}`}
                     sx={{
                       height: { xs: 108, md: 124 },
@@ -132,8 +163,8 @@ export function SkinConsultationSection() {
             <ArcGauge
               segments={verbs}
               value={formatKoboToNgn(totalKobo)}
-              caption="Complete ritual · 3 steps"
-              ariaLabel={`Your ritual has three steps: ${verbs.join(', ')}. Complete ritual ${formatKoboToNgn(totalKobo)}`}
+              caption={availability}
+              ariaLabel={`Your ritual has ${ritual.steps.length} steps: ${verbs.join(', ')}. ${availability}, ${formatKoboToNgn(totalKobo)}`}
               maxWidth={380}
             />
             <Box>
@@ -156,7 +187,7 @@ export function SkinConsultationSection() {
                     aria-label={s.product.name}
                     sx={{ position: 'relative', width: { xs: 64, md: 88 }, height: { xs: 76, md: 100 }, flexShrink: 0, borderRadius: '18px', overflow: 'hidden', bgcolor: 'glow.petal' }}
                   >
-                    <Image src={s.product.images[0].url} alt="" fill sizes="88px" style={{ objectFit: 'cover' }} />
+                    {s.product.images[0] ? <Image src={s.product.images[0].url} alt="" fill sizes="88px" style={{ objectFit: 'cover' }} /> : null}
                     <Box sx={{ position: 'absolute', top: 6, left: 6, width: 22, height: 22, borderRadius: '999px', bgcolor: 'primary.main', color: 'primary.contrastText', display: 'grid', placeItems: 'center', fontSize: 11.5, fontWeight: 800 }}>
                       {i + 1}
                     </Box>
@@ -177,6 +208,12 @@ export function SkinConsultationSection() {
                 </Box>
               ))}
             </Box>
+            {!isComplete ? (
+              <Typography variant="body2" data-testid="ritual-unavailable-note" sx={{ p: 1.75, borderRadius: '20px', bgcolor: 'background.default', fontWeight: 600 }}>
+                The {unavailable.map((s) => s.verb.toLowerCase()).join(' and ')} {unavailable.length === 1 ? 'step is' : 'steps are'}{' '}
+                unavailable right now, so this total covers the {steps.length} {steps.length === 1 ? 'piece' : 'pieces'} in stock.
+              </Typography>
+            ) : null}
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.25 }}>
               <Button
                 variant="contained"
@@ -186,7 +223,11 @@ export function SkinConsultationSection() {
                 data-testid="add-ritual-to-bag-button"
                 sx={{ flex: '1 1 260px' }}
               >
-                {added ? '✓ Ritual added to bag' : `Add ritual to bag · ${formatKoboToNgn(totalKobo)}`}
+                {added
+                  ? '✓ Ritual added to bag'
+                  : isComplete
+                    ? `Add ritual to bag · ${formatKoboToNgn(totalKobo)}`
+                    : `Add ${steps.length} available ${steps.length === 1 ? 'piece' : 'pieces'} · ${formatKoboToNgn(totalKobo)}`}
               </Button>
               <Button component={Link} href="/#catalogue" variant="text" size="large" sx={{ flex: '0 1 auto', bgcolor: 'background.default' }}>
                 Browse instead

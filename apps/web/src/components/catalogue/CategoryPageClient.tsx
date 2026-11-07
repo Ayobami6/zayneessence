@@ -329,7 +329,7 @@ export function CategoryPageClient({ category }: { category: ProductCategory }) 
 
         {pairings.length > 0 ? (
           <Box component="section" aria-labelledby="pair-heading" sx={{ mt: { xs: 4, md: 8 } }}>
-            <AccentHeading id="pair-heading" component="h2" variant="h3" text="Layer it with" accent="pure oud" sx={{ mb: 2, fontSize: { md: 24 } }} />
+            <AccentHeading id="pair-heading" component="h2" variant="h3" text="Layer it with" accent="fragrance" sx={{ mb: 2, fontSize: { md: 24 } }} />
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(260px, 1fr))' }, gap: 2 }}>
               {pairings.map((p) => (
                 <Box
@@ -338,8 +338,8 @@ export function CategoryPageClient({ category }: { category: ProductCategory }) 
                   href={`/products/${p.slug}`}
                   sx={{ display: 'flex', alignItems: 'center', gap: 1.75, p: 1.25, pr: 2.25, borderRadius: '28px', bgcolor: 'background.paper', textDecoration: 'none', color: 'text.primary' }}
                 >
-                  <Box sx={{ position: 'relative', width: 84, height: 96, flexShrink: 0, borderRadius: '20px', overflow: 'hidden' }}>
-                    <Image src={p.images[0].url} alt="" fill sizes="84px" style={{ objectFit: 'cover' }} />
+                  <Box sx={{ position: 'relative', width: 84, height: 96, flexShrink: 0, borderRadius: '20px', overflow: 'hidden', bgcolor: 'glow.petal' }}>
+                    {p.images[0] ? <Image src={p.images[0].url} alt="" fill sizes="84px" style={{ objectFit: 'cover' }} /> : null}
                   </Box>
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography sx={{ fontSize: 15, fontWeight: 700 }}>{p.name}</Typography>

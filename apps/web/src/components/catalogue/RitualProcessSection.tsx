@@ -10,19 +10,21 @@ import Button from '@mui/material/Button';
 import { AccentHeading } from '@/components/glow';
 import { useBag } from '@/context/BagContext';
 import { useStoreData } from '@/context/StoreDataContext';
-import { DAILY_RITUAL, resolveRitualSteps } from '@/data/rituals';
+import { DAILY_RITUAL, getUnavailableRitualSteps, resolveRitualSteps } from '@/data/rituals';
 import { formatKoboToNgn } from '@/utils/currency';
 
 export function RitualProcessSection() {
   const { publishedProducts } = useStoreData();
-  const { addToBag } = useBag();
+  const { addLinesToBag } = useBag();
   const [ritualAdded, setRitualAdded] = useState(false);
 
   const steps = resolveRitualSteps(DAILY_RITUAL, publishedProducts);
+  const isComplete = getUnavailableRitualSteps(DAILY_RITUAL, publishedProducts).length === 0;
   const totalKobo = steps.reduce((sum, s) => sum + s.variant.price_kobo, 0);
 
   const handleAddFullRitual = () => {
-    steps.forEach((s) => addToBag(s.product, s.variant, 1));
+    const { addedUnits } = addLinesToBag(steps.map((s) => ({ product: s.product, variant: s.variant, quantity: 1 })));
+    if (addedUnits === 0) return;
     setRitualAdded(true);
     setTimeout(() => setRitualAdded(false), 2200);
   };
@@ -39,7 +41,11 @@ export function RitualProcessSection() {
           </Box>
           {steps.length > 0 ? (
             <Button variant="contained" size="large" onClick={handleAddFullRitual} data-testid="add-full-ritual-button">
-              {ritualAdded ? '✓ Ritual added to bag' : `Add complete ritual · ${formatKoboToNgn(totalKobo)}`}
+              {ritualAdded
+                ? '✓ Ritual added to bag'
+                : isComplete
+                  ? `Add complete ritual · ${formatKoboToNgn(totalKobo)}`
+                  : `Add the ${steps.length} available pieces · ${formatKoboToNgn(totalKobo)}`}
             </Button>
           ) : null}
         </Box>
@@ -88,8 +94,8 @@ export function RitualProcessSection() {
                   color: 'text.primary',
                 }}
               >
-                <Box sx={{ position: 'relative', width: 46, height: 46, flexShrink: 0, borderRadius: '999px', overflow: 'hidden' }}>
-                  <Image src={s.product.images[0].url} alt="" fill sizes="46px" style={{ objectFit: 'cover' }} />
+                <Box sx={{ position: 'relative', width: 46, height: 46, flexShrink: 0, borderRadius: '999px', overflow: 'hidden', bgcolor: 'glow.petal' }}>
+                  {s.product.images[0] ? <Image src={s.product.images[0].url} alt="" fill sizes="46px" style={{ objectFit: 'cover' }} /> : null}
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography sx={{ fontSize: 14, fontWeight: 700 }} noWrap>

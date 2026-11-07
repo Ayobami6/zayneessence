@@ -26,13 +26,16 @@ export function ProductTile({ product, isFeaturedSpan = false, compact = false }
   const primaryImage = product.images[0];
   const entryVariant = product.variants[0];
   const hasMultipleSizes = product.variants.length > 1;
-  const outOfStock = !entryVariant || product.variants.every((v) => v.stock <= 0);
+  // Quick-add takes the first size that's in stock, so a sold-out entry size never reaches the bag.
+  const quickAddVariant = product.variants.find((v) => v.stock > 0);
+  const outOfStock = !quickAddVariant;
 
   const handleQuickAdd = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
-    if (!entryVariant) return;
-    addToBag(product, entryVariant, 1);
+    if (!quickAddVariant) return;
+    const { addedUnits } = addToBag(product, quickAddVariant, 1);
+    if (addedUnits === 0) return;
     setQuickAdded(true);
     setTimeout(() => setQuickAdded(false), 1700);
   };
@@ -111,7 +114,7 @@ export function ProductTile({ product, isFeaturedSpan = false, compact = false }
           disabled={outOfStock}
           data-testid={`quick-add-${product.slug}`}
           aria-label={
-            outOfStock ? `${product.name} is out of stock` : `Add ${product.name} ${entryVariant?.label ?? ''} to bag`
+            outOfStock ? `${product.name} is out of stock` : `Add ${product.name} ${quickAddVariant.label} to bag`
           }
           sx={{ minWidth: 0, px: compact ? 1.5 : 2 }}
         >

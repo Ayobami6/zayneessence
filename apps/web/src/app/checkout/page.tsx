@@ -32,7 +32,7 @@ import {
 } from '@/types/domain';
 import { NIGERIA_STATES_AND_FCT, isLagosOrAbuja } from '@/data/nigeria-states';
 import { calculateDeliveryFeeKobo, getFreeDeliveryProgress } from '@/services/store-service';
-import { createOrderNotifications } from '@/services/notification-service';
+import { createOrderNotifications, isWhatsAppAvailable } from '@/services/notification-service';
 import { generatePaymentReference } from '@/services/payment-service';
 import { formatKoboToNgn } from '@/utils/currency';
 import {
@@ -43,12 +43,15 @@ import {
 import { AnimatedPrice } from '@/components/ui/AnimatedPrice';
 import { PaystackMockDialog } from '@/components/checkout/PaystackMockDialog';
 import { AccentHeading, ArcGauge, QuantityStepper, RingGauge } from '@/components/glow';
+import { rovingRadioProps } from '@/components/glow/rovingRadio';
 
 type PaymentChannel = 'card' | 'bank_transfer' | 'ussd';
+const PAYMENT_CHANNELS: readonly PaymentChannel[] = ['card', 'bank_transfer', 'ussd'];
+const DELIVERY_CHOICES = ['ship', 'store_pickup'] as const;
 
 export default function CheckoutPage() {
   const { items, subtotalKobo, clearBag, updateQuantity } = useBag();
-  const { settings, addOrder } = useStoreData();
+  const { settings, addOrder, products } = useStoreData();
   const { session, signInWithMagicLink } = useAuth();
 
   const [checkoutMode, setCheckoutMode] = useState<'guest' | 'signin'>('guest');
@@ -81,6 +84,10 @@ export default function CheckoutPage() {
       const defaultAddr = session.savedAddresses[0];
       if (defaultAddr) {
         setSelectedState(defaultAddr.state);
+        // Keep the delivery zone in step with the saved address; a chosen pickup stays as is.
+        setDeliveryMethod((current) =>
+          current === 'store_pickup' ? current : isLagosOrAbuja(defaultAddr.state) ? 'lagos_abuja' : 'rest_of_nigeria'
+        );
         setCityOrLga(defaultAddr.cityOrLga);
         setStreetAddress(defaultAddr.streetAddress);
         setLandmark(defaultAddr.landmark || '');
@@ -107,12 +114,18 @@ export default function CheckoutPage() {
     }
   };
 
+  const chooseDelivery = (choice: (typeof DELIVERY_CHOICES)[number]) =>
+    setDeliveryMethod(
+      choice === 'store_pickup' ? 'store_pickup' : isLagosOrAbuja(selectedState) ? 'lagos_abuja' : 'rest_of_nigeria'
+    );
+
   const deliveryFeeKobo = useMemo(
     () => calculateDeliveryFeeKobo(deliveryMethod, subtotalKobo, settings),
     [deliveryMethod, subtotalKobo, settings]
   );
 
   const giftWrapFeeKobo = giftWrap ? settings.giftWrapFeeKobo : 0;
+  const whatsappAvailable = isWhatsAppAvailable(settings);
   const totalKobo = subtotalKobo + deliveryFeeKobo + giftWrapFeeKobo;
 
   const handleOpenPayment = (event: React.FormEvent) => {
@@ -137,6 +150,21 @@ export default function CheckoutPage() {
       setFormError('Enter a street address for delivery, or choose Store pickup.');
       return;
     }
+    // Stock can change after a piece goes in the bag, so check it again before payment.
+    for (const item of items) {
+      const product = products.find((p) => p.id === item.productId);
+      const variant = product?.variants.find((v) => v.id === item.variantId);
+      if (!product?.is_published || !variant || variant.stock <= 0) {
+        setFormError(`${item.name} (${item.sizeLabel}) is no longer available. Remove it from your bag to continue.`);
+        return;
+      }
+      if (item.quantity > variant.stock) {
+        setFormError(
+          `Only ${variant.stock} of ${item.name} (${item.sizeLabel}) ${variant.stock === 1 ? 'is' : 'are'} left. Lower the quantity to continue.`
+        );
+        return;
+      }
+    }
 
     const ref = generatePaymentReference(paymentProvider);
     setActiveReference(ref);
@@ -154,6 +182,7 @@ export default function CheckoutPage() {
     const orderId = `ord-${Date.now()}`;
     const orderNumber = `ZE-${Math.floor(100000 + Math.random() * 900000)}`;
     const normalizedPhone = toE164NigerianPhone(phone);
+    const whatsappOptIn = whatsappAvailable && whatsappUpdates;
 
     const initialNotifications = createOrderNotifications(
       {
@@ -161,9 +190,10 @@ export default function CheckoutPage() {
         orderNumber,
         customerEmail: email.trim(),
         customerPhone: normalizedPhone,
+        whatsappOptIn,
       },
       'paid',
-      settings.whatsappUpdatesEnabled && whatsappUpdates
+      settings
     );
 
     const newOrder: OrderRecord = {
@@ -215,6 +245,7 @@ export default function CheckoutPage() {
         createdAt: now,
       },
       notifications: initialNotifications,
+      whatsappOptIn,
       createdAt: now,
       updatedAt: now,
     };
@@ -259,6 +290,7 @@ export default function CheckoutPage() {
 
   // Order confirmation screen
   if (completedOrder) {
+    const whatsappSetUp = completedOrder.notifications.some((n) => n.channel === 'whatsapp_cloud');
     return (
       <Container maxWidth="md" sx={{ py: { xs: 3, md: 7 } }}>
         <Box data-testid="order-confirmation-screen" sx={{ p: { xs: 2.5, md: 5 }, borderRadius: { xs: '32px', md: '40px' }, bgcolor: 'background.paper', display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -271,7 +303,9 @@ export default function CheckoutPage() {
                 Order {completedOrder.orderNumber}
               </Box>
               <Typography variant="h2" component="h1" data-testid="order-confirmation-heading" sx={{ fontSize: { xs: 24, md: 34 } }}>
-                Order placed. You’ll get a WhatsApp message when it leaves our studio.
+                {whatsappSetUp
+                  ? 'Order placed. You’ll get a WhatsApp message when it leaves our studio.'
+                  : 'Order placed. We’ll email you when it leaves our studio.'}
               </Typography>
             </Box>
           </Box>
@@ -279,11 +313,16 @@ export default function CheckoutPage() {
             We sent your receipt to{' '}
             <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>
               {completedOrder.customerEmail}
-            </Box>{' '}
-            and set up WhatsApp updates for{' '}
-            <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>
-              {formatNigerianPhone(completedOrder.customerPhone)}
             </Box>
+            {whatsappSetUp ? (
+              <>
+                {' '}
+                and set up WhatsApp updates for{' '}
+                <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>
+                  {formatNigerianPhone(completedOrder.customerPhone)}
+                </Box>
+              </>
+            ) : null}
             .
           </Typography>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}>
@@ -429,19 +468,14 @@ export default function CheckoutPage() {
             <StepTitle n="2" title="Delivery" id="checkout-delivery" />
             <Box role="radiogroup" aria-label="Delivery method" sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.25 }}>
               {[
-                { id: 'ship', label: 'Deliver to me', icon: <LocalShippingOutlinedIcon />, active: deliveryMethod !== 'store_pickup' },
-                { id: 'store_pickup', label: 'Studio pickup', icon: <StorefrontOutlinedIcon />, active: deliveryMethod === 'store_pickup' },
+                { id: 'ship' as const, label: 'Deliver to me', icon: <LocalShippingOutlinedIcon />, active: deliveryMethod !== 'store_pickup' },
+                { id: 'store_pickup' as const, label: 'Studio pickup', icon: <StorefrontOutlinedIcon />, active: deliveryMethod === 'store_pickup' },
               ].map((opt) => (
                 <ButtonBase
                   key={opt.id}
-                  role="radio"
-                  aria-checked={opt.active}
+                  {...rovingRadioProps(DELIVERY_CHOICES, deliveryMethod === 'store_pickup' ? 'store_pickup' : 'ship', chooseDelivery, opt.id)}
                   data-testid={`delivery-option-${opt.id}`}
-                  onClick={() =>
-                    setDeliveryMethod(
-                      opt.id === 'store_pickup' ? 'store_pickup' : isLagosOrAbuja(selectedState) ? 'lagos_abuja' : 'rest_of_nigeria'
-                    )
-                  }
+                  onClick={() => chooseDelivery(opt.id)}
                   sx={{
                     height: 56,
                     borderRadius: '20px',
@@ -513,14 +547,16 @@ export default function CheckoutPage() {
               <Typography sx={{ flex: 1, fontSize: 14, fontWeight: 600 }}>{zoneLabel}</Typography>
               <Typography sx={{ fontSize: 16, fontWeight: 800 }}>{deliveryFeeKobo === 0 ? 'Free' : formatKoboToNgn(deliveryFeeKobo)}</Typography>
             </Box>
-            <FormControlLabel
-              control={<Checkbox checked={whatsappUpdates} onChange={(e) => setWhatsappUpdates(e.target.checked)} />}
-              label={
-                <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.75, fontSize: 14, fontWeight: 600 }}>
-                  <WhatsAppIcon sx={{ fontSize: 18 }} /> Send order updates on WhatsApp
-                </Box>
-              }
-            />
+            {whatsappAvailable ? (
+              <FormControlLabel
+                control={<Checkbox checked={whatsappUpdates} onChange={(e) => setWhatsappUpdates(e.target.checked)} />}
+                label={
+                  <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.75, fontSize: 14, fontWeight: 600 }}>
+                    <WhatsAppIcon sx={{ fontSize: 18 }} /> Send order updates on WhatsApp
+                  </Box>
+                }
+              />
+            ) : null}
           </Box>
 
           <Box component="section" aria-labelledby="checkout-gift" sx={cardSx}>
@@ -579,8 +615,7 @@ export default function CheckoutPage() {
                 return (
                   <ButtonBase
                     key={ch.id}
-                    role="radio"
-                    aria-checked={active}
+                    {...rovingRadioProps(PAYMENT_CHANNELS, paymentChannel, setPaymentChannel, ch.id)}
                     data-testid={`checkout-channel-${ch.id}`}
                     onClick={() => setPaymentChannel(ch.id)}
                     sx={{
@@ -669,7 +704,7 @@ export default function CheckoutPage() {
                   size="sm"
                   value={item.quantity}
                   itemName={item.name}
-                  max={9}
+                  max={item.maxQuantity}
                   onDecrease={() => updateQuantity(item.id, item.quantity - 1)}
                   onIncrease={() => updateQuantity(item.id, item.quantity + 1)}
                 />
@@ -710,14 +745,7 @@ export default function CheckoutPage() {
             </Box>
           </Box>
 
-          {formError ? (
-            <Box role="alert" sx={{ p: 1.75, borderRadius: '18px', bgcolor: 'background.default', border: (t) => `1.5px solid ${t.palette.glow.accent}` }}>
-              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                {formError}
-              </Typography>
-            </Box>
-          ) : null}
-
+          {/* On phones the Pay button is fixed to the bottom, so the error sits with it to stay visible. */}
           <Box
             sx={(t) => ({
               position: { xs: 'fixed', md: 'static' },
@@ -725,11 +753,37 @@ export default function CheckoutPage() {
               right: { xs: 16, md: 'auto' },
               bottom: { xs: 'calc(16px + env(safe-area-inset-bottom, 0px))', md: 'auto' },
               zIndex: t.zIndex.appBar,
-              borderRadius: '999px',
-              boxShadow: { xs: t.palette.glow.shadowStrong, md: 'none' },
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
             })}
           >
-            <Button type="submit" fullWidth variant="contained" size="large" startIcon={<LockOutlinedIcon />} data-testid="place-order-button">
+            {formError ? (
+              <Box
+                role="alert"
+                data-testid="checkout-form-error"
+                sx={(t) => ({
+                  p: 1.75,
+                  borderRadius: '18px',
+                  bgcolor: 'background.default',
+                  border: `1.5px solid ${t.palette.glow.accent}`,
+                  boxShadow: { xs: t.palette.glow.shadowStrong, md: 'none' },
+                })}
+              >
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {formError}
+                </Typography>
+              </Box>
+            ) : null}
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              size="large"
+              startIcon={<LockOutlinedIcon />}
+              data-testid="place-order-button"
+              sx={(t) => ({ boxShadow: { xs: t.palette.glow.shadowStrong, md: 'none' } })}
+            >
               Pay {formatKoboToNgn(totalKobo)} with {channelName}
             </Button>
           </Box>

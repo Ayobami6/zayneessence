@@ -19,8 +19,9 @@ import { CATEGORY_META, Product } from '@/types/domain';
 import { SaveHeartButton } from '@/components/ui/SaveHeartButton';
 import { AnimatedPrice } from '@/components/ui/AnimatedPrice';
 import { AccentHeading, CircleIconButton, QuantityStepper, RingGauge, StatDisc } from '@/components/glow';
+import { rovingRadioProps } from '@/components/glow/rovingRadio';
 import { GLOW_BLUR_DATA_URL } from '@/data/blur';
-import { useBag } from '@/context/BagContext';
+import { MAX_UNITS_PER_LINE, useBag } from '@/context/BagContext';
 import { useStoreData } from '@/context/StoreDataContext';
 import { formatKoboToNgn } from '@/utils/currency';
 
@@ -70,7 +71,16 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
 
   const selectedVariant = product.variants.find((v) => v.id === selectedVariantId) || product.variants[0];
   const outOfStock = !selectedVariant || selectedVariant.stock <= 0;
+  // The stepper never offers more than the selected size has in stock.
+  const maxQuantity = Math.max(1, Math.min(MAX_UNITS_PER_LINE, selectedVariant?.stock ?? 1));
   const totalLinePriceKobo = (selectedVariant?.price_kobo || 0) * quantity;
+  const variantIds = product.variants.map((v) => v.id);
+
+  const chooseVariant = (id: string) => {
+    setSelectedVariantId(id);
+    const stock = product.variants.find((v) => v.id === id)?.stock ?? 1;
+    setQuantity((q) => Math.min(q, Math.max(1, Math.min(MAX_UNITS_PER_LINE, stock))));
+  };
   const images = product.images.length > 0 ? product.images : [];
   const currentImage = images[activeImageIndex] || images[0];
 
@@ -99,7 +109,8 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
 
   const handleAddToBag = () => {
     if (!selectedVariant || outOfStock) return;
-    addToBag(product, selectedVariant, quantity);
+    const { addedUnits } = addToBag(product, selectedVariant, quantity);
+    if (addedUnits === 0) return;
     setAddedFeedback(true);
     setTimeout(() => setAddedFeedback(false), 1700);
   };
@@ -266,9 +277,8 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
                   return (
                     <ButtonBase
                       key={variant.id}
-                      role="radio"
-                      aria-checked={active}
-                      onClick={() => setSelectedVariantId(variant.id)}
+                      {...rovingRadioProps(variantIds, selectedVariant?.id, chooseVariant, variant.id)}
+                      onClick={() => chooseVariant(variant.id)}
                       data-testid={`size-option-${variant.label.replace(/\s+/g, '-')}`}
                       sx={{
                         height: 72,
@@ -311,8 +321,8 @@ export function ProductDetailView({ product, onCloseModal }: ProductDetailViewPr
               value={quantity}
               itemName={product.name}
               onDecrease={() => setQuantity((q) => Math.max(1, q - 1))}
-              onIncrease={() => setQuantity((q) => Math.min(9, q + 1))}
-              max={9}
+              onIncrease={() => setQuantity((q) => Math.min(maxQuantity, q + 1))}
+              max={maxQuantity}
               testIdPrefix="product-quantity"
             />
             <Button

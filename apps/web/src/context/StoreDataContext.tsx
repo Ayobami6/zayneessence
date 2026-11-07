@@ -99,11 +99,7 @@ export function StoreDataProvider({ children }: { children: React.ReactNode }) {
   const updateOrderStatus = (orderId: string, status: OrderStatus) => {
     const nextOrders = orders.map((order) => {
       if (order.id !== orderId) return order;
-      const newLogs = createOrderNotifications(
-        order,
-        status,
-        settings.whatsappUpdatesEnabled
-      );
+      const newLogs = createOrderNotifications(order, status, settings);
       return {
         ...order,
         status,

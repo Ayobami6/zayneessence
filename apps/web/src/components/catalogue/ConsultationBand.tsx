@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import { AccentHeading, ArcGauge, PhotoTile } from '@/components/glow';
-import { CONSULTATION_RITUALS, getRitualTotalKobo, resolveRitualSteps } from '@/data/rituals';
+import { CONSULTATION_RITUALS, getRitualTotalKobo, getUnavailableRitualSteps, resolveRitualSteps } from '@/data/rituals';
 import { useStoreData } from '@/context/StoreDataContext';
 import { formatKoboToNgn } from '@/utils/currency';
 
@@ -19,6 +19,7 @@ export function ConsultationBand() {
   const sample = CONSULTATION_RITUALS[0];
   const steps = resolveRitualSteps(sample.steps, publishedProducts);
   const total = getRitualTotalKobo(sample.steps, publishedProducts);
+  const isComplete = getUnavailableRitualSteps(sample.steps, publishedProducts).length === 0;
 
   return (
     <Box component="section" aria-labelledby="consult-band-heading" sx={{ py: { xs: 3, md: 6 } }}>
@@ -70,7 +71,7 @@ export function ConsultationBand() {
                 <Box
                   key={r.id}
                   component={Link}
-                  href="/consultation"
+                  href={`/consultation?goal=${r.id}`}
                   sx={{
                     height: 44,
                     px: 2.25,
@@ -111,7 +112,9 @@ export function ConsultationBand() {
               segments={sample.steps.map((s) => s.verb)}
               value={formatKoboToNgn(total)}
               caption={steps.map((s) => s.product.name).join(' · ')}
-              ariaLabel={`${sample.label} ritual: ${sample.steps.map((s) => s.verb).join(', ')}. Complete ritual ${formatKoboToNgn(total)}`}
+              ariaLabel={`${sample.label} ritual: ${sample.steps.map((s) => s.verb).join(', ')}. ${
+                isComplete ? 'Complete ritual' : `${steps.length} of ${sample.steps.length} pieces available`
+              } ${formatKoboToNgn(total)}`}
               onInverse
               maxWidth={400}
             />

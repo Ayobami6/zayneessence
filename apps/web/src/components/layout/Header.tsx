@@ -20,12 +20,15 @@ import { useWishlist } from '@/context/WishlistContext';
 import { useAuth } from '@/context/AuthContext';
 import { CircleIconButton, Wordmark } from '@/components/glow';
 
+// Between 900px and 1200px the full row (nav, admin link, five actions) doesn't fit, so the
+// header tightens there: Journal, the admin link and the theme toggle wait for wide screens
+// (Journal is in the footer and on the home page; dark mode is also in Account).
 const NAV_LINKS = [
   { label: 'Shop', href: '/', match: (p: string) => p === '/' || p.startsWith('/products') },
   { label: 'Consultation', href: '/consultation', match: (p: string) => p.startsWith('/consultation') },
   { label: 'Bakhoor', href: '/shop/bakhoor', match: (p: string) => p === '/shop/bakhoor' },
   { label: 'Supplements', href: '/shop/supplements', match: (p: string) => p === '/shop/supplements' },
-  { label: 'Journal', href: '/#journal', match: () => false },
+  { label: 'Journal', href: '/#journal', match: () => false, wideOnly: true },
 ];
 
 export function Header() {
@@ -70,7 +73,7 @@ export function Header() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: 2,
+            gap: { xs: 2, md: 1.5, lg: 2 },
           }}
         >
           <Box
@@ -83,7 +86,7 @@ export function Header() {
             }}
             sx={{ textDecoration: 'none', display: 'inline-flex' }}
           >
-            <Wordmark size={{ xs: 26, md: 30 }} />
+            <Wordmark size={{ xs: 26, lg: 30 }} />
           </Box>
 
           {!isCheckout ? (
@@ -109,11 +112,13 @@ export function Header() {
                     aria-current={active ? 'page' : undefined}
                     sx={{
                       height: 40,
-                      px: 2.25,
+                      px: { md: 1.5, lg: 2.25 },
                       borderRadius: '999px',
-                      display: 'flex',
+                      display: 'wideOnly' in link ? { md: 'none', lg: 'flex' } : 'flex',
                       alignItems: 'center',
-                      fontSize: 14,
+                      flexShrink: 0,
+                      whiteSpace: 'nowrap',
+                      fontSize: { md: 13.5, lg: 14 },
                       fontWeight: 600,
                       textDecoration: 'none',
                       color: active ? 'primary.contrastText' : 'text.primary',
@@ -130,7 +135,7 @@ export function Header() {
                 <Box
                   component={Link}
                   href="/admin"
-                  sx={{ height: 40, px: 2, display: 'flex', alignItems: 'center', fontSize: 13, fontWeight: 600, color: 'text.secondary' }}
+                  sx={{ height: 40, px: 2, display: { md: 'none', lg: 'flex' }, alignItems: 'center', whiteSpace: 'nowrap', fontSize: 13, fontWeight: 600, color: 'text.secondary' }}
                 >
                   Studio admin
                 </Box>
@@ -143,7 +148,7 @@ export function Header() {
               label={mode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
               onClick={toggleColorMode}
               data-testid="theme-toggle-button"
-              sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+              sx={{ display: { xs: 'none', lg: 'inline-flex' } }}
             >
               {mode === 'light' ? <DarkModeOutlinedIcon /> : <LightModeOutlinedIcon />}
             </CircleIconButton>

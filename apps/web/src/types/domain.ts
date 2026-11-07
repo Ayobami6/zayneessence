@@ -247,6 +247,8 @@ export interface OrderRecord {
   items: OrderItemRecord[];
   payment: PaymentRecord;
   notifications: NotificationDispatchLog[];
+  /** The customer's WhatsApp choice at checkout. Orders saved before this field existed count as opted in. */
+  whatsappOptIn?: boolean;
   createdAt: string;
   updatedAt: string;
 }

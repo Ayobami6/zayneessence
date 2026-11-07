@@ -310,10 +310,12 @@ export function createZayneTheme(mode: ColorMode) {
             color: t.text,
             '&:hover': { border: 'none', backgroundColor: t.petal },
           },
-          text: {
-            color: t.text,
-            '&:hover': { backgroundColor: t.petal },
-          },
+          // color="inherit" (for example the Snackbar's "View bag") keeps the
+          // parent's text color; only default text buttons take the ink.
+          text: ({ ownerState }) =>
+            ownerState.color === 'inherit'
+              ? { '&:hover': { backgroundColor: 'rgba(127, 127, 127, 0.18)' } }
+              : { color: t.text, '&:hover': { backgroundColor: t.petal } },
         },
       },
       MuiIconButton: {

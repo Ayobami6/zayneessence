@@ -11,14 +11,23 @@ import {
   calculateDeliveryFeeKobo,
   filterProducts,
   getFreeDeliveryProgress,
+  migrateLegacyCatalogue,
 } from '@/services/store-service';
+import { createOrderNotifications } from '@/services/notification-service';
 import {
   CATEGORY_META,
   CATEGORY_ORDER,
   PRODUCT_CATEGORIES,
   categoryFromSlug,
 } from '@/types/domain';
-import { CONSULTATION_RITUALS, DAILY_RITUAL, getRitualTotalKobo, resolveRitualSteps } from '@/data/rituals';
+import {
+  CONSULTATION_RITUALS,
+  DAILY_RITUAL,
+  getRitualTotalKobo,
+  getUnavailableRitualSteps,
+  resolveRitualSteps,
+} from '@/data/rituals';
+import type { Product } from '@/types/domain';
 import { NIGERIA_STATES_AND_FCT, isLagosOrAbuja } from '@/data/nigeria-states';
 import { verifyPaystackWebhookSignature } from '../../../api/src/webhooks/paystack.controller';
 
@@ -67,8 +76,14 @@ describe('Catalogue & live search filtering', () => {
   it('has unique slugs, ids and SKUs', () => {
     const slugs = SEED_PRODUCTS.map((p) => p.slug);
     const skus = SEED_PRODUCTS.flatMap((p) => p.variants.map((v) => v.sku));
+    const productIds = SEED_PRODUCTS.map((p) => p.id);
+    const imageIds = SEED_PRODUCTS.flatMap((p) => p.images.map((image) => image.id));
+    const variantIds = SEED_PRODUCTS.flatMap((p) => p.variants.map((variant) => variant.id));
     expect(new Set(slugs).size).toBe(slugs.length);
     expect(new Set(skus).size).toBe(skus.length);
+    expect(new Set(productIds).size).toBe(productIds.length);
+    expect(new Set(imageIds).size).toBe(imageIds.length);
+    expect(new Set(variantIds).size).toBe(variantIds.length);
   });
 
   it('filters live by name, type, category, and Nigerian ingredients', () => {
@@ -131,6 +146,72 @@ describe('Rituals', () => {
     expect(getRitualTotalKobo(CONSULTATION_RITUALS[0].steps, SEED_PRODUCTS)).toBe(19800000);
     // Sérum Lumière + Huile Visage + Crème Velours + Oud Mubakhar 3 ml
     expect(getRitualTotalKobo(DAILY_RITUAL, SEED_PRODUCTS)).toBe(36500000);
+  });
+
+  it('flags sold-out or unpublished steps instead of pricing them as a complete ritual', () => {
+    const ritual = CONSULTATION_RITUALS[0];
+    const soldOutSlug = ritual.steps[1].slug;
+    const products: Product[] = SEED_PRODUCTS.map((p) =>
+      p.slug === soldOutSlug ? { ...p, variants: p.variants.map((v) => ({ ...v, stock: 0 })) } : p
+    );
+    expect(resolveRitualSteps(ritual.steps, products)).toHaveLength(ritual.steps.length - 1);
+    expect(getUnavailableRitualSteps(ritual.steps, products).map((s) => s.slug)).toEqual([soldOutSlug]);
+    expect(getUnavailableRitualSteps(ritual.steps, SEED_PRODUCTS)).toHaveLength(0);
+  });
+});
+
+describe('Catalogue migration from the Parade-era store', () => {
+  const legacySerum = (): Product => {
+    const seed = SEED_PRODUCTS.find((p) => p.slug === 'serum-lumiere') as Product;
+    return {
+      ...seed,
+      aged_years: undefined,
+      highlights: undefined,
+      is_sample: undefined,
+      variants: seed.variants.map((v) => ({ ...v, price_kobo: 9900000, stock: 2 })),
+      is_published: false,
+      images: seed.images.map((img, i) => ({ ...img, url: `/products/serum-lumiere/${i + 1}.svg` })),
+    };
+  };
+
+  it('keeps studio edits, swaps retired artwork and adds the new categories', () => {
+    const studioAdded: Product = {
+      ...legacySerum(),
+      id: 'prod-custom',
+      slug: 'custom-balm',
+      name: 'Custom Balm',
+      images: [{ id: 'img-custom', product_id: 'prod-custom', url: '/products/serum-lumiere/1.svg', alt: 'Custom balm', position: 1 }],
+    };
+    const migrated = migrateLegacyCatalogue([legacySerum(), studioAdded], SEED_PRODUCTS);
+
+    const serum = migrated.find((p) => p.slug === 'serum-lumiere') as Product;
+    expect(serum.is_published).toBe(false);
+    expect(serum.variants.every((v) => v.price_kobo === 9900000 && v.stock === 2)).toBe(true);
+    expect(serum.images.every((img) => img.url.endsWith('.jpg'))).toBe(true);
+
+    const custom = migrated.find((p) => p.id === 'prod-custom') as Product;
+    expect(custom.name).toBe('Custom Balm');
+    expect(custom.images[0].url).toBe('/products/serum-lumiere/1.jpg');
+
+    // Everything from the new seed that the old catalogue lacked is appended.
+    expect(migrated).toHaveLength(SEED_PRODUCTS.length + 1);
+    expect(migrated.filter((p) => p.category === 'Bakhoor')).toHaveLength(4);
+    expect(new Set(migrated.map((p) => p.id)).size).toBe(migrated.length);
+  });
+});
+
+describe('Order notifications', () => {
+  const order = { id: 'ord-1', orderNumber: 'ZE-100001', customerEmail: 'a@b.co', customerPhone: '+2348034567890' };
+
+  it('respects a WhatsApp opt-out even when WhatsApp is on for the store', () => {
+    const optedOut = createOrderNotifications({ ...order, whatsappOptIn: false }, 'shipped', { whatsappUpdatesEnabled: true });
+    expect(optedOut.map((n) => n.channel)).toEqual(['email_resend']);
+
+    const optedIn = createOrderNotifications({ ...order, whatsappOptIn: true }, 'shipped', { whatsappUpdatesEnabled: true });
+    expect(optedIn.map((n) => n.channel)).toEqual(['email_resend', 'whatsapp_cloud']);
+
+    const storeOff = createOrderNotifications({ ...order, whatsappOptIn: true }, 'shipped', { whatsappUpdatesEnabled: false });
+    expect(storeOff.map((n) => n.channel)).toEqual(['email_resend']);
   });
 });
 

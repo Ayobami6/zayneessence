@@ -163,7 +163,7 @@ export function BagDrawer() {
                       size="sm"
                       value={item.quantity}
                       itemName={item.name}
-                      max={9}
+                      max={item.maxQuantity}
                       onDecrease={() => updateQuantity(item.id, item.quantity - 1)}
                       onIncrease={() => updateQuantity(item.id, item.quantity + 1)}
                       testIdPrefix={`bag-qty-${item.slug}`}

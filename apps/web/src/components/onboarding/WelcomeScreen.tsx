@@ -5,7 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
 import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import { AccentHeading, PhotoTile, Wordmark } from '@/components/glow';
 
@@ -14,35 +17,19 @@ export const WELCOME_SEEN_KEY = 'zayneessence_welcome_seen_v1';
 /** One-time welcome on the first mobile visit to the home page. Never shown on desktop. */
 export function WelcomeScreen() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down('md'), { noSsr: true });
+  const [pending, setPending] = useState(false);
   const primaryRef = useRef<HTMLAnchorElement | null>(null);
 
   useEffect(() => {
-    if (pathname !== '/') return;
+    if (pathname !== '/' || !isPhone) return;
     try {
-      const isPhone = window.matchMedia('(max-width: 899.95px)').matches;
-      const seen = window.localStorage.getItem(WELCOME_SEEN_KEY);
-      if (isPhone && !seen) setOpen(true);
+      if (!window.localStorage.getItem(WELCOME_SEEN_KEY)) setPending(true);
     } catch {
       // Storage unavailable (private mode): skip the welcome rather than block the shop.
     }
-  }, [pathname]);
-
-  useEffect(() => {
-    if (!open) return;
-    primaryRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') dismiss();
-    };
-    document.addEventListener('keydown', onKey);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = previousOverflow;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [pathname, isPhone]);
 
   const dismiss = () => {
     try {
@@ -50,27 +37,25 @@ export function WelcomeScreen() {
     } catch {
       // ignore
     }
-    setOpen(false);
+    setPending(false);
   };
 
-  if (!open) return null;
+  // Leaving home (Back) or widening past the phone breakpoint closes it without marking it seen;
+  // the Dialog then releases its scroll lock and focus trap.
+  const open = pending && isPhone && pathname === '/';
 
   return (
-    <Box
-      role="dialog"
-      aria-modal="true"
+    <Dialog
+      open={open}
+      onClose={dismiss}
+      fullScreen
       aria-labelledby="welcome-heading"
-      data-testid="welcome-screen"
-      sx={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: (t) => t.zIndex.modal + 1,
-        bgcolor: 'background.default',
-        display: { xs: 'flex', md: 'none' },
-        flexDirection: 'column',
-        overflowY: 'auto',
-        pb: 'env(safe-area-inset-bottom, 0px)',
-      }}
+      TransitionProps={{ onEntered: () => primaryRef.current?.focus() }}
+      PaperProps={{
+        'data-testid': 'welcome-screen',
+        sx: { display: 'flex', flexDirection: 'column', overflowY: 'auto', pb: 'env(safe-area-inset-bottom, 0px)' },
+      } as React.ComponentProps<typeof Dialog>['PaperProps']}
+      sx={{ zIndex: (t) => t.zIndex.modal + 1 }}
     >
       <PhotoTile
         src="/images/hero.jpg"
@@ -154,6 +139,6 @@ export function WelcomeScreen() {
           </Button>
         </Box>
       </Box>
-    </Box>
+    </Dialog>
   );
 }

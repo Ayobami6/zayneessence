@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
 import Button from '@mui/material/Button';
 import { AccentHeading, Wordmark } from '@/components/glow';
 
@@ -17,7 +16,8 @@ const COLUMNS: Array<{ title: string; links: Array<{ label: string; href: string
       { label: 'Skincare', href: '/shop/skincare' },
       { label: 'Pure oud', href: '/shop/oud' },
       { label: 'Perfume', href: '/shop/perfume' },
-      { label: 'Roll-ons & oils', href: '/shop/roll-ons' },
+      { label: 'Roll-ons', href: '/shop/roll-ons' },
+      { label: 'Oils', href: '/shop/oils' },
       { label: 'Bakhoor & turaren wuta', href: '/shop/bakhoor' },
       { label: 'Supplements', href: '/shop/supplements' },
     ],
@@ -33,10 +33,11 @@ const COLUMNS: Array<{ title: string; links: Array<{ label: string; href: string
   },
 ];
 
+const DISPATCH_MAILTO =
+  'mailto:concierge@zayneessence.com?subject=Join%20the%20Studio%20Dispatch&body=Please%20add%20me%20to%20the%20Studio%20Dispatch.';
+
 export function Footer() {
   const pathname = usePathname() || '/';
-  const [email, setEmail] = useState('');
-  const [joined, setJoined] = useState(false);
   const year = new Date().getFullYear();
 
   const bottomPad = { xs: 'calc(108px + env(safe-area-inset-bottom, 0px))', md: 6 };
@@ -81,56 +82,28 @@ export function Footer() {
         }}
       >
         <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: { xs: 4, md: 6 } }}>
-          <Box
-            component="form"
-            onSubmit={(e: React.FormEvent) => {
-              e.preventDefault();
-              if (email.includes('@')) setJoined(true);
-            }}
-            sx={{ flex: '1 1 340px', display: 'flex', flexDirection: 'column', gap: 1.75, minWidth: 0 }}
-          >
+          {/* There's no mailing-list service yet, so joining opens an email to the studio
+              rather than showing a confirmation for an address nobody receives. */}
+          <Box sx={{ flex: '1 1 340px', display: 'flex', flexDirection: 'column', gap: 1.75, minWidth: 0 }}>
             <AccentHeading component="h2" variant="h3" text="The Studio" accent="Dispatch" onInverse sx={{ fontSize: 26 }} />
             <Typography variant="body2" sx={{ color: 'glow.inverseMuted', maxWidth: 380 }}>
               Rare agarwood harvests, new formulations and private studio appointments in Ikoyi and Maitama.
             </Typography>
-            {joined ? (
-              <Typography role="status" sx={{ fontWeight: 700 }}>
-                You’re on the list. Watch your inbox.
-              </Typography>
-            ) : (
-              <Box
-                sx={{
-                  display: 'flex',
-                  gap: 0.75,
-                  p: 0.75,
-                  borderRadius: '999px',
-                  bgcolor: 'rgba(255,255,255,0.1)',
-                  maxWidth: 440,
-                }}
-              >
-                <InputBase
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  inputProps={{ 'aria-label': 'Email address for the Studio Dispatch' }}
-                  sx={{ flex: 1, minWidth: 0, px: 2, color: 'inherit', fontSize: 15, '& input::placeholder': { color: 'glow.inverseMuted', opacity: 1 } }}
-                />
-                <Button
-                  type="submit"
-                  sx={{
-                    minHeight: 46,
-                    px: 3,
-                    bgcolor: 'glow.inverseText',
-                    color: 'glow.inverse',
-                    '&:hover': { bgcolor: 'glow.inverseText', opacity: 0.9 },
-                  }}
-                >
-                  Join
-                </Button>
-              </Box>
-            )}
+            <Button
+              component="a"
+              href={DISPATCH_MAILTO}
+              data-testid="dispatch-join-link"
+              sx={{
+                alignSelf: 'flex-start',
+                minHeight: 46,
+                px: 3,
+                bgcolor: 'glow.inverseText',
+                color: 'glow.inverse',
+                '&:hover': { bgcolor: 'glow.inverseText', opacity: 0.9 },
+              }}
+            >
+              Join by email
+            </Button>
           </Box>
 
           <Box

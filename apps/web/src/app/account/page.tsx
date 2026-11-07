@@ -96,7 +96,7 @@ export default function AccountPage() {
   const { session, signInWithPhoneOtp, signInWithMagicLink, signOut, saveAddress, removeAddress } = useAuth();
   const { orders, products } = useStoreData();
   const { savedIds } = useWishlist();
-  const { addToBag } = useBag();
+  const { addLinesToBag } = useBag();
   const { mode, setColorMode } = useColorMode();
 
   const [authMethod, setAuthMethod] = useState<'phone_otp' | 'email_magic_link'>('phone_otp');
@@ -160,12 +160,22 @@ export default function AccountPage() {
     setAddrStreet('');
   };
 
+  // Only published pieces still in stock; the bag caps each line at what's left and says so.
   const handleBuyAgain = (order: OrderRecord) => {
-    order.items.forEach((item) => {
+    const lines = order.items.flatMap((item) => {
       const product = products.find((p) => p.id === item.productId);
       const variant = product?.variants.find((v) => v.id === item.variantId);
-      if (product && variant && variant.stock > 0) addToBag(product, variant, item.quantity);
+      return product?.is_published && variant && variant.stock > 0 ? [{ product, variant, quantity: item.quantity }] : [];
     });
+    if (lines.length > 0) addLinesToBag(lines);
+  };
+
+  // Orders keep the photo URL from the day they were placed; prefer the product's current photo
+  // so orders from before the photography change don't show broken images.
+  const orderThumbnail = (item: OrderRecord['items'][number]): string | null => {
+    const current = products.find((p) => p.id === item.productId)?.images[0]?.url;
+    if (current) return current;
+    return item.thumbnailUrl && !item.thumbnailUrl.endsWith('.svg') ? item.thumbnailUrl : null;
   };
 
   if (!session) {
@@ -428,7 +438,9 @@ export default function AccountPage() {
                   <Box sx={{ display: 'flex', gap: 0.75 }}>
                     {latestOrder.items.slice(0, 4).map((item) => (
                       <Box key={item.id} sx={{ position: 'relative', width: 40, height: 46, borderRadius: '14px', overflow: 'hidden', bgcolor: 'glow.petal' }}>
-                        <Image src={item.thumbnailUrl} alt={item.productName} fill sizes="40px" style={{ objectFit: 'cover' }} />
+                        {orderThumbnail(item) ? (
+                          <Image src={orderThumbnail(item) as string} alt={item.productName} fill sizes="40px" style={{ objectFit: 'cover' }} />
+                        ) : null}
                       </Box>
                     ))}
                   </Box>
@@ -443,7 +455,9 @@ export default function AccountPage() {
                 sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1.75, p: 1.25, pr: 2, borderRadius: '28px', bgcolor: 'background.paper' }}
               >
                 <Box sx={{ position: 'relative', width: 64, height: 72, flexShrink: 0, borderRadius: '18px', overflow: 'hidden', bgcolor: 'glow.petal' }}>
-                  {order.items[0] ? <Image src={order.items[0].thumbnailUrl} alt="" fill sizes="64px" style={{ objectFit: 'cover' }} /> : null}
+                  {order.items[0] && orderThumbnail(order.items[0]) ? (
+                    <Image src={orderThumbnail(order.items[0]) as string} alt="" fill sizes="64px" style={{ objectFit: 'cover' }} />
+                  ) : null}
                 </Box>
                 <Box sx={{ flex: '1 1 160px', minWidth: 0 }}>
                   <Typography sx={{ fontSize: 15, fontWeight: 700 }} noWrap>
@@ -477,15 +491,22 @@ export default function AccountPage() {
                   >
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <PlaceOutlinedIcon />
-                      {isDefault ? (
-                        <Box sx={{ height: 24, px: 1.25, borderRadius: '999px', bgcolor: 'rgba(255,255,255,0.16)', display: 'inline-flex', alignItems: 'center', fontSize: 11, fontWeight: 700 }}>
-                          Default
-                        </Box>
-                      ) : (
-                        <CircleIconButton label={`Remove address in ${addr.cityOrLga}`} tone="ground" size={34} onClick={() => removeAddress(addr.id)}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {isDefault ? (
+                          <Box sx={{ height: 24, px: 1.25, borderRadius: '999px', bgcolor: 'rgba(255,255,255,0.16)', display: 'inline-flex', alignItems: 'center', fontSize: 11, fontWeight: 700 }}>
+                            Default
+                          </Box>
+                        ) : null}
+                        {/* Any address can go, including the default; the next one then becomes the default. */}
+                        <CircleIconButton
+                          label={`Remove address in ${addr.cityOrLga}`}
+                          tone={isDefault ? 'surface' : 'ground'}
+                          size={34}
+                          onClick={() => removeAddress(addr.id)}
+                        >
                           <CloseRoundedIcon />
                         </CircleIconButton>
-                      )}
+                      </Box>
                     </Box>
                     <Typography sx={{ fontSize: 15.5, fontWeight: 700 }}>{addr.recipientName}</Typography>
                     <Typography variant="body2" sx={{ color: isDefault ? 'glow.inverseMuted' : 'text.secondary' }}>

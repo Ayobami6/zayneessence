@@ -44,9 +44,12 @@ Open `http://localhost:3000`.
 ```bash
 npm run seed
 ```
-This reads the 12 luxury products from `apps/web/src/data/seed-catalogue.ts` and writes idempotent PostgreSQL `INSERT ... ON CONFLICT DO UPDATE` statements to `apps/api/sql/seed.sql`. To apply the schema and seed data to a live PostgreSQL / Supabase database:
+This reads the 20 products from `apps/web/src/data/seed-catalogue.ts` (8 of them Bakhoor and Supplements samples) and writes idempotent PostgreSQL `INSERT ... ON CONFLICT DO UPDATE` statements to `apps/api/sql/seed.sql`. To apply the schema and seed data to a live PostgreSQL / Supabase database:
 ```bash
 psql "$DATABASE_URL" -f apps/api/sql/schema.sql
+# Widens the category constraint for Bakhoor and Supplements. Safe to re-run; required on
+# databases created before the Glow redesign, or the seed fails on the new categories.
+psql "$DATABASE_URL" -f apps/api/sql/migrations/001_glow_categories.sql
 psql "$DATABASE_URL" -f apps/api/sql/seed.sql
 ```
 

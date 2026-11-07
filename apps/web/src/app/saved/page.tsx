@@ -32,7 +32,10 @@ export default function SavedPage() {
     () => products.filter((p) => p.is_published && savedIds.includes(p.id)),
     [products, savedIds]
   );
-  const visible = savedProducts.filter((FILTERS.find((f) => f.id === filter) ?? FILTERS[0]).test);
+  // Only offer filters that match something; if the active one empties (last piece removed), fall back to All.
+  const availableFilters = FILTERS.filter((f) => f.id === 'all' || savedProducts.some(f.test));
+  const activeFilter = availableFilters.find((f) => f.id === filter) ?? FILTERS[0];
+  const visible = savedProducts.filter(activeFilter.test);
 
   return (
     <Container maxWidth="lg" sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 2, md: 4 } }}>
@@ -65,12 +68,12 @@ export default function SavedPage() {
       ) : (
         <>
           <Box role="tablist" aria-label="Filter saved pieces" sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 0.5 }}>
-            {FILTERS.filter((f) => f.id === 'all' || savedProducts.some(f.test)).map((f) => (
+            {availableFilters.map((f) => (
               <Chip
                 key={f.id}
                 role="tab"
-                aria-selected={filter === f.id}
-                data-active={filter === f.id ? 'true' : 'false'}
+                aria-selected={activeFilter.id === f.id}
+                data-active={activeFilter.id === f.id ? 'true' : 'false'}
                 clickable
                 label={f.id === 'all' ? `All · ${savedProducts.length}` : f.label}
                 onClick={() => setFilter(f.id)}
