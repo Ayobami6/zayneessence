@@ -11,7 +11,8 @@ import { Header } from './Header';
 import { SearchTray } from './SearchTray';
 import { BagDrawer } from '@/components/bag/BagDrawer';
 import { Footer } from './Footer';
-import { MobileBottomNav } from './MobileBottomNav';
+import { FloatingNav } from './FloatingNav';
+import { WelcomeScreen } from '@/components/onboarding/WelcomeScreen';
 
 export function AppShell({
   children,
@@ -41,7 +42,8 @@ export function AppShell({
                 <Footer />
                 {modal}
                 <BagDrawer />
-                <MobileBottomNav />
+                <FloatingNav />
+                <WelcomeScreen />
               </Box>
             </BagProvider>
           </WishlistProvider>

@@ -1,339 +1,140 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import { AccentHeading } from '@/components/glow';
 import { useBag } from '@/context/BagContext';
 import { useStoreData } from '@/context/StoreDataContext';
+import { DAILY_RITUAL, getUnavailableRitualSteps, resolveRitualSteps } from '@/data/rituals';
 import { formatKoboToNgn } from '@/utils/currency';
-
-const RITUAL_STEPS = [
-  {
-    step: 'Step 01',
-    role: 'Prepare & Clarify',
-    slug: 'serum-lumiere',
-    name: 'Sérum Lumière',
-    type: 'Brightening face serum',
-    size: '30 ml',
-    priceKobo: 8500000,
-    desc: 'Stabilized niacinamide, vitamin C and moringa leaf extract formulated to smooth texture and brighten hyperpigmentation without barrier compromise.',
-    image: '/products/serum-lumiere/1.svg',
-  },
-  {
-    step: 'Step 02',
-    role: 'Nourish & Veil',
-    slug: 'huile-visage',
-    name: 'Huile Visage',
-    type: 'Nourishing face oil',
-    size: '30 ml',
-    priceKobo: 7500000,
-    desc: 'Cold-pressed northern baobab and nutrient-dense savanna moringa oils that absorb instantly to seal in moisture and prevent trans-epidermal water loss.',
-    image: '/products/huile-visage/1.svg',
-  },
-  {
-    step: 'Step 03',
-    role: 'Seal & Restore',
-    slug: 'creme-velours',
-    name: 'Crème Velours',
-    type: 'Rich night cream',
-    size: '50 ml',
-    priceKobo: 11000000,
-    desc: 'Unrefined northern shea butter paired with plant ceramides that melt on melanin-rich skin to calm irritation and lock in overnight hydration.',
-    image: '/products/creme-velours/1.svg',
-  },
-  {
-    step: 'Step 04',
-    role: 'Scent & Anchor',
-    slug: 'oud-mubakhar',
-    name: 'Oud Mubakhar',
-    type: 'Pure aged oud oil',
-    size: '3 ml',
-    priceKobo: 9500000,
-    desc: 'Distilled pure Assam agarwood aged six years in dark glass. Dabbed on pulse points to project a tranquil, intimate sillage throughout the day.',
-    image: '/products/oud-mubakhar/1.svg',
-  },
-];
 
 export function RitualProcessSection() {
   const { publishedProducts } = useStoreData();
-  const { addToBag } = useBag();
+  const { addLinesToBag } = useBag();
   const [ritualAdded, setRitualAdded] = useState(false);
 
-  const totalRitualKobo = RITUAL_STEPS.reduce((sum, s) => sum + s.priceKobo, 0);
+  const steps = resolveRitualSteps(DAILY_RITUAL, publishedProducts);
+  const unavailable = getUnavailableRitualSteps(DAILY_RITUAL, publishedProducts);
+  const isComplete = unavailable.length === 0;
+  const resolvedBySlug = new Map(steps.map((s) => [s.slug, s]));
+  const unavailableRoles = unavailable.map((s) => s.role.toLowerCase()).join(' and ');
+  const totalKobo = steps.reduce((sum, s) => sum + s.variant.price_kobo, 0);
 
   const handleAddFullRitual = () => {
-    RITUAL_STEPS.forEach((step) => {
-      const product = publishedProducts.find((p) => p.slug === step.slug);
-      if (product && product.variants[0]) {
-        addToBag(product, product.variants[0], 1);
-      }
-    });
+    const { addedUnits } = addLinesToBag(steps.map((s) => ({ product: s.product, variant: s.variant, quantity: 1 })));
+    if (addedUnits === 0) return;
     setRitualAdded(true);
-    setTimeout(() => setRitualAdded(false), 2400);
+    setTimeout(() => setRitualAdded(false), 2200);
   };
 
   return (
-    <Box
-      id="rituals"
-      component="section"
-      aria-label="Daily ritual sequence"
-      sx={{
-        py: { xs: 8, md: 13 },
-        borderBottom: 1,
-        borderColor: 'divider',
-      }}
-    >
+    <Box id="rituals" component="section" aria-labelledby="ritual-heading" sx={{ py: { xs: 4, md: 8 }, scrollMarginTop: 96 }}>
       <Container maxWidth="lg">
-        {/* Eyebrow */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            mb: 4,
-            borderBottom: 1,
-            borderColor: 'divider',
-            pb: 2,
-          }}
-        >
-          <Typography
-            sx={{
-              fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.9375rem',
-              fontWeight: 600,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              color: 'text.primary',
-              opacity: 0.85,
-            }}
-          >
-            (The Daily Ritual)
-          </Typography>
-          <Typography
-            sx={{
-              fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.9375rem',
-              fontWeight: 500,
-              color: 'text.primary',
-              opacity: 0.85,
-            }}
-          >
-            Four Steps · Morning &amp; Night
-          </Typography>
-        </Box>
-
-        {/* Section title & Add-all button header */}
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            justifyContent: 'space-between',
-            alignItems: { xs: 'flex-start', md: 'flex-end' },
-            gap: 3,
-            mb: { xs: 5, md: 7 },
-          }}
-        >
-          <Box sx={{ maxWidth: '44ch' }}>
-            <Typography
-              variant="h2"
-              sx={{
-                fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: { xs: '2.2rem', sm: '2.8rem', md: '3.5rem' },
-                fontWeight: 700,
-                letterSpacing: '-0.035em',
-                lineHeight: 1.05,
-                color: 'text.primary',
-                mb: 1.5,
-              }}
-            >
-              A simple ritual, obsessively run.
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', gap: 2, mb: { xs: 2.5, md: 3 } }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Typography variant="eyebrow" component="p">
+              The daily ritual · morning &amp; night
             </Typography>
-            <Typography
-              variant="body1"
-              sx={{ color: 'text.primary', opacity: 0.88, fontSize: '1.15rem' }}
-            >
-              Four complementary steps to balance, nourish and lock in skin vitality, anchored by artisanal pure aged oud.
-            </Typography>
+            <AccentHeading id="ritual-heading" component="h2" variant="h2" text="A simple ritual," accent="obsessively run." />
           </Box>
-
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAddFullRitual}
-            sx={{
-              px: 4,
-              py: 1.6,
-              fontSize: '1.05rem',
-              fontWeight: 600,
-              flexShrink: 0,
-            }}
-          >
-            {ritualAdded
-              ? '✓ 4-Piece ritual added to bag'
-              : `Add complete ritual · ${formatKoboToNgn(totalRitualKobo)}`}
-          </Button>
+          {steps.length > 0 ? (
+            <Button variant="contained" size="large" onClick={handleAddFullRitual} data-testid="add-full-ritual-button">
+              {ritualAdded
+                ? '✓ Ritual added to bag'
+                : isComplete
+                  ? `Add complete ritual · ${formatKoboToNgn(totalKobo)}`
+                  : `Add the ${steps.length} available pieces · ${formatKoboToNgn(totalKobo)}`}
+            </Button>
+          ) : null}
         </Box>
 
-        {/* 4 Steps timeline grid (Parade's "Week 1 Discover / Weeks 2–3 Define" timeline) */}
+        {!isComplete ? (
+          <Typography
+            variant="body2"
+            data-testid="daily-ritual-unavailable-note"
+            sx={{ mb: 2, p: 1.75, borderRadius: '20px', bgcolor: 'background.paper', fontWeight: 600 }}
+          >
+            {steps.length === 0
+              ? 'Every piece in the daily ritual is sold out or unavailable right now.'
+              : `The ${unavailableRoles} ${unavailable.length === 1 ? 'step is' : 'steps are'} unavailable right now, so the button adds the ${steps.length} pieces in stock.`}
+          </Typography>
+        ) : null}
+
         <Box
+          component="ol"
           sx={{
+            m: 0,
+            p: 0,
+            listStyle: 'none',
             display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' },
-            gap: { xs: 3, md: 3.5 },
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))', lg: 'repeat(4, minmax(0, 1fr))' },
+            gap: 2,
           }}
         >
-          {RITUAL_STEPS.map((step) => {
-            const product = publishedProducts.find((p) => p.slug === step.slug);
-            const variant = product?.variants[0];
-
+          {DAILY_RITUAL.map((step) => {
+            const s = resolvedBySlug.get(step.slug);
             return (
               <Box
-                key={step.step}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  p: 3.5,
-                  borderRadius: 2,
-                  border: 1,
-                  borderColor: 'divider',
-                  bgcolor: 'background.paper',
-                  transition: 'border-color 0.25s ease, transform 0.25s ease',
-                  '&:hover': {
-                    borderColor: 'text.primary',
-                    transform: 'translateY(-4px)',
-                  },
-                }}
+                key={step.slug}
+                component="li"
+                sx={{ display: 'flex', flexDirection: 'column', gap: 1.75, p: 2.5, borderRadius: '32px', bgcolor: 'background.paper' }}
               >
-                <Box>
-                  {/* Step label & Role tag */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+                  <Box sx={{ width: 38, height: 38, borderRadius: '999px', bgcolor: 'primary.main', color: 'primary.contrastText', display: 'grid', placeItems: 'center', fontSize: 14, fontWeight: 800 }}>
+                    {step.step}
+                  </Box>
+                  <Typography component="h3" variant="h4" sx={{ fontSize: 15 }}>
+                    {step.role}
+                  </Typography>
+                </Box>
+                <Typography variant="body2" color="text.secondary">
+                  {step.description}
+                </Typography>
+                {s ? (
                   <Box
+                    component={Link}
+                    href={`/products/${s.product.slug}`}
                     sx={{
+                      mt: 'auto',
                       display: 'flex',
-                      alignItems: 'baseline',
-                      justifyContent: 'space-between',
-                      mb: 2,
-                      borderBottom: 1,
-                      borderColor: 'divider',
-                      pb: 1.5,
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: '0.875rem',
-                        fontWeight: 700,
-                        letterSpacing: '0.04em',
-                        color: 'text.primary',
-                        opacity: 0.8,
-                        textTransform: 'uppercase',
-                      }}
-                    >
-                      {step.step}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: '0.875rem',
-                        fontWeight: 600,
-                        color: 'text.primary',
-                      }}
-                    >
-                      {step.role}
-                    </Typography>
-                  </Box>
-
-                  {/* Thumbnail */}
-                  <Box
-                    component={Link}
-                    href={`/products/${step.slug}`}
-                    sx={(t) => ({
-                      display: 'block',
-                      position: 'relative',
-                      aspectRatio: '1 / 1',
-                      borderRadius: 1.5,
-                      bgcolor: t.palette.zayne.productTile,
-                      overflow: 'hidden',
-                      mb: 2.5,
-                    })}
-                  >
-                    <Image
-                      src={step.image}
-                      alt={step.name}
-                      fill
-                      sizes="(max-width: 600px) 90vw, 280px"
-                      style={{ objectFit: 'cover' }}
-                    />
-                  </Box>
-
-                  <Typography
-                    component={Link}
-                    href={`/products/${step.slug}`}
-                    sx={{
-                      display: 'block',
-                      fontFamily: 'var(--font-italiana), "Italiana", serif',
-                      fontSize: '1.55rem',
-                      fontWeight: 400,
-                      WebkitTextStroke: '0.22px currentColor',
-                      color: 'text.primary',
+                      alignItems: 'center',
+                      gap: 1.25,
+                      p: 0.75,
+                      pr: 1,
+                      borderRadius: '999px',
+                      bgcolor: 'background.default',
                       textDecoration: 'none',
-                      mb: 0.5,
+                      color: 'text.primary',
                     }}
                   >
-                    {step.name}
-                  </Typography>
-
-                  <Typography
-                    sx={{
-                      fontSize: '0.9375rem',
-                      fontWeight: 500,
-                      color: 'text.secondary',
-                      mb: 1.5,
-                    }}
+                    <Box sx={{ position: 'relative', width: 46, height: 46, flexShrink: 0, borderRadius: '999px', overflow: 'hidden', bgcolor: 'glow.petal' }}>
+                      {s.product.images[0] ? <Image src={s.product.images[0].url} alt="" fill sizes="46px" style={{ objectFit: 'cover' }} /> : null}
+                    </Box>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography sx={{ fontSize: 14, fontWeight: 700 }} noWrap>
+                        {s.product.name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {s.variant.label}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ height: 36, px: 1.5, borderRadius: '999px', bgcolor: 'background.paper', display: 'flex', alignItems: 'center', fontSize: 13, fontWeight: 800 }}>
+                      {formatKoboToNgn(s.variant.price_kobo)}
+                    </Box>
+                  </Box>
+                ) : (
+                  <Box
+                    data-testid={`ritual-step-unavailable-${step.slug}`}
+                    sx={{ mt: 'auto', height: 58, px: 2, borderRadius: '999px', bgcolor: 'background.default', display: 'flex', alignItems: 'center', fontSize: 13.5, fontWeight: 600, color: 'text.secondary' }}
                   >
-                    {step.type} · {step.size}
-                  </Typography>
-
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: 'text.secondary',
-                      fontSize: '0.9375rem',
-                      lineHeight: 1.6,
-                      mb: 2.5,
-                    }}
-                  >
-                    {step.desc}
-                  </Typography>
-                </Box>
-
-                <Box
-                  sx={{
-                    pt: 2.25,
-                    borderTop: 1,
-                    borderColor: 'divider',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', color: 'text.primary' }}>
-                    {formatKoboToNgn(step.priceKobo)}
-                  </Typography>
-
-                  {product && variant && (
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => addToBag(product, variant, 1)}
-                      sx={{ py: 0.75, px: 2.25, fontSize: '0.875rem', fontWeight: 600 }}
-                    >
-                      Add to bag
-                    </Button>
-                  )}
-                </Box>
+                    Unavailable right now
+                  </Box>
+                )}
               </Box>
             );
           })}

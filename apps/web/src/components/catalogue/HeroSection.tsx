@@ -1,293 +1,259 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { ArchedWindow } from '@/components/ui/ArchedWindow';
+import ButtonBase from '@mui/material/ButtonBase';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
+import NorthEastRoundedIcon from '@mui/icons-material/NorthEastRounded';
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import { AccentHeading, PhotoTile, RingGauge } from '@/components/glow';
+import { useAuth } from '@/context/AuthContext';
+import { useBag } from '@/context/BagContext';
 import { useStoreData } from '@/context/StoreDataContext';
+import { getFreeDeliveryProgress } from '@/services/store-service';
 import { formatKoboToNgn } from '@/utils/currency';
 
+function greetingForHour(hour: number) {
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
 export function HeroSection() {
-  const { publishedProducts, setActiveCategory, setSearchQuery } = useStoreData();
+  const { session } = useAuth();
+  const { subtotalKobo, totalCount, openBag } = useBag();
+  const { settings, publishedProducts, setActiveCategory } = useStoreData();
+  const [greeting, setGreeting] = React.useState('Welcome to the studio');
 
-  const heroProduct =
-    publishedProducts.find((p) => p.slug === 'serum-lumiere') ||
-    publishedProducts.find((p) => p.category === 'Skincare') ||
-    publishedProducts[0];
+  React.useEffect(() => {
+    const firstName = session?.name?.split(' ')[0];
+    setGreeting(firstName ? `${greetingForHour(new Date().getHours())}, ${firstName}` : 'Welcome to the studio');
+  }, [session?.name]);
 
-  const primaryImage = heroProduct?.images[0];
-  const startingPrice = heroProduct?.variants[0]?.price_kobo ?? 8500000;
+  const delivery = getFreeDeliveryProgress(subtotalKobo, settings);
+  const threshold = formatKoboToNgn(delivery.thresholdKobo);
+  const deliveryLine = delivery.unlocked
+    ? 'Unlocked in Lagos & Abuja'
+    : totalCount > 0
+      ? `${formatKoboToNgn(delivery.remainingKobo)} away · ${totalCount} ${totalCount === 1 ? 'piece' : 'pieces'} in your bag`
+      : `On Lagos & Abuja orders over ${threshold}`;
 
-  const handleShopSkincare = () => {
-    setSearchQuery('');
-    setActiveCategory('Skincare');
-    const el = document.getElementById('catalogue');
-    el?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const handleExploreOud = () => {
-    setSearchQuery('');
-    setActiveCategory('Oud');
-    const el = document.getElementById('catalogue');
-    el?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const signature = publishedProducts.find((p) => p.slug === 'serum-lumiere') ?? publishedProducts[0];
 
   return (
-    <Box
-      component="section"
-      aria-label="Featured introduction"
-      sx={{
-        pt: { xs: 4, md: 6 },
-        pb: { xs: 7, md: 11 },
-        borderBottom: 1,
-        borderColor: 'divider',
-      }}
-    >
+    <Box component="section" aria-labelledby="home-hero-heading" sx={{ pt: { xs: 1, md: 3 }, pb: { xs: 3, md: 6 } }}>
       <Container maxWidth="lg">
-        {/* Parade-style top eyebrow row */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            mb: { xs: 4, md: 6 },
-            borderBottom: 1,
-            borderColor: 'divider',
-            pb: 2,
-          }}
-        >
-          <Typography
-            sx={{
-              fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.9375rem',
-              fontWeight: 600,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              color: 'text.primary',
-              opacity: 0.85,
-            }}
-          >
-            (Melanin-rich skincare &amp; pure aged oud)
-          </Typography>
-          <Typography
-            sx={{
-              fontFamily: 'var(--font-jost), "Jost", sans-serif',
-              fontSize: '0.9375rem',
-              fontWeight: 500,
-              color: 'text.primary',
-              opacity: 0.85,
-            }}
-          >
-            Lagos &amp; Abuja — Est. 2026
-          </Typography>
-        </Box>
-
-        {/* Hero asymmetric grid */}
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: '1.2fr 0.8fr' },
-            alignItems: 'center',
-            gap: { xs: 6, md: 8 },
-          }}
-        >
-          {/* Left Column: Stacked monumental typography & CTAs */}
-          <Box>
-            <Typography
-              component="h1"
-              sx={{
-                fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: 'clamp(58px, 9vw, 116px)',
-                fontWeight: 700,
-                lineHeight: 0.92,
-                letterSpacing: '-0.045em',
-                color: 'text.primary',
-                mb: 3.5,
-                animation: 'heroHeadlineSettle 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both',
-              }}
-            >
-              Skin that
-              <br />
-              glows,
-              <br />
-              quietly.
-            </Typography>
-
-            <Typography
-              variant="body1"
-              sx={{
-                color: 'text.primary',
-                opacity: 0.88,
-                fontSize: { xs: '1.15rem', md: '1.28rem' },
-                lineHeight: 1.65,
-                mb: 4.5,
-                maxWidth: '48ch',
-              }}
-            >
-              Skincare formulated with unrefined northern Nigerian shea, cold-pressed baobab
-              and moringa for melanin-rich skin, alongside pure aged oud oils and fine perfume.
-            </Typography>
-
-            {/* Parade-style pill action cluster */}
-            <Box
-              sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                alignItems: 'center',
-                gap: 2,
-              }}
-            >
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleShopSkincare}
-                data-testid="hero-shop-skincare-btn"
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: { xs: 2.5, md: 7 } }}>
+          <Box sx={{ flex: '1 1 440px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: { xs: 2, md: 3 } }}>
+            <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 1.25, flexWrap: 'wrap' }}>
+              <Typography sx={{ fontWeight: 600, fontSize: 15 }}>{greeting}</Typography>
+              <Box
                 sx={{
-                  px: 4,
-                  py: 1.6,
-                  fontSize: '1.05rem',
+                  height: 28,
+                  px: 1.5,
+                  borderRadius: '999px',
+                  bgcolor: 'background.paper',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  fontSize: 12,
                   fontWeight: 600,
                 }}
               >
-                Shop skincare
-              </Button>
+                <Box component="span" sx={{ width: 6, height: 6, borderRadius: '999px', bgcolor: 'glow.accent' }} />
+                For melanin-rich skin
+              </Box>
+            </Box>
 
+            <Box
+              sx={{
+                display: { xs: 'none', md: 'inline-flex' },
+                alignSelf: 'flex-start',
+                height: 34,
+                px: 1.75,
+                borderRadius: '999px',
+                bgcolor: 'background.paper',
+                alignItems: 'center',
+                gap: 1,
+                fontSize: 13,
+                fontWeight: 600,
+              }}
+            >
+              <Box component="span" sx={{ width: 7, height: 7, borderRadius: '999px', bgcolor: 'glow.accent' }} />
+              Melanin-rich skincare &amp; pure aged oud
+            </Box>
+
+            <AccentHeading
+              id="home-hero-heading"
+              component="h1"
+              variant="h1"
+              text="Skin that glows,"
+              accent="quietly."
+              sx={{ fontSize: { xs: 38, sm: 52, md: 'clamp(52px, 6.2vw, 88px)' }, lineHeight: { xs: 1.06, md: 1 } }}
+            />
+
+            <Typography
+              color="text.secondary"
+              sx={{ display: { xs: 'none', md: 'block' }, fontSize: { md: 18 }, maxWidth: 500 }}
+            >
+              Formulated with unrefined northern Nigerian shea, cold-pressed baobab and moringa, alongside pure aged oud
+              oils and fine perfume. Hand-bottled in Lagos and Abuja.
+            </Typography>
+
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, flexWrap: 'wrap', gap: 1.25 }}>
+              <Button
+                component={Link}
+                href="/consultation"
+                variant="contained"
+                size="large"
+                endIcon={
+                  <Box
+                    component="span"
+                    sx={{ width: 36, height: 36, borderRadius: '999px', bgcolor: 'primary.contrastText', color: 'primary.main', display: 'grid', placeItems: 'center', mr: -1.25 }}
+                  >
+                    <NorthEastRoundedIcon sx={{ fontSize: 18 }} />
+                  </Box>
+                }
+              >
+                Start skin consultation
+              </Button>
               <Button
                 variant="outlined"
-                onClick={handleExploreOud}
-                sx={{
-                  px: 4,
-                  py: 1.6,
-                  fontSize: '1.05rem',
-                  fontWeight: 600,
+                size="large"
+                onClick={() => {
+                  setActiveCategory('All');
+                  document.getElementById('catalogue')?.scrollIntoView({ behavior: 'smooth' });
                 }}
               >
-                Explore pure oud
+                Shop the collection
               </Button>
-
-              <Typography
-                component={Link}
-                href="/#rituals"
-                sx={{
-                  color: 'text.primary',
-                  fontSize: '1.05rem',
-                  fontWeight: 600,
-                  textDecoration: 'underline',
-                  textUnderlineOffset: '5px',
-                  ml: { xs: 0, sm: 1 },
-                  '&:hover': {
-                    color: 'text.secondary',
-                  },
-                }}
-              >
-                View 4-step ritual →
-              </Typography>
             </Box>
-          </Box>
 
-          {/* Right Column: Featured skincare showcase in signature arched window */}
-          {heroProduct && primaryImage && (
-            <Box
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, flexWrap: 'wrap', gap: 1 }}>
+              {['Unrefined northern shea', 'Cold-pressed baobab & moringa', 'Aged Assam agarwood'].map((label) => (
+                <Box
+                  key={label}
+                  sx={{ height: 32, px: 1.5, borderRadius: '999px', border: (t) => `1px solid ${t.palette.glow.mauve}`, display: 'inline-flex', alignItems: 'center', fontSize: 12.5, fontWeight: 600 }}
+                >
+                  {label}
+                </Box>
+              ))}
+            </Box>
+
+            <ButtonBase
+              onClick={openBag}
+              aria-label={`Free delivery: ${deliveryLine}. Open bag`}
               sx={{
-                maxWidth: { xs: 440, md: 520 },
-                width: '100%',
-                ml: 'auto',
-                mr: { xs: 'auto', md: 0 },
+                display: { xs: 'flex', md: 'none' },
+                alignItems: 'center',
+                gap: 1.75,
+                p: 1.25,
+                borderRadius: '999px',
+                bgcolor: 'background.paper',
+                boxShadow: (t) => t.palette.glow.shadow,
+                textAlign: 'left',
+                justifyContent: 'flex-start',
               }}
             >
+              <Box sx={{ width: 52, height: 52, flexShrink: 0, borderRadius: '999px', bgcolor: 'background.default', display: 'grid', placeItems: 'center' }}>
+                <LocalShippingOutlinedIcon />
+              </Box>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography sx={{ fontWeight: 700, fontSize: 15 }}>Free delivery</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: 12.5 }}>
+                  {deliveryLine}
+                </Typography>
+              </Box>
+              <RingGauge
+                value={delivery.progress}
+                size={56}
+                label={`${Math.round(delivery.progress * 100)}%`}
+                ariaLabel={`${Math.round(delivery.progress * 100)} percent of the way to free delivery`}
+              />
+            </ButtonBase>
+          </Box>
+
+          <Box sx={{ flex: '1 1 520px', minWidth: 0, display: { xs: 'none', md: 'block' } }}>
+            <PhotoTile
+              src="/images/hero.jpg"
+              alt="Woman with deep brown skin and an afro, hands raised to frame her glowing face"
+              height="clamp(440px, 46vw, 620px)"
+              radius="48px"
+              priority
+              sizes="(max-width: 1200px) 50vw, 620px"
+              objectPosition="50% 28%"
+            >
+              <Box component="svg" viewBox="0 0 520 270" aria-hidden="true" sx={{ position: 'absolute', left: '6%', width: '88%', top: '30%' }}>
+                <path d="M20 260a240 240 0 0 1 480 0" fill="none" stroke="#FFFFFF" strokeWidth={2.5} strokeDasharray="2 9" strokeLinecap="round" />
+                <path d="M20 260a240 240 0 0 1 380 -210" fill="none" stroke="#FFFFFF" strokeWidth={3} strokeLinecap="round" opacity={0.9} />
+                <circle cx={400} cy={50} r={7} fill="#FFFFFF" />
+              </Box>
               <Box
-                component={Link}
-                href={`/products/${heroProduct.slug}`}
-                aria-label={`Explore ${heroProduct.name}, ${heroProduct.type}`}
                 sx={{
-                  display: 'block',
-                  textDecoration: 'none',
-                  color: 'inherit',
+                  position: 'absolute',
+                  left: 20,
+                  top: 20,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  py: 1,
+                  pl: 1,
+                  pr: 2,
+                  borderRadius: '999px',
+                  bgcolor: 'glow.scrim',
+                  boxShadow: (t) => t.palette.glow.shadow,
                 }}
               >
-                <ArchedWindow enableLightSweep animateRiseOnLoad>
-                  <Image
-                    src={primaryImage.url}
-                    alt={primaryImage.alt}
-                    fill
-                    priority
-                    fetchPriority="high"
-                    placeholder="blur"
-                    blurDataURL={primaryImage.blurDataURL}
-                    sizes="(max-width: 900px) 90vw, 520px"
-                    style={{ objectFit: 'cover' }}
-                  />
-                </ArchedWindow>
-
-                {/* Metadata caption card */}
+                <Box sx={{ width: 40, height: 40, borderRadius: '999px', bgcolor: 'background.default', display: 'grid', placeItems: 'center' }}>
+                  <LocalShippingOutlinedIcon sx={{ fontSize: 19 }} />
+                </Box>
+                <Box>
+                  <Typography sx={{ fontSize: 13.5, fontWeight: 700 }}>Free delivery over {threshold}</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Lagos &amp; Abuja · delivering to all 36 states + FCT
+                  </Typography>
+                </Box>
+              </Box>
+              {signature ? (
                 <Box
+                  component={Link}
+                  href={`/products/${signature.slug}`}
                   sx={{
-                    mt: 2.5,
+                    position: 'absolute',
+                    right: 20,
+                    bottom: 20,
                     display: 'flex',
-                    alignItems: 'baseline',
-                    justifyContent: 'space-between',
-                    gap: 2,
-                    px: 0.5,
+                    alignItems: 'center',
+                    gap: 1.75,
+                    py: 1,
+                    pr: 1,
+                    pl: 2.25,
+                    borderRadius: '999px',
+                    bgcolor: 'glow.scrim',
+                    color: 'text.primary',
+                    textDecoration: 'none',
+                    boxShadow: (t) => t.palette.glow.shadow,
                   }}
                 >
                   <Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                      <Typography
-                        sx={{
-                          fontSize: '0.84375rem',
-                          fontWeight: 600,
-                          letterSpacing: '0.04em',
-                          textTransform: 'uppercase',
-                          color: 'text.primary',
-                          opacity: 0.8,
-                        }}
-                      >
-                        2026 Signature formulation
-                      </Typography>
-                    </Box>
-                    <Typography
-                      sx={{
-                        fontFamily: 'var(--font-italiana), "Italiana", serif',
-                        fontSize: '1.75rem',
-                        fontWeight: 400,
-                        WebkitTextStroke: '0.25px currentColor',
-                        color: 'text.primary',
-                        lineHeight: 1.15,
-                      }}
-                    >
-                      {heroProduct.name}
+                    <Typography variant="caption" color="text.secondary">
+                      2026 signature
                     </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{ color: 'text.secondary', fontSize: '1rem', fontWeight: 500 }}
-                    >
-                      {heroProduct.type} · {heroProduct.variants[0]?.label}
+                    <Typography sx={{ fontSize: 14.5, fontWeight: 700 }}>
+                      {signature.name} · {formatKoboToNgn(signature.variants[0]?.price_kobo ?? 0)}
                     </Typography>
                   </Box>
-
-                  <Box sx={{ textAlign: 'right' }}>
-                    <Typography
-                      sx={{
-                        fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                        fontWeight: 700,
-                        fontSize: '1.35rem',
-                        color: 'text.primary',
-                      }}
-                    >
-                      {formatKoboToNgn(startingPrice)}
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.84375rem', color: 'text.secondary', fontWeight: 500 }}>
-                      Free delivery eligible
-                    </Typography>
+                  <Box sx={{ width: 40, height: 40, borderRadius: '999px', bgcolor: 'primary.main', color: 'primary.contrastText', display: 'grid', placeItems: 'center' }}>
+                    <AddRoundedIcon sx={{ fontSize: 18 }} />
                   </Box>
                 </Box>
-              </Box>
-            </Box>
-          )}
+              ) : null}
+            </PhotoTile>
+          </Box>
         </Box>
       </Container>
     </Box>

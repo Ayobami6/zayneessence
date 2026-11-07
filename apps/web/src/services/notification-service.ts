@@ -1,4 +1,4 @@
-import { NotificationDispatchLog, OrderRecord, OrderStatus } from '@/types/domain';
+import { NotificationDispatchLog, OrderRecord, OrderStatus, StoreSettings } from '@/types/domain';
 
 const STATUS_MESSAGES: Record<OrderStatus, string> = {
   paid: 'Order placed and payment confirmed. Our studio is preparing your pieces.',
@@ -7,10 +7,17 @@ const STATUS_MESSAGES: Record<OrderStatus, string> = {
   delivered: 'Your order has been delivered. Enjoy your ritual.',
 };
 
+/** WhatsApp is available when the studio turns it on in settings or the deployment sets the env flag. */
+export function isWhatsAppAvailable(settings: Pick<StoreSettings, 'whatsappUpdatesEnabled'>): boolean {
+  const envFlag =
+    typeof process !== 'undefined' && process.env.NEXT_PUBLIC_ENABLE_WHATSAPP_UPDATES === 'true';
+  return settings.whatsappUpdatesEnabled || envFlag;
+}
+
 export function createOrderNotifications(
-  order: Pick<OrderRecord, 'id' | 'orderNumber' | 'customerEmail' | 'customerPhone'>,
+  order: Pick<OrderRecord, 'id' | 'orderNumber' | 'customerEmail' | 'customerPhone' | 'whatsappOptIn'>,
   status: OrderStatus,
-  whatsappEnabled: boolean
+  settings: Pick<StoreSettings, 'whatsappUpdatesEnabled'>
 ): NotificationDispatchLog[] {
   const now = new Date().toISOString();
   const logs: NotificationDispatchLog[] = [
@@ -25,11 +32,8 @@ export function createOrderNotifications(
     },
   ];
 
-  const envFlag =
-    typeof process !== 'undefined' &&
-    process.env.NEXT_PUBLIC_ENABLE_WHATSAPP_UPDATES === 'true';
-
-  if (whatsappEnabled || envFlag) {
+  // The customer's opt-out always wins, even when WhatsApp is switched on for the store.
+  if (order.whatsappOptIn !== false && isWhatsAppAvailable(settings)) {
     logs.push({
       id: `notif-wa-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       orderId: order.id,

@@ -9,6 +9,10 @@ export default defineConfig({
   retries: 0,
   workers: 1,
   reporter: 'list',
+  // The suite runs against `next dev`, which compiles each route on first visit
+  // (and optimises images without `sharp`), so first navigations can be slow.
+  timeout: 60000,
+  expect: { timeout: 15000 },
   use: {
     baseURL: `http://localhost:${PORT}`,
     trace: 'on-first-retry',
@@ -16,8 +20,17 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
+      testIgnore: /mobile\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
+        channel: 'chrome',
+      },
+    },
+    {
+      name: 'mobile-chrome',
+      testMatch: /mobile\.spec\.ts/,
+      use: {
+        ...devices['Pixel 7'],
         channel: 'chrome',
       },
     },

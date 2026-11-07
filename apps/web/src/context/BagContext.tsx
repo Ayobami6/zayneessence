@@ -7,11 +7,32 @@ import Box from '@mui/material/Box';
 import { CartItem, Product, ProductVariant } from '@/types/domain';
 import { useStoreData } from './StoreDataContext';
 import { formatKoboToNgn } from '@/utils/currency';
+import { getFreeDeliveryProgress } from '@/services/store-service';
 
 const BAG_STORAGE_KEY = 'zayneessence_bag_v1';
+/** Most units of one size a shopper can hold in the bag, whatever the stock. */
+export const MAX_UNITS_PER_LINE = 9;
+
+/** A bag line with the current product photo and how many units the shopper may hold. */
+export interface BagLine extends CartItem {
+  maxQuantity: number;
+}
+
+export interface BagAddLine {
+  product: Product;
+  variant: ProductVariant;
+  quantity?: number;
+}
+
+export interface BagAddResult {
+  /** Units actually added across all lines. */
+  addedUnits: number;
+  /** Names of pieces where stock (or the per-line cap) allowed fewer units than asked. */
+  limited: string[];
+}
 
 interface BagContextValue {
-  items: CartItem[];
+  items: BagLine[];
   totalCount: number;
   subtotalKobo: number;
   remainingForFreeDeliveryKobo: number;
@@ -20,7 +41,9 @@ interface BagContextValue {
   isBagOpen: boolean;
   openBag: () => void;
   closeBag: () => void;
-  addToBag: (product: Product, variant: ProductVariant, quantity?: number) => void;
+  addToBag: (product: Product, variant: ProductVariant, quantity?: number) => BagAddResult;
+  /** Adds several pieces at once (rituals, Buy again) with one confirmation. */
+  addLinesToBag: (lines: BagAddLine[]) => BagAddResult;
   updateQuantity: (itemId: string, quantity: number) => void;
   removeItem: (itemId: string) => void;
   clearBag: () => void;
@@ -31,12 +54,14 @@ interface BagContextValue {
 const BagContext = createContext<BagContextValue | undefined>(undefined);
 
 export function BagProvider({ children }: { children: React.ReactNode }) {
-  const { settings } = useStoreData();
-  const [items, setItems] = useState<CartItem[]>([]);
+  const { settings, products } = useStoreData();
+  const [storedItems, setItems] = useState<CartItem[]>([]);
   const [isBagOpen, setIsBagOpen] = useState<boolean>(false);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [badgeBumpKey, setBadgeBumpKey] = useState<number>(0);
   const [liveAnnouncement, setLiveAnnouncement] = useState<string>('');
+  const [snackbarMessage, setSnackbarMessage] = useState<string>('Added to bag');
+  const [hasLoadedBag, setHasLoadedBag] = useState<boolean>(false);
 
   useEffect(() => {
     try {
@@ -50,29 +75,73 @@ export function BagProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Ignore storage error
     }
+    setHasLoadedBag(true);
   }, []);
 
-  const persistBag = (next: CartItem[]) => {
-    setItems(next);
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(BAG_STORAGE_KEY, JSON.stringify(next));
+  // Persist after every change, outside the state updaters, so a failed write
+  // (quota, private mode) never blocks the in-memory bag.
+  useEffect(() => {
+    if (!hasLoadedBag) return;
+    try {
+      window.localStorage.setItem(BAG_STORAGE_KEY, JSON.stringify(storedItems));
+    } catch {
+      // The bag keeps working for this visit; it just won't survive a reload.
     }
-  };
+  }, [storedItems, hasLoadedBag]);
 
-  const addToBag = (product: Product, variant: ProductVariant, quantity = 1) => {
-    const itemId = `${product.id}__${variant.id}`;
-    const primaryImage = product.images[0];
+  const findVariant = (productId: string, variantId: string) =>
+    products.find((p) => p.id === productId)?.variants.find((v) => v.id === variantId);
 
-    setItems((prev) => {
-      const existing = prev.find((item) => item.id === itemId);
-      const next = existing
-        ? prev.map((item) =>
-            item.id === itemId
-              ? { ...item, quantity: item.quantity + quantity }
-              : item
-          )
-        : [
-            ...prev,
+  /** Units of a size a shopper may hold: current stock, capped per line. */
+  const capFor = (stock: number) => Math.max(0, Math.min(MAX_UNITS_PER_LINE, stock));
+
+  // Always show the product's current photo, so bags saved before a catalogue
+  // change never point at retired image files, and expose the stock cap.
+  const items = useMemo<BagLine[]>(
+    () =>
+      storedItems.map((item) => {
+        const product = products.find((p) => p.id === item.productId);
+        const variant = product?.variants.find((v) => v.id === item.variantId);
+        const image = product?.images[0];
+        return {
+          ...item,
+          thumbnailUrl: image?.url ?? item.thumbnailUrl,
+          thumbnailAlt: image?.alt ?? item.thumbnailAlt,
+          maxQuantity: variant ? capFor(variant.stock) : Math.min(MAX_UNITS_PER_LINE, item.quantity),
+        };
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [storedItems, products]
+  );
+
+  const addLinesToBag = (lines: BagAddLine[]): BagAddResult => {
+    const limited: string[] = [];
+    const accepted: Array<{ product: Product; variant: ProductVariant; quantity: number }> = [];
+
+    for (const { product, variant, quantity = 1 } of lines) {
+      const inBag = storedItems.find((i) => i.id === `${product.id}__${variant.id}`)?.quantity ?? 0;
+      const room = Math.max(0, capFor(variant.stock) - inBag);
+      const allowed = Math.min(quantity, room);
+      if (allowed < quantity) limited.push(product.name);
+      if (allowed > 0) accepted.push({ product, variant, quantity: allowed });
+    }
+
+    const addedUnits = accepted.reduce((sum, line) => sum + line.quantity, 0);
+
+    if (accepted.length > 0) {
+      setItems((prev) =>
+        accepted.reduce<CartItem[]>((acc, { product, variant, quantity }) => {
+          const itemId = `${product.id}__${variant.id}`;
+          const cap = capFor(variant.stock);
+          const existing = acc.find((item) => item.id === itemId);
+          if (existing) {
+            return acc.map((item) =>
+              item.id === itemId ? { ...item, quantity: Math.min(cap, item.quantity + quantity) } : item
+            );
+          }
+          const primaryImage = product.images[0];
+          return [
+            ...acc,
             {
               id: itemId,
               productId: product.id,
@@ -82,55 +151,72 @@ export function BagProvider({ children }: { children: React.ReactNode }) {
               type: product.type,
               sizeLabel: variant.label,
               priceKobo: variant.price_kobo,
-              quantity,
-              thumbnailUrl: primaryImage?.url || '/products/serum-lumiere/1.svg',
+              quantity: Math.min(cap, quantity),
+              thumbnailUrl: primaryImage?.url || '/products/serum-lumiere/1.jpg',
               thumbnailAlt: primaryImage?.alt || product.name,
             },
           ];
+        }, prev)
+      );
+      setBadgeBumpKey((k) => k + 1);
+    }
 
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(BAG_STORAGE_KEY, JSON.stringify(next));
-      }
-      return next;
-    });
-
-    setBadgeBumpKey((k) => k + 1);
+    const limitedNames = limited.join(', ');
+    let message: string;
+    let announcement: string;
+    if (addedUnits === 0) {
+      message = limited.length > 0 ? `No more ${limitedNames} in stock to add.` : 'Nothing to add.';
+      announcement = message;
+    } else if (limited.length > 0) {
+      message = `Added to bag. Only the remaining stock of ${limitedNames} was added.`;
+      announcement = `Added ${addedUnits} ${addedUnits === 1 ? 'piece' : 'pieces'} to bag. ${limitedNames}: limited by stock.`;
+    } else {
+      message = 'Added to bag';
+      announcement =
+        accepted.length === 1
+          ? `Added ${accepted[0].quantity} ${accepted[0].product.name} (${accepted[0].variant.label}) to bag. Price ${formatKoboToNgn(
+              accepted[0].variant.price_kobo * accepted[0].quantity
+            )}.`
+          : `Added ${addedUnits} pieces to bag.`;
+    }
+    setSnackbarMessage(message);
     setSnackbarOpen(true);
-    setLiveAnnouncement(
-      `Added ${quantity} ${product.name} (${variant.label}) to bag. Price ${formatKoboToNgn(
-        variant.price_kobo * quantity
-      )}.`
-    );
+    setLiveAnnouncement(announcement);
+
+    return { addedUnits, limited };
   };
+
+  const addToBag = (product: Product, variant: ProductVariant, quantity = 1) =>
+    addLinesToBag([{ product, variant, quantity }]);
 
   const updateQuantity = (itemId: string, quantity: number) => {
     if (quantity <= 0) {
       removeItem(itemId);
       return;
     }
-    const next = items.map((item) =>
-      item.id === itemId ? { ...item, quantity } : item
-    );
-    persistBag(next);
-    const updatedItem = next.find((i) => i.id === itemId);
-    if (updatedItem) {
+    const current = storedItems.find((i) => i.id === itemId);
+    const variant = current ? findVariant(current.productId, current.variantId) : undefined;
+    const nextQuantity = variant ? Math.min(quantity, Math.max(1, capFor(variant.stock))) : quantity;
+    setItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, quantity: nextQuantity } : item)));
+    if (current) {
       setLiveAnnouncement(
-        `Updated ${updatedItem.name} (${updatedItem.sizeLabel}) quantity to ${quantity}.`
+        nextQuantity < quantity
+          ? `Only ${nextQuantity} ${current.name} available. Quantity set to ${nextQuantity}.`
+          : `Updated ${current.name} quantity to ${nextQuantity}.`
       );
     }
   };
 
   const removeItem = (itemId: string) => {
-    const removed = items.find((i) => i.id === itemId);
-    const next = items.filter((item) => item.id !== itemId);
-    persistBag(next);
+    const removed = storedItems.find((i) => i.id === itemId);
+    setItems((prev) => prev.filter((item) => item.id !== itemId));
     if (removed) {
       setLiveAnnouncement(`Removed ${removed.name} from bag.`);
     }
   };
 
   const clearBag = () => {
-    persistBag([]);
+    setItems([]);
     setLiveAnnouncement('Cleared all items from bag.');
   };
 
@@ -144,18 +230,10 @@ export function BagProvider({ children }: { children: React.ReactNode }) {
     [items]
   );
 
-  const remainingForFreeDeliveryKobo = Math.max(
-    0,
-    settings.freeDeliveryThresholdKobo - subtotalKobo
-  );
-
-  const hasUnlockedFreeDelivery =
-    subtotalKobo >= settings.freeDeliveryThresholdKobo && subtotalKobo > 0;
-
-  const freeDeliveryProgressPercent = Math.min(
-    100,
-    Math.round((subtotalKobo / settings.freeDeliveryThresholdKobo) * 100)
-  );
+  const freeDelivery = getFreeDeliveryProgress(subtotalKobo, settings);
+  const remainingForFreeDeliveryKobo = freeDelivery.remainingKobo;
+  const hasUnlockedFreeDelivery = freeDelivery.unlocked;
+  const freeDeliveryProgressPercent = Math.round(freeDelivery.progress * 100);
 
   const value = useMemo(
     () => ({
@@ -169,6 +247,7 @@ export function BagProvider({ children }: { children: React.ReactNode }) {
       openBag: () => setIsBagOpen(true),
       closeBag: () => setIsBagOpen(false),
       addToBag,
+      addLinesToBag,
       updateQuantity,
       removeItem,
       clearBag,
@@ -221,7 +300,7 @@ export function BagProvider({ children }: { children: React.ReactNode }) {
         autoHideDuration={4000}
         onClose={() => setSnackbarOpen(false)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        message="Added to bag"
+        message={snackbarMessage}
         sx={{
           bottom: { xs: 84, md: 28 },
         }}

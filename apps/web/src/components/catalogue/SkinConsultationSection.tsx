@@ -1,378 +1,238 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import ToggleButton from '@mui/material/ToggleButton';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
+import ButtonBase from '@mui/material/ButtonBase';
+import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
+import WaterDropOutlinedIcon from '@mui/icons-material/WaterDropOutlined';
+import NightsStayOutlinedIcon from '@mui/icons-material/NightsStayOutlined';
+import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined';
+import { AccentHeading, ArcGauge, PhotoTile } from '@/components/glow';
+import { rovingRadioProps } from '@/components/glow/rovingRadio';
 import { useStoreData } from '@/context/StoreDataContext';
 import { useBag } from '@/context/BagContext';
+import {
+  CONSULTATION_RITUALS,
+  RitualGoalId,
+  RitualIcon,
+  getUnavailableRitualSteps,
+  resolveRitualSteps,
+} from '@/data/rituals';
 import { formatKoboToNgn } from '@/utils/currency';
 
-type RitualGoalId =
-  | 'hyperpigmentation'
-  | 'barrier_recovery'
-  | 'evening_oud_layering'
-  | 'daytime_skin_scent';
+const ICONS: Record<RitualIcon, React.ReactNode> = {
+  sparkle: <AutoAwesomeOutlinedIcon />,
+  drop: <WaterDropOutlinedIcon />,
+  moon: <NightsStayOutlinedIcon />,
+  sun: <WbSunnyOutlinedIcon />,
+};
 
-interface RitualDefinition {
-  id: RitualGoalId;
-  label: string;
-  headline: string;
-  summary: string;
-  steps: Array<{
-    stepLabel: string;
-    slug: string;
-    note: string;
-  }>;
-}
+const GOAL_IDS: readonly RitualGoalId[] = CONSULTATION_RITUALS.map((r) => r.id);
 
-const RITUALS: RitualDefinition[] = [
-  {
-    id: 'hyperpigmentation',
-    label: 'Even tone & brightening',
-    headline: 'Morning radiance for melanin-rich skin',
-    summary:
-      'Pairs cold-pressed baobab, Kano hibiscus alpha-hydroxy acids and 5% niacinamide to soften dark marks without sensitising melanin-rich skin.',
-    steps: [
-      {
-        stepLabel: 'Step 1 · Treat',
-        slug: 'serum-lumiere',
-        note: 'Press three drops into damp skin to target uneven tone and post-blemish marks.',
-      },
-      {
-        stepLabel: 'Step 2 · Seal',
-        slug: 'huile-visage',
-        note: 'Lock in hydration with two drops of cold-pressed baobab and Zaria moringa oil.',
-      },
-      {
-        stepLabel: 'Step 3 · Scent',
-        slug: 'musc-soie',
-        note: 'Finish with a quiet touch of botanical silk musk on the wrists.',
-      },
-    ],
-  },
-  {
-    id: 'barrier_recovery',
-    label: 'Dry skin & harmattan repair',
-    headline: 'Overnight lipid replenishment with unrefined shea',
-    summary:
-      'Built around hand-kneaded northern Nigerian shea butter from Kwara and Niger states to restore dry, tight barriers overnight.',
-    steps: [
-      {
-        stepLabel: 'Step 1 · Nourish',
-        slug: 'huile-visage',
-        note: 'Warm three drops between palms and press across cheeks and neck.',
-      },
-      {
-        stepLabel: 'Step 2 · Cocoon',
-        slug: 'creme-velours',
-        note: 'Melt a pea-sized amount of unrefined shea night cream over the face to seal the barrier.',
-      },
-      {
-        stepLabel: 'Step 3 · Body',
-        slug: 'huile-precieuse',
-        note: 'Smooth shea olein and desert date dry oil across shoulders and shins after bathing.',
-      },
-    ],
-  },
-  {
-    id: 'evening_oud_layering',
-    label: 'Evening oud layering',
-    headline: 'How our studio layers pure oud and eau de parfum',
-    summary:
-      'In warm Nigerian air, layering an oil base beneath eau de parfum anchors the heartwood resin so it unfolds slowly until morning.',
-    steps: [
-      {
-        stepLabel: 'Step 1 · Prepare skin',
-        slug: 'oud-et-santal',
-        note: 'Smooth moringa and sandalwood oil over collarbones so fragrance has a lipid base to hold.',
-      },
-      {
-        stepLabel: 'Step 2 · Pulse points',
-        slug: 'oud-mubakhar',
-        note: 'Touch the glass dipstick of six-year-aged pure oud oil to the inside of each wrist.',
-      },
-      {
-        stepLabel: 'Step 3 · Mist',
-        slug: 'nuit-doud',
-        note: 'Mist Nuit d’Oud once from twenty centimetres away to complete the sillage.',
-      },
-    ],
-  },
-  {
-    id: 'daytime_skin_scent',
-    label: 'Close-to-skin rose & musk',
-    headline: 'Intimate daytime scent and gleamed skin',
-    summary:
-      'For warm afternoons in Lagos or Abuja when you want skin that looks quietly luminous and smells of dewy rose and clean cotton.',
-    steps: [
-      {
-        stepLabel: 'Step 1 · Body gleam',
-        slug: 'huile-precieuse',
-        note: 'Apply to damp skin after showering for a satin finish that never transfers to linen.',
-      },
-      {
-        stepLabel: 'Step 2 · Attar pulse',
-        slug: 'rose-taifi',
-        note: 'Glide Rose Taïfi across the wrists for a bright, un-powdery Damask rose lift.',
-      },
-      {
-        stepLabel: 'Step 3 · Veil',
-        slug: 'velours-blanc',
-        note: 'Mist Velours Blanc onto the inside of your collar for a soft ambrette and rice-vapour trail.',
-      },
-    ],
-  },
-];
-
+/** Skin & scent consultation: pick a goal, get a three-step ritual priced from the catalogue. */
 export function SkinConsultationSection() {
   const { publishedProducts } = useStoreData();
-  const { addToBag } = useBag();
+  const { addLinesToBag } = useBag();
   const [selectedGoal, setSelectedGoal] = useState<RitualGoalId>('hyperpigmentation');
+  const [added, setAdded] = useState(false);
+  const addedTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  const currentRitual =
-    RITUALS.find((r) => r.id === selectedGoal) || RITUALS[0];
+  // A goal chosen on the home page arrives as /consultation?goal=…
+  useEffect(() => {
+    const goal = new URLSearchParams(window.location.search).get('goal');
+    if (goal && GOAL_IDS.includes(goal as RitualGoalId)) setSelectedGoal(goal as RitualGoalId);
+  }, []);
 
-  const resolvedSteps = currentRitual.steps
-    .map((step) => {
-      const product = publishedProducts.find((p) => p.slug === step.slug);
-      return product ? { ...step, product } : null;
-    })
-    .filter(
-      (
-        item
-      ): item is {
-        stepLabel: string;
-        slug: string;
-        note: string;
-        product: NonNullable<typeof publishedProducts[number]>;
-      } => item !== null
-    );
+  useEffect(() => () => clearTimeout(addedTimer.current), []);
 
-  const ritualTotalKobo = resolvedSteps.reduce(
-    (sum, item) => sum + (item.product.variants[0]?.price_kobo || 0),
-    0
-  );
+  // Switching goals clears the "added" confirmation, which belonged to the previous ritual.
+  const chooseGoal = (id: RitualGoalId) => {
+    clearTimeout(addedTimer.current);
+    setAdded(false);
+    setSelectedGoal(id);
+  };
 
-  const handleAddFullRitual = () => {
-    for (const step of resolvedSteps) {
-      const firstVariant = step.product.variants[0];
-      if (firstVariant) {
-        addToBag(step.product, firstVariant, 1);
-      }
-    }
+  const ritual = CONSULTATION_RITUALS.find((r) => r.id === selectedGoal) || CONSULTATION_RITUALS[0];
+  const steps = resolveRitualSteps(ritual.steps, publishedProducts);
+  const unavailable = getUnavailableRitualSteps(ritual.steps, publishedProducts);
+  const isComplete = unavailable.length === 0;
+  const totalKobo = steps.reduce((sum, s) => sum + s.variant.price_kobo, 0);
+  const verbs = ritual.steps.map((s) => s.verb);
+  const availability = isComplete
+    ? `Complete ritual · ${ritual.steps.length} steps`
+    : `${steps.length} of ${ritual.steps.length} steps available`;
+
+  const handleAddRitual = () => {
+    const { addedUnits } = addLinesToBag(steps.map((s) => ({ product: s.product, variant: s.variant, quantity: 1 })));
+    if (addedUnits === 0) return;
+    clearTimeout(addedTimer.current);
+    setAdded(true);
+    addedTimer.current = setTimeout(() => setAdded(false), 2200);
   };
 
   return (
-    <Box
-      id="consultation"
-      component="section"
-      aria-label="Skin and scent consultation"
-      sx={{
-        mt: { xs: 8, md: 12 },
-        py: { xs: 6, md: 9 },
-        borderTop: 1,
-        borderBottom: 1,
-        borderColor: 'divider',
-        bgcolor: 'background.paper',
-      }}
-    >
+    <Box id="consultation" component="section" aria-labelledby="consultation-heading" sx={{ pt: { xs: 1, md: 3 }, pb: { xs: 4, md: 6 } }}>
       <Container maxWidth="lg">
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            alignItems: { xs: 'flex-start', md: 'flex-end' },
-            justifyContent: 'space-between',
-            gap: 3,
-            mb: 4,
-          }}
-        >
-          <Box>
-            <Typography variant="h2" sx={{ mb: 1.5 }}>
-              Skin and scent consultation
-            </Typography>
-            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-              Select your skin concern or fragrance mood to view our studio’s three-step
-              ritual recommendation.
-            </Typography>
-          </Box>
-
-          <ToggleButtonGroup
-            exclusive
-            value={selectedGoal}
-            onChange={(_e, next) => {
-              if (next !== null) setSelectedGoal(next);
-            }}
-            aria-label="Choose skin concern or fragrance mood"
-          >
-            {RITUALS.map((ritual) => (
-              <ToggleButton
-                key={ritual.id}
-                value={ritual.id}
-                data-testid={`consultation-goal-${ritual.id}`}
-              >
-                {ritual.label}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-        </Box>
-
-        <Box
-          sx={{
-            p: { xs: 3, md: 4.5 },
-            borderRadius: 1,
-            border: 1,
-            borderColor: 'divider',
-            bgcolor: 'background.default',
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: { xs: 'column', md: 'row' },
-              justifyContent: 'space-between',
-              alignItems: { xs: 'flex-start', md: 'center' },
-              gap: 2,
-              mb: 3.5,
-            }}
-          >
-            <Box>
-              <Typography variant="h3" sx={{ mb: 0.75 }}>
-                {currentRitual.headline}
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {currentRitual.summary}
-              </Typography>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: { xs: 2.5, md: 6 }, alignItems: 'flex-start' }}>
+          <Box sx={{ flex: '1 1 420px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: { xs: 2, md: 2.75 } }}>
+            <Box sx={{ alignSelf: 'flex-start', height: 32, px: 1.75, borderRadius: '999px', bgcolor: 'background.paper', display: 'inline-flex', alignItems: 'center', gap: 1, fontSize: 12.5, fontWeight: 600 }}>
+              <Box component="span" sx={{ width: 7, height: 7, borderRadius: '999px', bgcolor: 'glow.accent' }} />
+              Skin &amp; scent consultation
             </Box>
+            <AccentHeading
+              id="consultation-heading"
+              component="h1"
+              variant="h1"
+              text="What should your ritual"
+              accent="do?"
+              sx={{ fontSize: { xs: 31, md: 'clamp(40px, 4.6vw, 64px)' } }}
+            />
+            <Typography color="text.secondary" sx={{ display: { xs: 'none', md: 'block' }, maxWidth: 460 }}>
+              Pick one goal. The studio builds a three-step ritual from the collection for melanin-rich skin, priced as one.
+            </Typography>
 
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddFullRitual}
-              data-testid="add-ritual-to-bag-button"
-              sx={{ flexShrink: 0 }}
-            >
-              Add 3-piece ritual · {formatKoboToNgn(ritualTotalKobo)}
-            </Button>
-          </Box>
-
-          <Divider sx={{ mb: 3.5 }} />
-
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
-              gap: 3,
-            }}
-          >
-            {resolvedSteps.map(({ stepLabel, note, product }) => {
-              const firstVariant = product.variants[0];
-              const primaryImage = product.images[0];
-              return (
-                <Box
-                  key={product.id}
-                  sx={{
-                    p: 2.5,
-                    borderRadius: 1,
-                    border: 1,
-                    borderColor: 'divider',
-                    bgcolor: 'background.paper',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    gap: 2,
-                  }}
-                >
-                  <Box>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        display: 'block',
-                        color: 'text.secondary',
-                        mb: 1.5,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {stepLabel}
-                    </Typography>
-
+            <Box role="radiogroup" aria-label="Choose your ritual goal" sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: { xs: 1.25, md: 1.5 } }}>
+              {CONSULTATION_RITUALS.map((r) => {
+                const active = r.id === selectedGoal;
+                return (
+                  <ButtonBase
+                    key={r.id}
+                    {...rovingRadioProps(GOAL_IDS, selectedGoal, chooseGoal, r.id)}
+                    onClick={() => chooseGoal(r.id)}
+                    data-testid={`consultation-goal-${r.id}`}
+                    sx={{
+                      height: { xs: 108, md: 124 },
+                      p: { xs: 1.75, md: 2.25 },
+                      borderRadius: '28px',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      justifyContent: 'space-between',
+                      textAlign: 'left',
+                      bgcolor: active ? 'primary.main' : 'background.paper',
+                      color: active ? 'primary.contrastText' : 'text.primary',
+                      transition: 'background-color 0.25s ease',
+                    }}
+                  >
                     <Box
                       sx={{
+                        width: 38,
+                        height: 38,
+                        borderRadius: '999px',
                         display: 'grid',
-                        gridTemplateColumns: '72px 1fr',
-                        gap: 2,
-                        alignItems: 'center',
-                        mb: 2,
+                        placeItems: 'center',
+                        bgcolor: active ? 'rgba(255,255,255,0.14)' : 'background.default',
+                        '& svg': { fontSize: 18 },
                       }}
                     >
-                      <Box
-                        component={Link}
-                        href={`/products/${product.slug}`}
-                        sx={(t) => ({
-                          position: 'relative',
-                          width: 72,
-                          aspectRatio: '4 / 5',
-                          borderRadius: `${t.palette.zayne.tileRadius}px`,
-                          bgcolor: t.palette.zayne.productTile,
-                          overflow: 'hidden',
-                          display: 'block',
-                        })}
-                      >
-                        {primaryImage && (
-                          <Image
-                            src={primaryImage.url}
-                            alt={primaryImage.alt}
-                            fill
-                            sizes="72px"
-                            style={{ objectFit: 'cover' }}
-                          />
-                        )}
-                      </Box>
-
-                      <Box>
-                        <Typography
-                          component={Link}
-                          href={`/products/${product.slug}`}
-                          variant="h4"
-                          sx={{
-                            display: 'block',
-                            color: 'text.primary',
-                            textDecoration: 'none',
-                            mb: 0.25,
-                          }}
-                        >
-                          {product.name}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                          {product.type} · {firstVariant?.label}
-                        </Typography>
-                      </Box>
+                      {ICONS[r.icon]}
                     </Box>
+                    <Box component="span" sx={{ fontSize: { xs: 14, md: 15 }, lineHeight: 1.25, fontWeight: 700 }}>
+                      {r.label}
+                    </Box>
+                  </ButtonBase>
+                );
+              })}
+            </Box>
 
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      {note}
+            <PhotoTile
+              src="/images/apply.jpg"
+              alt="Woman with deep brown skin pressing cream into her cheek"
+              height={240}
+              radius="32px"
+              sizes="560px"
+              objectPosition="50% 40%"
+              sx={{ display: { xs: 'none', md: 'block' } }}
+            >
+              <Box sx={{ position: 'absolute', left: 16, right: 16, bottom: 16, px: 2, py: 1.5, borderRadius: '20px', bgcolor: 'glow.scrim', fontSize: 13.5, fontWeight: 600 }}>
+                Every ritual is formulated for melanin-rich skin, with zero white cast.
+              </Box>
+            </PhotoTile>
+          </Box>
+
+          <Box
+            component="section"
+            aria-labelledby="ritual-result-heading"
+            aria-live="polite"
+            sx={{ flex: '1 1 480px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2.25, p: { xs: 2.25, md: 5 }, borderRadius: { xs: '32px', md: '40px' }, bgcolor: 'background.paper' }}
+          >
+            <ArcGauge
+              segments={verbs}
+              value={formatKoboToNgn(totalKobo)}
+              caption={availability}
+              ariaLabel={`Your ritual has ${ritual.steps.length} steps: ${verbs.join(', ')}. ${availability}, ${formatKoboToNgn(totalKobo)}`}
+              maxWidth={380}
+            />
+            <Box>
+              <Typography variant="eyebrow" component="p">
+                Your ritual
+              </Typography>
+              <Typography id="ritual-result-heading" component="h2" variant="h3" sx={{ fontSize: { xs: 21, md: 26 }, mt: 0.5 }}>
+                {ritual.headline}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1, fontSize: { md: 15 } }}>
+                {ritual.summary}
+              </Typography>
+            </Box>
+            <Box component="ol" sx={{ m: 0, p: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+              {steps.map((s, i) => (
+                <Box key={s.slug} component="li" sx={{ display: 'flex', alignItems: 'center', gap: 1.75, p: 1.25, borderRadius: '24px', bgcolor: 'background.default' }}>
+                  <Box
+                    component={Link}
+                    href={`/products/${s.product.slug}`}
+                    aria-label={s.product.name}
+                    sx={{ position: 'relative', width: { xs: 64, md: 88 }, height: { xs: 76, md: 100 }, flexShrink: 0, borderRadius: '18px', overflow: 'hidden', bgcolor: 'glow.petal' }}
+                  >
+                    {s.product.images[0] ? <Image src={s.product.images[0].url} alt="" fill sizes="88px" style={{ objectFit: 'cover' }} /> : null}
+                    <Box sx={{ position: 'absolute', top: 6, left: 6, width: 22, height: 22, borderRadius: '999px', bgcolor: 'primary.main', color: 'primary.contrastText', display: 'grid', placeItems: 'center', fontSize: 11.5, fontWeight: 800 }}>
+                      {i + 1}
+                    </Box>
+                  </Box>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography variant="eyebrow" component="p" sx={{ fontSize: 11.5 }}>
+                      Step {i + 1} · {s.verb}
+                    </Typography>
+                    <Typography sx={{ fontSize: { xs: 15, md: 16 }, fontWeight: 700 }}>{s.product.name}</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: 12.5, md: 13.5 } }}>
+                      {s.note}
                     </Typography>
                   </Box>
-
-                  {firstVariant && (
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => addToBag(product, firstVariant, 1)}
-                    >
-                      Add to bag · {formatKoboToNgn(firstVariant.price_kobo)}
-                    </Button>
-                  )}
+                  <Typography variant="price" sx={{ alignSelf: 'flex-start', pt: 0.75, pr: 0.5, fontSize: { xs: 13, md: 15 }, whiteSpace: 'nowrap' }}>
+                    {s.product.variants.length > 1 ? 'From ' : ''}
+                    {formatKoboToNgn(s.variant.price_kobo)}
+                  </Typography>
                 </Box>
-              );
-            })}
+              ))}
+            </Box>
+            {!isComplete ? (
+              <Typography variant="body2" data-testid="ritual-unavailable-note" sx={{ p: 1.75, borderRadius: '20px', bgcolor: 'background.default', fontWeight: 600 }}>
+                The {unavailable.map((s) => s.verb.toLowerCase()).join(' and ')} {unavailable.length === 1 ? 'step is' : 'steps are'}{' '}
+                unavailable right now, so this total covers the {steps.length} {steps.length === 1 ? 'piece' : 'pieces'} in stock.
+              </Typography>
+            ) : null}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.25 }}>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={handleAddRitual}
+                disabled={steps.length === 0}
+                data-testid="add-ritual-to-bag-button"
+                sx={{ flex: '1 1 260px' }}
+              >
+                {added
+                  ? '✓ Ritual added to bag'
+                  : isComplete
+                    ? `Add ritual to bag · ${formatKoboToNgn(totalKobo)}`
+                    : `Add ${steps.length} available ${steps.length === 1 ? 'piece' : 'pieces'} · ${formatKoboToNgn(totalKobo)}`}
+              </Button>
+              <Button component={Link} href="/#catalogue" variant="text" size="large" sx={{ flex: '0 1 auto', bgcolor: 'background.default' }}>
+                Browse instead
+              </Button>
+            </Box>
           </Box>
         </Box>
       </Container>

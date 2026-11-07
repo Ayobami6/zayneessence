@@ -6,19 +6,16 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { TransitionProps } from '@mui/material/transitions';
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { Product } from '@/types/domain';
+import { CircleIconButton, Wordmark } from '@/components/glow';
 import { ProductDetailView } from './ProductDetailView';
 
 const SlideUpTransition = React.forwardRef(function SlideUpTransition(
-  props: TransitionProps & {
-    children: React.ReactElement;
-  },
+  props: TransitionProps & { children: React.ReactElement },
   ref: React.Ref<unknown>
 ) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -52,34 +49,21 @@ export function ProductDetailDialog({ product }: { product: Product }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          px: { xs: 2.5, md: 4 },
-          py: 1.75,
-          bgcolor: (t) => t.palette.zayne.headerGlass,
+          px: { xs: 2, md: 4 },
+          py: 1.5,
+          bgcolor: (t) => (t.palette.mode === 'light' ? 'rgba(246, 234, 243, 0.9)' : 'rgba(21, 12, 20, 0.9)'),
           backdropFilter: 'blur(14px)',
-          borderBottom: 1,
-          borderColor: 'divider',
+          WebkitBackdropFilter: 'blur(14px)',
         }}
       >
-        <Typography
-          sx={{
-            fontFamily: 'var(--font-italiana), "Italiana", Georgia, serif',
-            fontSize: '1.35rem',
-            textTransform: 'lowercase',
-          }}
-        >
-          zayneessence
-        </Typography>
-        <IconButton
-          onClick={handleClose}
-          aria-label="Close product view"
-          data-testid="close-product-dialog"
-        >
-          <CloseOutlinedIcon fontSize="small" />
-        </IconButton>
+        <Wordmark size={24} />
+        <CircleIconButton label="Close product view" onClick={handleClose} data-testid="close-product-dialog">
+          <CloseRoundedIcon />
+        </CircleIconButton>
       </Box>
 
-      <DialogContent sx={{ px: { xs: 2.5, md: 5 }, pb: 6 }}>
-        <ProductDetailView product={product} onCloseModal={handleClose} />
+      <DialogContent sx={{ px: { xs: 1.5, md: 4 }, pt: 0, pb: { xs: 2, md: 5 } }}>
+        <ProductDetailView key={product.id} product={product} onCloseModal={handleClose} />
       </DialogContent>
     </Dialog>
   );

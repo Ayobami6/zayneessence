@@ -1,11 +1,10 @@
 import path from 'node:path';
 import { expect, test } from '@playwright/test';
 
-const ARTIFACT_DIR =
-  '/Users/mac/.gemini/antigravity/brain/5162610d-8cfa-42c0-897f-ca48ff4a71e4';
+const ARTIFACT_DIR = path.resolve('test-results', 'screenshots');
 
 test.describe('zayneessence luxury storefront E2E flows', () => {
-  test('theme toggle switches between light and dark plum modes and persists', async ({
+  test('theme toggle switches between light and dark modes and persists', async ({
     page,
   }) => {
     await page.goto('/');
@@ -60,12 +59,16 @@ test.describe('zayneessence luxury storefront E2E flows', () => {
   test('browse -> product slide-up dialog -> add to bag -> checkout (Paystack test mode) -> confirmation', async ({
     page,
   }) => {
+    // First visits compile the product dialog, checkout and confirmation routes in dev.
+    test.setTimeout(120000);
     await page.goto('/');
 
     // 1. Click Oud Mubakhar tile to open slide-up product dialog
     await page.getByTestId('product-tile-oud-mubakhar').locator('a').first().click();
 
-    await expect(page.getByTestId('product-detail-dialog')).toBeVisible();
+    // The dev server compiles the intercepted product route on first visit, which can take
+    // well over the default wait under test load.
+    await expect(page.getByTestId('product-detail-dialog')).toBeVisible({ timeout: 45000 });
     await expect(page.getByTestId('product-detail-price')).toContainText('₦95,000');
 
     // 2. Select 6 ml variant (₦170,000 — unlocks free delivery over ₦150,000)
@@ -104,9 +107,10 @@ test.describe('zayneessence luxury storefront E2E flows', () => {
     await expect(page.getByTestId('payment-gateway-dialog')).toBeVisible();
     await page.getByTestId('confirm-mock-payment-button').click();
 
-    // 8. Verify exact order confirmation copy
+    // 8. Verify exact order confirmation copy. WhatsApp updates are off in the default store
+    //    settings, so the confirmation promises email rather than a WhatsApp message.
     await expect(page.getByTestId('order-confirmation-heading')).toHaveText(
-      'Order placed. You’ll get a WhatsApp message when it leaves our studio.'
+      'Order placed. We’ll email you when it leaves our studio.'
     );
 
     await page.screenshot({

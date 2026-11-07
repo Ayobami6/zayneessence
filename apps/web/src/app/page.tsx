@@ -1,14 +1,15 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
 import { HeroSection } from '@/components/catalogue/HeroSection';
-import { ParadeTicker } from '@/components/ui/ParadeTicker';
 import { StudioMetricsSection } from '@/components/catalogue/StudioMetricsSection';
+import { ForYouCarousel } from '@/components/catalogue/ForYouCarousel';
+import { CatalogueHeader } from '@/components/catalogue/CatalogueHeader';
 import { CategoryChips } from '@/components/catalogue/CategoryChips';
 import { ConcernAndIngredientBar } from '@/components/catalogue/ConcernAndIngredientBar';
 import { ProductGrid } from '@/components/catalogue/ProductGrid';
-import { BrandPhilosophySection } from '@/components/catalogue/BrandPhilosophySection';
+import { CategorySpotlight } from '@/components/catalogue/CategorySpotlight';
+import { ConsultationBand } from '@/components/catalogue/ConsultationBand';
 import { RitualProcessSection } from '@/components/catalogue/RitualProcessSection';
 import { ClientWordsSection } from '@/components/catalogue/ClientWordsSection';
 import { StudioJournalSection } from '@/components/catalogue/StudioJournalSection';
@@ -16,107 +17,23 @@ import { StudioJournalSection } from '@/components/catalogue/StudioJournalSectio
 export default function HomePage() {
   return (
     <Box>
-      {/* 1. Hero Section */}
       <HeroSection />
-
-      {/* 2. Continuous Scrolling Provenance Ticker */}
-      <ParadeTicker />
-
-      {/* 3. Studio Proof Benchmarks */}
+      <ForYouCarousel />
       <StudioMetricsSection />
 
-      {/* 4. Catalogue Collection */}
-      <Box
-        id="catalogue"
-        component="section"
-        aria-label="Product catalogue"
-        sx={{ py: { xs: 7, md: 11 } }}
-      >
+      <Box id="catalogue" component="section" aria-labelledby="catalogue-heading" sx={{ py: { xs: 3, md: 6 }, scrollMarginTop: 96 }}>
         <Container maxWidth="lg">
-          {/* Parade-style Parenthesis Eyebrow */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              mb: 4,
-              borderBottom: 1,
-              borderColor: 'divider',
-              pb: 2,
-            }}
-          >
-            <Typography
-              sx={{
-                fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: '0.9375rem',
-                fontWeight: 600,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                color: 'text.primary',
-                opacity: 0.85,
-              }}
-            >
-              (Catalogue collection)
-            </Typography>
-            <Typography
-              sx={{
-                fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: '0.9375rem',
-                fontWeight: 500,
-                color: 'text.primary',
-                opacity: 0.85,
-              }}
-            >
-              12 Formulations · In Stock
-            </Typography>
-          </Box>
-
-          <Box sx={{ mb: { xs: 4, md: 6 } }}>
-            <Typography
-              variant="h2"
-              sx={{
-                fontFamily: 'var(--font-jost), "Jost", sans-serif',
-                fontSize: { xs: '2.4rem', sm: '3rem', md: '3.8rem' },
-                fontWeight: 700,
-                letterSpacing: '-0.04em',
-                lineHeight: 1.05,
-                color: 'text.primary',
-                mb: 1.5,
-              }}
-            >
-              Formulations we’re proud of.
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                color: 'text.primary',
-                opacity: 0.88,
-                maxWidth: '52ch',
-                fontSize: { xs: '1.0625rem', md: '1.2rem' },
-                lineHeight: 1.65,
-                fontWeight: 400,
-              }}
-            >
-              Skincare formulated for melanin-rich skin with unrefined northern shea, baobab and moringa, alongside pure aged oud oils and perfume.
-            </Typography>
-          </Box>
-
+          <CatalogueHeader />
           <CategoryChips />
           <ConcernAndIngredientBar />
           <ProductGrid />
         </Container>
       </Box>
 
-      {/* 5. Brand Philosophy & Savanna Provenance (About zayneessence) */}
-      <BrandPhilosophySection />
-
-      {/* 6. The 4-Step Daily Ritual (Parade Process Timeline) */}
+      <CategorySpotlight />
+      <ConsultationBand />
       <RitualProcessSection />
-
-      {/* 7. Client Impressions (Kind Words) */}
       <ClientWordsSection />
-
-      {/* 8. Studio Journal Notes */}
       <StudioJournalSection />
     </Box>
   );

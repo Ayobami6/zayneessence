@@ -18,6 +18,8 @@ interface PaystackMockDialogProps {
   email: string;
   amountKobo: number;
   reference: string;
+  /** Channel picked on the checkout page; the dialog opens on it. */
+  initialChannel?: 'card' | 'bank_transfer' | 'ussd';
   onClose: () => void;
   onSuccess: (result: {
     reference: string;
@@ -32,10 +34,15 @@ export function PaystackMockDialog({
   email,
   amountKobo,
   reference,
+  initialChannel = 'card',
   onClose,
   onSuccess,
 }: PaystackMockDialogProps) {
-  const [channel, setChannel] = useState<'card' | 'bank_transfer' | 'ussd'>('card');
+  const [channel, setChannel] = useState<'card' | 'bank_transfer' | 'ussd'>(initialChannel);
+
+  React.useEffect(() => {
+    if (open) setChannel(initialChannel);
+  }, [open, initialChannel]);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleConfirmPayment = () => {

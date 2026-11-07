@@ -8,7 +8,8 @@ function escapeSql(val: string): string {
 
 function buildSeedSql(): string {
   const lines: string[] = [
-    '-- Auto-generated seed script for zayneessence catalogue (12 products, 36 images, variants, and Nigerian delivery zones)',
+    `-- Auto-generated seed script for zayneessence catalogue (${SEED_PRODUCTS.length} products, ${SEED_PRODUCTS.reduce((n, p) => n + p.images.length, 0)} images, variants, and Nigerian delivery zones)`,
+    '-- Products marked is_sample in seed-catalogue.ts are draft Bakhoor / Supplements pieces: replace before launch.',
     'BEGIN;',
     '',
     '-- Delivery zones',
@@ -31,7 +32,7 @@ function buildSeedSql(): string {
     lines.push(
       `INSERT INTO products (id, slug, name, category, type, description, notes, ingredients, how_to_use, is_published, sort_order) VALUES (` +
         `'${escapeSql(product.id)}', '${escapeSql(product.slug)}', '${escapeSql(product.name)}', '${escapeSql(product.category)}', '${escapeSql(product.type)}', '${escapeSql(product.description)}', ${notesJson}, ${ingredientsJson}, '${escapeSql(product.how_to_use)}', ${product.is_published}, ${product.sort_order}` +
-        `) ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, notes = EXCLUDED.notes, ingredients = EXCLUDED.ingredients, how_to_use = EXCLUDED.how_to_use;`
+        `) ON CONFLICT (id) DO UPDATE SET slug = EXCLUDED.slug, name = EXCLUDED.name, category = EXCLUDED.category, type = EXCLUDED.type, description = EXCLUDED.description, notes = EXCLUDED.notes, ingredients = EXCLUDED.ingredients, how_to_use = EXCLUDED.how_to_use, is_published = EXCLUDED.is_published, sort_order = EXCLUDED.sort_order;`
     );
 
     for (const img of product.images) {
@@ -46,7 +47,7 @@ function buildSeedSql(): string {
       lines.push(
         `INSERT INTO variants (id, product_id, label, price_kobo, stock, sku) VALUES (` +
           `'${escapeSql(variant.id)}', '${escapeSql(variant.product_id)}', '${escapeSql(variant.label)}', ${variant.price_kobo}, ${variant.stock}, '${escapeSql(variant.sku)}'` +
-          `) ON CONFLICT (id) DO UPDATE SET price_kobo = EXCLUDED.price_kobo, stock = EXCLUDED.stock;`
+          `) ON CONFLICT (id) DO UPDATE SET label = EXCLUDED.label, price_kobo = EXCLUDED.price_kobo, stock = EXCLUDED.stock, sku = EXCLUDED.sku;`
       );
     }
 

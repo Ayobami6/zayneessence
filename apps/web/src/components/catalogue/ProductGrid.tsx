@@ -7,25 +7,29 @@ import Button from '@mui/material/Button';
 import Skeleton from '@mui/material/Skeleton';
 import { useStoreData } from '@/context/StoreDataContext';
 import { filterProducts } from '@/services/store-service';
+import { Product } from '@/types/domain';
 import { ProductTile } from './ProductTile';
 
-export function ProductGrid() {
-  const {
-    publishedProducts,
-    isHydrated,
-    activeCategory,
-    setActiveCategory,
-    searchQuery,
-    setSearchQuery,
-  } = useStoreData();
+const GRID_COLUMNS = {
+  xs: 'repeat(2, minmax(0, 1fr))',
+  sm: 'repeat(3, minmax(0, 1fr))',
+  lg: 'repeat(4, minmax(0, 1fr))',
+};
+
+interface ProductGridProps {
+  /** Render these products instead of the store's category/search filter (category pages). */
+  products?: Product[];
+  /** Span the first tile across two columns (catalogue home view only). */
+  featureFirst?: boolean;
+}
+
+export function ProductGrid({ products, featureFirst = true }: ProductGridProps) {
+  const { publishedProducts, isHydrated, activeCategory, setActiveCategory, searchQuery, setSearchQuery } =
+    useStoreData();
 
   const filteredProducts = useMemo(
-    () =>
-      filterProducts(publishedProducts, {
-        category: activeCategory,
-        searchQuery,
-      }),
-    [publishedProducts, activeCategory, searchQuery]
+    () => products ?? filterProducts(publishedProducts, { category: activeCategory, searchQuery }),
+    [products, publishedProducts, activeCategory, searchQuery]
   );
 
   if (!isHydrated) {
@@ -33,34 +37,12 @@ export function ProductGrid() {
       <Box
         aria-busy="true"
         aria-label="Loading products"
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: {
-            xs: 'repeat(2, minmax(0, 1fr))',
-            sm: 'repeat(3, minmax(0, 1fr))',
-            lg: 'repeat(4, minmax(0, 1fr))',
-          },
-          gap: { xs: 2.5, sm: 3.5 },
-          mt: 3,
-        }}
+        sx={{ display: 'grid', gridTemplateColumns: GRID_COLUMNS, gap: { xs: 1.5, sm: 2 }, mt: 3 }}
       >
-        {Array.from({ length: 7 }).map((_, idx) => (
-          <Box
-            key={idx}
-            sx={{
-              gridColumn: idx === 0 ? { xs: 'span 2', sm: 'span 2' } : 'span 1',
-            }}
-          >
-            <Skeleton
-              variant="rectangular"
-              sx={{
-                width: '100%',
-                aspectRatio: idx === 0 ? '16 / 10' : '4 / 5',
-                height: 'auto',
-                mb: 1.5,
-              }}
-            />
-            <Skeleton variant="text" width="65%" height={28} />
+        {Array.from({ length: 8 }).map((_, idx) => (
+          <Box key={idx} sx={{ p: 1, borderRadius: '30px', bgcolor: 'background.paper' }}>
+            <Skeleton variant="rectangular" sx={{ width: '100%', aspectRatio: '4 / 5', height: 'auto', mb: 1.5 }} />
+            <Skeleton variant="text" width="65%" height={24} />
             <Skeleton variant="text" width="45%" height={20} />
           </Box>
         ))}
@@ -73,21 +55,19 @@ export function ProductGrid() {
       <Box
         data-testid="search-empty-state"
         sx={{
-          py: 10,
-          px: 2,
-          textAlign: 'center',
-          border: 1,
-          borderColor: 'divider',
-          borderRadius: 1,
-          bgcolor: 'background.paper',
           mt: 3,
+          py: { xs: 7, md: 10 },
+          px: 3,
+          textAlign: 'center',
+          borderRadius: '32px',
+          bgcolor: 'background.paper',
         }}
       >
-        <Typography variant="body1" sx={{ mb: 2.5, mx: 'auto' }}>
+        <Typography variant="body1" sx={{ mb: 2.5, mx: 'auto', fontWeight: 600 }}>
           Nothing matches that search. Try shea, rose, oud or serum.
         </Typography>
         <Button
-          variant="outlined"
+          variant="contained"
           onClick={() => {
             setSearchQuery('');
             setActiveCategory('All');
@@ -100,23 +80,12 @@ export function ProductGrid() {
   }
 
   return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: {
-          xs: 'repeat(2, minmax(0, 1fr))',
-          sm: 'repeat(3, minmax(0, 1fr))',
-          lg: 'repeat(4, minmax(0, 1fr))',
-        },
-        gap: { xs: 2.5, sm: 3.5 },
-        mt: 3,
-      }}
-    >
+    <Box sx={{ display: 'grid', gridTemplateColumns: GRID_COLUMNS, gap: { xs: 1.5, sm: 2 }, mt: 3 }}>
       {filteredProducts.map((product, index) => (
         <ProductTile
           key={product.id}
           product={product}
-          isFeaturedSpan={index === 0 && !searchQuery}
+          isFeaturedSpan={featureFirst && !products && index === 0 && !searchQuery}
         />
       ))}
     </Box>
